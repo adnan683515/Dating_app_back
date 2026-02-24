@@ -25,8 +25,8 @@ export interface IUser {
     availableForDate ? : boolean;
     availableForDance ? : boolean;
     availableForFriend ? : boolean;
-    lat ? : string;
-    long ? : string;
+    lat ? : number;
+    long ? : number;
     interests? : Types.ObjectId[];
     role : Role;
     auths : IAuthProvider[]

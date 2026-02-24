@@ -15,8 +15,8 @@ export interface IEvent {
 
     _id? : Types.ObjectId;
     title : string;
-    fee : number;
-    user : Types.ObjectId;
+    fee : number; //event fee
+    user : Types.ObjectId; //who create this event(Only admin)
     category : Types.ObjectId;
 
     lat : string;
