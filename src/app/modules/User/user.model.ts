@@ -25,16 +25,15 @@ const userSchema = new Schema<IUser>({
     availableForDate: { type: Boolean, default: false },
     availableForDance: { type: Boolean, default: false },
     availableForFriend: { type: Boolean, default: false },
-    
+
     lat: { type: Number },
     long: { type: Number },
 
-    interests: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "Interest",
-            default: []
-        }
+    interests: [{
+        type: Schema.Types.ObjectId,
+        ref: "Interest",
+        default: []
+    }
     ],
 
     auths: [authProviderSchema]
@@ -44,7 +43,7 @@ const userSchema = new Schema<IUser>({
 })
 
 
-// displayName : string; 
+// displayName : string;
 // email : string;
 // age? : number;
 // image? : string;
