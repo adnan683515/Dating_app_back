@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { IAuthProvider, IUser, Role } from "./user.interface";
+import { IAuthProvider, IUser, Role, Status } from "./user.interface";
 
 
 const authProviderSchema = new Schema<IAuthProvider>({
@@ -29,13 +29,14 @@ const userSchema = new Schema<IUser>({
     lat: { type: Number },
     long: { type: Number },
 
+    status : {type : String , default : Status.ACTIVE}, 
+
     interests: [{
         type: Schema.Types.ObjectId,
         ref: "Interest",
         default: []
     }
     ],
-
     auths: [authProviderSchema]
 }, {
     timestamps: true,

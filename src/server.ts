@@ -1,13 +1,14 @@
+import dotenv from 'dotenv';
 import { Server } from "http";
 import mongoose from "mongoose";
-import  express  from "express";
-import dotenv from 'dotenv'
+import app from "./app";
+import { Request, Response } from 'express';
 dotenv.config()
-
+import httpStatus from 'http-status-codes';
 
 
 let server : Server
-const app = express()
+
 
 const startServer =async ()=>{
     console.log(process.env.DB_URL as string)
@@ -29,3 +30,13 @@ const startServer =async ()=>{
         await startServer()
     }
 )()
+
+
+
+
+app.get("/", (req : Request , res : Response)=>{
+    res.status(httpStatus.OK).json({
+        message : "Welcome To tour Dating App!!.."
+    })
+    
+})

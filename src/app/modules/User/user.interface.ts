@@ -13,6 +13,13 @@ export interface IAuthProvider {
     providerId : string
 }
 
+
+// user status
+export enum Status {
+    ACTIVE = "ACTIVE", 
+    INACTIVE = "INACTIVE"
+}
+
 export interface IUser {
     _id? : Types.ObjectId;
     displayName : string; 
@@ -35,6 +42,8 @@ export interface IUser {
     long ? : number;
 
     interests? : Types.ObjectId[];
+
+    status : Status;
 
     role : Role;
     auths : IAuthProvider[];
