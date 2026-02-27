@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import { IAuthProvider, IUser, Role, Status } from "./user.interface";
 
 
@@ -42,6 +42,9 @@ const userSchema = new Schema<IUser>({
     timestamps: true,
     versionKey: false
 })
+
+
+export const User = model<IUser>("User", userSchema)
 
 
 // displayName : string;

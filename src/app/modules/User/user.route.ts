@@ -12,7 +12,6 @@ const router = Router()
 
 
 // user registration route
-
 router.post('/register', userController.createUser)
 
 
