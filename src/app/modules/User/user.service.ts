@@ -4,7 +4,7 @@ import { IUser } from "./user.interface";
 
 const usercreate = async (payload: Partial<IUser>) => {
 
-    const { email, password } = payload
+    const { email, password ,displayName } = payload
     console.log(email)
     if (!email) {
         console.log("email not found")
@@ -12,6 +12,10 @@ const usercreate = async (payload: Partial<IUser>) => {
 
     if (!password) {
         console.log("password not found")
+    }
+
+    if(!displayName){
+        console.log("Name not found")
     }
 }
 
