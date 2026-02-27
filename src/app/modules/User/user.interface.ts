@@ -29,19 +29,19 @@ export interface IUser {
     password? : string;
     bio? : string;
 
-    availableForDate ? : boolean;
-    availableForDance ? : boolean;
-    availableForFriend ? : boolean;
+    availableForDate ? : boolean; // user date ar jonno prepared kina ..
+    availableForDance ? : boolean; // dance ar jonno ?
+    availableForFriend ? : boolean;  // friend ar jonno
 
     newMatches ? : boolean; 
-    eventReminders? : boolean;
-    messageAlerts ? : boolean;
+    eventReminders? : boolean;  //when admin create an event ... this event notification send all user .jaden eventReminders true kora ase
+    messageAlerts ? : boolean;  // jkhn message alert true kora ase tkhn ..every message a notification jabe
 
 
-    lat ? : number;
+    lat ? : number;  
     long ? : number;
 
-    interests? : Types.ObjectId[];
+    interests? : Types.ObjectId[];   
 
     status : Status;
 
