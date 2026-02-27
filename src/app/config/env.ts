@@ -18,14 +18,16 @@ interface EnvConfig {
     JWT_REFRESH_SECRET : string,
 
     ADMIN_EMAIL : string, 
-    ADMIN_PASSWORD : string
+    ADMIN_PASSWORD : string, 
+    
+    BCRYPT_SALT_ROUND : string,
 
 }
 
 
 const loadEnvVariables = () : EnvConfig => {
 
-    const requiredEnvVariables : string[] = ['PORT', 'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET','JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT']
+    const requiredEnvVariables : string[] = ['PORT', 'BCRYPT_SALT_ROUND' ,  'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET','JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT']
 
 
     requiredEnvVariables?.forEach(key =>{
@@ -51,7 +53,10 @@ const loadEnvVariables = () : EnvConfig => {
         JWT_ACCESS_SECRET : process.env.JWT_ACCESS_SECRET as string,
         JWT_ACCESS_EXPIRES : process.env.JWT_ACCESS_EXPIRES as string,
 
-        NODE_ENV : process.env.NODE_ENV as "development" | "production"
+        NODE_ENV : process.env.NODE_ENV as "development" | "production",
+
+
+        BCRYPT_SALT_ROUND : process.env.BCRYPT_SALT_ROUND as string
 
     }
 }

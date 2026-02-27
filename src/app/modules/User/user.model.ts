@@ -14,22 +14,27 @@ const userSchema = new Schema<IUser>({
     displayName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
+    image: { type: String, default: "" },
     role: {
         type: String,
         enum: Object.values(Role),
         default: Role.USER
     },
     age: { type: Number },
-    bio: { type: String },
+    bio: { type: String, default: "" },
 
     availableForDate: { type: Boolean, default: false },
     availableForDance: { type: Boolean, default: false },
     availableForFriend: { type: Boolean, default: false },
 
+    newMatchesNotification: { type: Boolean, default: true },
+    messageAlertsNotification: { type: Boolean, default: true },
+    eventRemindersNotification: { type: Boolean, default: true },
+
     lat: { type: Number },
     long: { type: Number },
 
-    status : {type : String , default : Status.ACTIVE}, 
+    status: { type: String, default: Status.ACTIVE },
 
     interests: [{
         type: Schema.Types.ObjectId,

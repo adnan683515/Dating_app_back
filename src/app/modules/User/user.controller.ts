@@ -7,11 +7,9 @@ import  httpStatus  from 'http-status-codes';
 
 
 
-
+// create a user
 const createUser = catchAsync(async (req : Request, res : Response, next : NextFunction)=>{
 
-
-    console.log("user data from body", req?.body)
 
     const user = await userService.usercreate(req?.body)
 
@@ -23,6 +21,9 @@ const createUser = catchAsync(async (req : Request, res : Response, next : NextF
         data : user
     })
 })
+
+
+
 
 
 export  const userController = {

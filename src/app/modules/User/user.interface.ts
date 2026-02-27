@@ -33,9 +33,9 @@ export interface IUser {
     availableForDance ? : boolean; // dance ar jonno ?
     availableForFriend ? : boolean;  // friend ar jonno
 
-    newMatches ? : boolean; 
-    eventReminders? : boolean;  //when admin create an event ... this event notification send all user .jaden eventReminders true kora ase
-    messageAlerts ? : boolean;  // jkhn message alert true kora ase tkhn ..every message a notification jabe
+    newMatchesNotification ? : boolean;  // jkhn 
+    eventRemindersNotification? : boolean;  //when admin create an event ... this event notification send all user .jaden eventReminders true kora ase
+    messageAlertsNotification ? : boolean;  // jkhn message alert true kora ase tkhn ..every message a notification jabe
 
 
     lat ? : number;  

@@ -1,24 +1,46 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../errorHerlpers/AppError";
 import { envVars } from "../config/env";
+import { handleValidationError } from "../helpers/handleValidationError";
+import { handleZodError } from "../helpers/handleZodError";
 
 
 
 
+export interface IErrorsources {
+    path: string;
+    message: string;
+}
 
 
 
-
-export const globalErrorHandler =  ((err: any, req: Request, res: Response , next : NextFunction) => {
+export const globalErrorHandler = ((err: any, req: Request, res: Response, next: NextFunction) => {
 
 
     let statusCode = 500
     let message = `Something went Wrong!!`
 
+    let errorSources: any = []
+
+    console.log(err?.name)
 
     if (err instanceof AppError) {
         statusCode = err.statusCode
         message = err.message
+    }
+    else if(err?.name == "ZodError"){
+        const simplifiedError = handleZodError(err)
+        statusCode = simplifiedError.statusCode
+        message = simplifiedError.message
+        errorSources = simplifiedError.errorSource
+    }
+    else if (err?.name == "ValidationError") {
+
+        const simplifiedError = handleValidationError(err)
+        statusCode = simplifiedError.statusCode
+        message = simplifiedError.message
+        errorSources = simplifiedError.errorSources
+
     }
     else if (err instanceof Error) {
         statusCode = 500
@@ -27,10 +49,12 @@ export const globalErrorHandler =  ((err: any, req: Request, res: Response , nex
 
 
     res.status(statusCode).json({
-        success : false,
-        message : message, 
-        err : envVars.NODE_ENV == "development" ? err : null, 
-        stack : envVars.NODE_ENV == "development" ? err.stack : null
+        success: false,
+        message: message,
+        errorSources,
+        err: envVars.NODE_ENV == "development" ? err : null,
+        stack: envVars.NODE_ENV == "development" ? err.stack : null
     })
 
 })
+
