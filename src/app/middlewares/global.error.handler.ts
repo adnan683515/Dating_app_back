@@ -28,21 +28,21 @@ export const globalErrorHandler = ((err: any, req: Request, res: Response, next:
         statusCode = err.statusCode
         message = err.message
     }
-    else if(err?.name == "ZodError"){
+    else if(err?.name ==   "ZodError "){
         const simplifiedError = handleZodError(err)
         statusCode = simplifiedError.statusCode
         message = simplifiedError.message
-        errorSources = simplifiedError.errorSource
+        errorSources = simplifiedError.errorSource  
     }
     else if (err?.name == "ValidationError") {
 
         const simplifiedError = handleValidationError(err)
         statusCode = simplifiedError.statusCode
         message = simplifiedError.message
-        errorSources = simplifiedError.errorSources
+        errorSources = simplifiedError.errorSources   
 
     }
-    else if (err instanceof Error) {
+    else if (err instanceof Error) {2
         statusCode = 500
         message = err.message
     }
