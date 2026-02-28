@@ -39,9 +39,6 @@ export interface IUser {
 
     isVerified? : boolean;
 
-    otp? : "";
-
-
     lat ? : number;  
     long ? : number;
 
@@ -50,7 +47,7 @@ export interface IUser {
     status : Status;
 
     role : Role;
-    auths : IAuthProvider[];
+    auths? : IAuthProvider[];
 }
 
 // otp schema

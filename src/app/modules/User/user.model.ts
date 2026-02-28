@@ -3,6 +3,7 @@ import { IAuthProvider, IOTP, IUser, Role, Status } from "./user.interface";
 
 
 
+
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: { type: String, required: true },
     providerId: { type: String, required: true }
@@ -12,9 +13,9 @@ const authProviderSchema = new Schema<IAuthProvider>({
 })
 
 const userSchema = new Schema<IUser>({
-    displayName: { type: String, required: true },
+    displayName: { type: String, required: true , trim : true },
     email: { type: String, required: true, unique: true },
-    password: { type: String },
+    password: { type: String, trim : true },
     image: { type: String, default: "" },
     role: {
         type: String,
@@ -22,7 +23,7 @@ const userSchema = new Schema<IUser>({
         default: Role.USER
     },
     age: { type: Number },
-    bio: { type: String, default: "" },
+    bio: { type: String, default: "" , trim : true },
 
     availableForDate: { type: Boolean, default: false },
     availableForDance: { type: Boolean, default: false },
@@ -31,8 +32,6 @@ const userSchema = new Schema<IUser>({
     newMatchesNotification: { type: Boolean, default: true },
     messageAlertsNotification: { type: Boolean, default: true },
     eventRemindersNotification: { type: Boolean, default: true },
-
-    otp: { type: String },
 
     isVerified: { type: Boolean, default: false },
 
@@ -58,11 +57,13 @@ const otpSchema = new Schema({
     email: {
         type: String,
         required: true,
+        trim : true
     },
 
     otp: {
         type: String,
         required: true,
+        trim :true
     },
 
     expiresAt: {

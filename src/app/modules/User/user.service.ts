@@ -6,6 +6,11 @@ import bcrypt from 'bcrypt'
 import { envVars } from '../../config/env';
 
 import { sendEmail } from '../../utils/sendOTP';
+import { Types } from 'mongoose';
+import { object } from 'zod';
+
+
+
 
 // create user service
 const usercreate = async (payload: Partial<IUser>) => {
@@ -43,6 +48,42 @@ const usercreate = async (payload: Partial<IUser>) => {
 
 }
 
+// update user
+export const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUser | null> => {
+
+    // Spread payload
+    const { ...updatedFields } = payload;
+
+    // Convert to ObjectId
+    const idd = new Types.ObjectId(userId);
+
+    // Find user first
+    const findUser = await User.findOne({ _id: idd });
+    if (!findUser) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found");
+    }
+
+
+    
+
+
+
+    // Update user dynamically
+    const updatedUser = await User.findOneAndUpdate(
+        { _id: idd },
+        { $set: updatedFields },
+        { returnDocument: "after", runValidators: true } // return updated doc,
+
+        // returnDocument after mane udpate hoyar por data daw
+        // runValidators dile schema ta kaj korbe
+    );
+
+    return updatedUser;
+};
+
+
+
 export const userService = {
-    usercreate
+    usercreate,
+    updateUser
 }

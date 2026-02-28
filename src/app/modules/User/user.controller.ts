@@ -22,9 +22,29 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 })
 
 
+// update use
+
+const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    console.log(req, "request")
+
+
+    const userId = req?.params?.id as string
+    const updatedUserInfo = await userService.updateUser(userId, req?.body)
+
+    sendResponse(res, {
+        success: true,
+        message: "✅ updated successfully!",
+        statusCode: httpStatus.OK,
+        data: updatedUserInfo
+    })
+})
+
+
 
 
 
 export const userController = {
-    createUser
+    createUser,
+    updateUser
 }
