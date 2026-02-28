@@ -18,4 +18,6 @@ router.post('/register', validateRequest(createUserZodSchema), userController.cr
 
 
 
+
+
 export const UserRoutes = router
