@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, IUser, Role, Status } from "./user.interface";
+import { IAuthProvider, IOTP, IUser, Role, Status } from "./user.interface";
+
 
 
 const authProviderSchema = new Schema<IAuthProvider>({
@@ -31,6 +32,10 @@ const userSchema = new Schema<IUser>({
     messageAlertsNotification: { type: Boolean, default: true },
     eventRemindersNotification: { type: Boolean, default: true },
 
+    otp: { type: String },
+
+    isVerified: { type: Boolean, default: false },
+
     lat: { type: Number },
     long: { type: Number },
 
@@ -49,20 +54,30 @@ const userSchema = new Schema<IUser>({
 })
 
 
+const otpSchema = new Schema({
+    email: {
+        type: String,
+        required: true,
+    },
+
+    otp: {
+        type: String,
+        required: true,
+    },
+
+    expiresAt: {
+        type: Date,
+        required: true,
+    },
+}, {
+    versionKey : false
+})
+
+
+
+
+
+
 export const User = model<IUser>("User", userSchema)
+export const OTP = model<IOTP>("OTP", otpSchema)
 
-
-// displayName : string;
-// email : string;
-// age? : number;
-// image? : string;
-// password? : string;
-// bio? : string;
-// availableForDate ? : boolean;
-// availableForDance ? : boolean;
-// availableForFriend ? : boolean;
-// lat ? : string;
-// long ? : string;
-// interests? : Types.ObjectId[];
-// role : Role;
-// auths : IAuthProvider[]

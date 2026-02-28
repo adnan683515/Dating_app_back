@@ -18,11 +18,12 @@ export const createUserTokens = async (payload: Partial<IUser>) => {
 
 
     // create accesstoken 
-    const accessToken = generateTokenFn(payload , envVars.JWT_ACCESS_SECRET, envVars.JWT_ACCESS_EXPIRES)
+    const accessToken = await generateTokenFn(userPayLoad, envVars.JWT_ACCESS_SECRET, envVars.JWT_ACCESS_EXPIRES)
+
 
 
     // create refreshtoken
-    const refreshToken = generateTokenFn(payload, envVars.JWT_REFRESH_SECRET, envVars.JWT_REFRESH_EXPIRES)
+    const refreshToken = await generateTokenFn(userPayLoad, envVars.JWT_REFRESH_SECRET, envVars.JWT_REFRESH_EXPIRES)
 
 
     return {

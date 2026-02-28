@@ -37,6 +37,10 @@ export interface IUser {
     eventRemindersNotification? : boolean;  //when admin create an event ... this event notification send all user .jaden eventReminders true kora ase
     messageAlertsNotification ? : boolean;  // jkhn message alert true kora ase tkhn ..every message a notification jabe
 
+    isVerified? : boolean;
+
+    otp? : "";
+
 
     lat ? : number;  
     long ? : number;
@@ -47,4 +51,13 @@ export interface IUser {
 
     role : Role;
     auths : IAuthProvider[];
+}
+
+// otp schema
+
+
+export interface IOTP {
+    email : string;
+    otp :string;
+    expiresAt : Date
 }

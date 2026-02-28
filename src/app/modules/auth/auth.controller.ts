@@ -8,13 +8,13 @@ import http_status_code from "http-status-codes"
 
 
 
+// login user 
 const loginUser = catchAsync(async (req : Request, res : Response, next : NextFunction)=>{
-    console.log(req?.body)
+
 
     const user = await loginService.loginUser(req?.body)
 
     
-
 
     sendResponse(res , {
         success : true,
@@ -26,6 +26,21 @@ const loginUser = catchAsync(async (req : Request, res : Response, next : NextFu
 })
 
 
+//verified controller
+const verifyUser = catchAsync(async (req : Request , res : Response , next : NextFunction)=>{
+
+
+    await loginService.verifyuser(req?.body)
+
+
+    sendResponse(res , {
+        statusCode : http_status_code.OK, 
+        message : "✅ Otp verification successfully", 
+        success : true
+    })
+})
+
 export const authController = {
-    loginUser
+    loginUser,
+    verifyUser
 }
