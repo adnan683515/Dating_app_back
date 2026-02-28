@@ -14,6 +14,7 @@ export const handleZodError = (err: any) => {
 
     const errorSource: IErrorsources[] = []
 
+
     err?.issues?.forEach((element: IErrorSource) => {
 
         errorSource.push({
@@ -21,6 +22,8 @@ export const handleZodError = (err: any) => {
             message: element?.message
         })
     });
+
+
 
 
     return {

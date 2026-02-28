@@ -22,27 +22,29 @@ export const globalErrorHandler = ((err: any, req: Request, res: Response, next:
 
     let errorSources: any = []
 
-    console.log(err?.name)
 
-    if (err instanceof AppError) {
-        statusCode = err.statusCode
-        message = err.message
-    }
-    else if(err?.name ==   "ZodError "){
+    if (err?.name == "ZodError") {
+
         const simplifiedError = handleZodError(err)
         statusCode = simplifiedError.statusCode
         message = simplifiedError.message
-        errorSources = simplifiedError.errorSource  
+        errorSources = simplifiedError.errorSource
+
     }
     else if (err?.name == "ValidationError") {
 
         const simplifiedError = handleValidationError(err)
         statusCode = simplifiedError.statusCode
         message = simplifiedError.message
-        errorSources = simplifiedError.errorSources   
+        errorSources = simplifiedError.errorSources
 
     }
-    else if (err instanceof Error) {2
+    else if (err instanceof AppError) {
+        statusCode = err.statusCode
+        message = err.message
+    }
+    else if (err instanceof Error) {
+        
         statusCode = 500
         message = err.message
     }
