@@ -4,6 +4,8 @@ import { OTP, User } from "../User/user.model";
 import http_status_code from 'http-status-codes'
 import bcrypt from 'bcrypt'
 import { createUserTokens } from "../../utils/createUserTokens";
+import { IChangePassword } from "./auth.interface";
+import { envVars } from "../../config/env";
 
 // login service
 const loginUser = async (payload: Partial<IUser>) => {
@@ -47,7 +49,6 @@ const loginUser = async (payload: Partial<IUser>) => {
 
 
 // verify user
-
 const verifyuser = async (payload: Partial<IOTP>) => {
 
     const { email, otp } = payload
@@ -55,7 +56,7 @@ const verifyuser = async (payload: Partial<IOTP>) => {
     const user = await OTP.findOne({ email: email as string })
 
     if (user?.expiresAt && new Date(user.expiresAt) < new Date()) {
-        console.log("OTP expired");
+
         throw new AppError(http_status_code.BAD_REQUEST, "OTP expired")
     }
 
@@ -64,11 +65,45 @@ const verifyuser = async (payload: Partial<IOTP>) => {
     }
 
     // delete from otp model this email
-    await OTP.deleteOne({email : email as string})
+    await OTP.deleteOne({ email: email as string })
 
     // verified true kore deya holo from user model
-    await User.updateOne({email : email as string}, {$set : {isVerified : true}})
+    await User.updateOne({ email: email as string }, { $set: { isVerified: true } })
 
+
+    return true
+
+
+}
+
+
+
+
+// change password when user is login
+
+const changePasswordService = async (payload: IChangePassword) => {
+
+    const { currentPassword, newPassword, confirmPassword, email } = payload
+
+    if (newPassword !== confirmPassword) {
+        throw new AppError(http_status_code.BAD_REQUEST, "password doesn't match!")
+    }
+
+    const user = await User.findOne({ email: email as string })
+    if (!user) {
+        throw new AppError(http_status_code.NOT_FOUND, "user not found!")
+    }
+
+    const isMatchPass =await bcrypt.compare(currentPassword, user?.password as string)
+    if (!isMatchPass) {
+        throw new AppError(http_status_code.BAD_REQUEST, "password deosn't match!")
+    }
+
+    const hassPass =await bcrypt.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND))
+
+
+    user.password = hassPass
+    await user.save()
 
     return true
 
@@ -77,5 +112,6 @@ const verifyuser = async (payload: Partial<IOTP>) => {
 
 export const loginService = {
     loginUser,
-    verifyuser
+    verifyuser,
+    changePasswordService
 }

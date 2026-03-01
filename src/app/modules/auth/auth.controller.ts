@@ -39,7 +39,23 @@ const verifyUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+
+//change password when user is authenticated
+const changePassword = catchAsync(async (req : Request, res : Response, next : NextFunction)=>{
+
+    const passChange = await loginService.changePasswordService({email : req?.user?.email, ...req?.body})
+
+    sendResponse(res , {
+        success : true,
+        statusCode : http_status_code.OK,
+        message : "password change successfully"
+
+    })
+})
+
 export const authController = {
     loginUser,
-    verifyUser
+    verifyUser,
+    changePassword
+    
 }

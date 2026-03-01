@@ -26,7 +26,6 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    console.log(req, "request")
 
 
     const userId = req?.params?.id as string

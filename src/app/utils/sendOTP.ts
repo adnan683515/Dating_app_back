@@ -23,6 +23,8 @@ export const sendEmail = async (email: string) => {
   })
 
 
+
+
   await transport.sendMail({
 
     from: `"Dating App" <${envVars.ADMIN_EMAIL}>`,
@@ -40,7 +42,7 @@ export const sendEmail = async (email: string) => {
     }
   </style>
 </head>
-<body style="margin:0; padding:0; background-color:#0f0f12; font-family: 'Segoe UI', Helvetica, Arial, sans-serif;">
+<body style="margin:0; padding:0; font-family: 'Segoe UI', Helvetica, Arial, sans-serif;">
 
   <table align="center" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f0f12; padding: 40px 0;">
     <tr>
