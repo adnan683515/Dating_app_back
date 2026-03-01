@@ -16,7 +16,8 @@ export const VerifiedTokenFn = async (token: string, secret: string) => {
 
 
     const verifiedtoken = jwt.verify(token,secret)
-    
+
+
     return verifiedtoken
 
 

@@ -55,7 +55,7 @@ export const globalErrorHandler = ((err: any, req: Request, res: Response, next:
         message: message,
         errorSources,
         err: envVars.NODE_ENV == "development" ? err : null,
-        stack: envVars.NODE_ENV == "development" ? err.stack : null
+        stack: envVars.NODE_ENV == "development" ? err.stack : null 
     })
 
 })

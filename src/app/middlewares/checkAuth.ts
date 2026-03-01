@@ -10,8 +10,6 @@ import { Status } from "../modules/User/user.interface";
 
 export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
 
-    console.log("role", authRoles)
-
     try {
         const accessToken = req?.headers.authorization;
 
@@ -19,7 +17,9 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
             throw new AppError(httpStatusCode.BAD_REQUEST, "No Token Recived")
         }
 
-        const varifiedToken = VerifiedTokenFn(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload
+        const varifiedToken =await VerifiedTokenFn(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload
+
+    
 
         const isUserExits = await User.findOne({ email: varifiedToken.email })
 
@@ -31,7 +31,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
             throw new AppError(httpStatusCode.BAD_REQUEST, "user not verified!")
         }
 
-        if (isUserExits.status == Status.ACTIVE) {
+        if (isUserExits.status == Status.INACTIVE) {
             throw new AppError(httpStatusCode.BAD_REQUEST, `User is ${isUserExits?.status}`)
         }
 
@@ -40,7 +40,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
         }
 
         req.user = varifiedToken
-        console.log(req, "from check auth")
+
         next()
 
     }
