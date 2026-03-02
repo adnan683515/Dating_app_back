@@ -51,10 +51,14 @@ export const updatedUserSchema = z.object({
     long: z.number().min(-180).max(180).optional(),
 
     interests: z
-        .array(z.instanceof(Types.ObjectId))
+        .array(
+            z.string().regex(/^[0-9a-fA-F]{24}$/, {
+                message: "Invalid ObjectId format",
+            })
+        )
         .optional(),
 
     status: z.enum(Object.values(Status) as [string]).optional(),
-    
+
     role: z.enum(Object.values(Role) as [string]).optional(),
 });

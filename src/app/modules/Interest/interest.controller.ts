@@ -7,6 +7,7 @@ import httpStatus from 'http-status-codes'
 
 
 
+// create interest
 const interestcreate = catchAsync(async (req : Request, res : Response, next : NextFunction)=>{
 
     const interestResult = await interestService.interestCreate(req?.body)
@@ -20,7 +21,27 @@ const interestcreate = catchAsync(async (req : Request, res : Response, next : N
 })
 
 
+// get all interest 
+const getInterest = catchAsync(async (req : Request , res : Response , next : NextFunction)=>{
+
+
+    const query = req?.query
+
+    const interests = await interestService.interests(query as Record<string,string>)
+
+    sendResponse(res , {
+        data : interests,
+        success : true,
+        message : "All interest Retrived successfully!",
+        statusCode : httpStatus.OK
+    })
+
+})
+
+
+
 
 export const interestController = {
-    interestcreate
+    interestcreate,
+    getInterest
 }

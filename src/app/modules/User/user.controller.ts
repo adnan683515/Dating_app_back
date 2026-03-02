@@ -62,8 +62,12 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 // get all users with out admin
 const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+    const query = req?.query
 
-    const users = await userService.getAllUsers()
+
+    const users = await userService.getAllUsers(query as Record<string, string>)
+
+
 
     sendResponse(res, {
         success: true,

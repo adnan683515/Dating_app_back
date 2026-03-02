@@ -46,6 +46,9 @@ const userSchema = new Schema<IUser>({
         default: []
     }
     ],
+    
+
+
     auths: [authProviderSchema]
 }, {
     timestamps: true,
