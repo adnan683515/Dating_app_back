@@ -7,6 +7,7 @@ import { envVars } from './../../config/env';
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
 import { userFields } from './user.constants';
+import { excludeField } from '../../constant';
 
 
 
@@ -84,16 +85,25 @@ const getAllUsers = async (query: Record<string, string>) => {
     const filter = query
     const searchTerm = filter?.searchTerm || ""
     const sort = query?.sort || "-createdAt"
+    const limit = Number(query?.limit) || 10
+    const page = Number(query?.page) || 1
+    const skip = (page - 1) * limit
+
+
+    // field filtering
+    const fields = query?.fields?.split(',').join(' ') || ""
 
 
     // delete filter["searchTerm"]
     // delete filter['sort']
 
 
-    const excludeField = ["searchTerm", "sort"]
+
+
     for (const field of excludeField) {
         delete filter[field]
     }
+
 
     const searchArray = {
         $or: userFields?.map((item) => ({ [item]: { $regex: searchTerm, $options: 'i' } }))
@@ -106,20 +116,30 @@ const getAllUsers = async (query: Record<string, string>) => {
     //     ]
     // }
 
-
+    console.log(filter)
     const users = await User.find({
         $and: [
             searchArray,
             { email: { $ne: envVars.ADMIN_EMAIL } }
         ]
-    }).find(filter).sort(sort).populate('interests')
+    }).find(filter).sort(sort).select(fields as string).skip(skip).limit(limit).populate('interests')
 
 
-    const totaluser = await User.find({ email: { $ne: envVars.ADMIN_EMAIL } }).countDocuments()
+
+
+
+    const totalUser = await User.find({
+        $and: [
+            searchArray,
+            { email: { $ne: envVars.ADMIN_EMAIL } }
+        ]
+    }).find(filter).sort(sort).select(fields as string).populate('interests').countDocuments()
+
+
     return {
         data: users,
         meta: {
-            total: totaluser
+            total: totalUser
         }
     }
 }

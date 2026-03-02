@@ -1,2 +1,2 @@
 
-export const userFields = ["displayName", "role", "bio"]
+export const userFields = ["displayName", "bio", "page", "limit"]
