@@ -30,6 +30,10 @@ router.get('/users', userController.getAllUsers)
 router.get('/getMe', checkAuth(...Object.values(Role)) , userController.getMe)
 
 
+// get single user
+router.get('/singleUser/:id', checkAuth(...Object.values(Role)) , userController.singleUser)
+
+
 
 
 export const UserRoutes = router

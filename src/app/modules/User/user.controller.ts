@@ -36,19 +36,13 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         );
     }
 
-    if (
-        req?.user?.role === Role.ADMIN &&
-        req?.body?.role === Role.ADMIN
-    ) {
+    if (req?.user?.role === Role.ADMIN &&   req?.body?.role === Role.ADMIN   ) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
             "Admins cannot modify their own role."
         );
     }
 
-
-
-    
     const userId = req?.params?.id as string
     const updatedUserInfo = await userService.updateUser(userId, req?.body)
 
@@ -91,10 +85,25 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 })
 
 
+// get singleUser
+const singleUser = catchAsync(async (req : Request, res : Response, next : NextFunction)=>{
+    const id = req?.params?.id as string
+
+    const user = await userService.singleUser(id)
+    sendResponse(res, {
+        success : true,
+        message : "User Details Retrived Successfully",
+        data : user,
+        statusCode : httpStatus.OK
+    })
+})
+
+
 
 export const userController = {
     createUser,
     updateUser,
     getAllUsers,
-    getMe
+    getMe,
+    singleUser
 }

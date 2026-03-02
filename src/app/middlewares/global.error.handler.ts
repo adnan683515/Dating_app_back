@@ -39,12 +39,16 @@ export const globalErrorHandler = ((err: any, req: Request, res: Response, next:
         errorSources = simplifiedError.errorSources
 
     }
+    else if (err.name == "CastError") {
+        statusCode = 400;
+        message = "Invalid Mongodb Object Id , please provide valid Id"
+    }
     else if (err instanceof AppError) {
         statusCode = err.statusCode
         message = err.message
     }
     else if (err instanceof Error) {
-        
+
         statusCode = 500
         message = err.message
     }
@@ -55,7 +59,7 @@ export const globalErrorHandler = ((err: any, req: Request, res: Response, next:
         message: message,
         errorSources,
         err: envVars.NODE_ENV == "development" ? err : null,
-        stack: envVars.NODE_ENV == "development" ? err.stack : null 
+        stack: envVars.NODE_ENV == "development" ? err.stack : null
     })
 
 })

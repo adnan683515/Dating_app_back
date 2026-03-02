@@ -98,14 +98,26 @@ const getAllUsers = async () => {
 // get me 
 const getMe = async (userId: string) => {
     const user = await User.findById(userId).select('-password')
-
     return user
 
+}
+
+// get singleUser
+
+const singleUser = async (userId : string)=>{
+
+
+    const user = await User.findById(userId).select('-password')
+    if(!user){
+        throw new AppError(httpStatus.NOT_FOUND, "User not found!")
+    }
+    return user
 }
 
 export const userService = {
     usercreate,
     updateUser,
     getAllUsers,
-    getMe
+    getMe,
+    singleUser
 }
