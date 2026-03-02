@@ -5,7 +5,9 @@ import { IInterest } from "./interest.interface";
 
 
 const interestSchema = new Schema<IInterest>({
-    name : {type : String , unique : true}
+    name : {type : String , unique : true , trim : true}
+}, {
+    versionKey : false
 })
 
 
