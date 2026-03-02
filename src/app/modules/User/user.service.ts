@@ -49,7 +49,7 @@ const usercreate = async (payload: Partial<IUser>) => {
 }
 
 // update user
-export const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUser | null> => {
+const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUser | null> => {
 
     // Spread payload
     const { ...updatedFields } = payload;
@@ -64,7 +64,6 @@ export const updateUser = async (userId: string, payload: Partial<IUser>): Promi
     }
 
 
-    
 
 
 
@@ -82,8 +81,31 @@ export const updateUser = async (userId: string, payload: Partial<IUser>): Promi
 };
 
 
+// get all users with out admin
+const getAllUsers = async () => {
+
+    const users = await User.find({
+        email: {
+            $ne: envVars.ADMIN_EMAIL
+        }
+    })
+
+    return users
+}
+
+
+
+// get me 
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select('-password')
+
+    return user
+
+}
 
 export const userService = {
     usercreate,
-    updateUser
+    updateUser,
+    getAllUsers,
+    getMe
 }

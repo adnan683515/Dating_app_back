@@ -7,6 +7,7 @@ import { createUserTokens } from "../../utils/createUserTokens";
 import { IChangePassword } from "./auth.interface";
 import { envVars } from "../../config/env";
 
+
 // login service
 const loginUser = async (payload: Partial<IUser>) => {
 
@@ -33,6 +34,9 @@ const loginUser = async (payload: Partial<IUser>) => {
     }
 
     const userTokens = await createUserTokens(isUserExits)
+
+
+
 
 
 
@@ -80,7 +84,6 @@ const verifyuser = async (payload: Partial<IOTP>) => {
 
 
 // change password when user is login
-
 const changePasswordService = async (payload: IChangePassword) => {
 
     const { currentPassword, newPassword, confirmPassword, email } = payload
@@ -109,6 +112,11 @@ const changePasswordService = async (payload: IChangePassword) => {
 
 
 }
+
+
+
+
+
 
 export const loginService = {
     loginUser,

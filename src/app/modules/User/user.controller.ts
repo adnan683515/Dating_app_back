@@ -3,6 +3,9 @@ import { catchAsync } from "../../utils/catchAsync";
 import { userService } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes';
+import { JwtPayload } from "jsonwebtoken";
+import { Role } from "./user.interface";
+import AppError from "../../errorHerlpers/AppError";
 
 
 
@@ -23,11 +26,29 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 
 // update use
-
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
+    if (req?.user?.role === Role.USER && req?.body?.role) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "Users are not allowed to change their role."
+        );
+    }
 
+    if (
+        req?.user?.role === Role.ADMIN &&
+        req?.body?.role === Role.ADMIN
+    ) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "Admins cannot modify their own role."
+        );
+    }
+
+
+
+    
     const userId = req?.params?.id as string
     const updatedUserInfo = await userService.updateUser(userId, req?.body)
 
@@ -40,10 +61,40 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 })
 
 
+// get all users with out admin
+const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const users = await userService.getAllUsers()
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Get All Users",
+        data: users
+    })
+})
+
+
+// get me
+const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req?.user as JwtPayload
+    const user = await userService.getMe(decodedToken?.id)
+
+    sendResponse(res, {
+        success: true,
+        message: "Your profile Retrieved Successfully",
+        data: user,
+        statusCode: httpStatus.OK
+    })
+})
 
 
 
 export const userController = {
     createUser,
-    updateUser
+    updateUser,
+    getAllUsers,
+    getMe
 }

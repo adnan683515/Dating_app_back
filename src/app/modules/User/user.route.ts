@@ -23,6 +23,13 @@ router.post('/register', validateRequest(createUserZodSchema), userController.cr
 router.patch('/updateuser/:id', validateRequest(updatedUserSchema), checkAuth(...Object.values(Role)), userController.updateUser)
 
 
+//get all users
+router.get('/users', userController.getAllUsers)
+
+// get me
+router.get('/getMe', checkAuth(...Object.values(Role)) , userController.getMe)
+
+
 
 
 export const UserRoutes = router

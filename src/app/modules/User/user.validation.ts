@@ -55,5 +55,6 @@ export const updatedUserSchema = z.object({
         .optional(),
 
     status: z.enum(Object.values(Status) as [string]).optional(),
+    
     role: z.enum(Object.values(Role) as [string]).optional(),
 });
