@@ -4,7 +4,7 @@ import { userService } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes';
 import { JwtPayload } from "jsonwebtoken";
-import { Role } from "./user.interface";
+import { Role, Status } from "./user.interface";
 import AppError from "../../errorHerlpers/AppError";
 
 
@@ -28,20 +28,24 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 // update use
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-
-    if (req?.user?.role === Role.USER && req?.body?.role) {
+    if(req?.body?.password){
+        throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
+    }
+    if (req?.user?.role === Role?.USER && req?.body?.role) {
         throw new AppError(
             httpStatus.BAD_REQUEST,
             "Users are not allowed to change their role."
         );
     }
 
-    if (req?.user?.role === Role.ADMIN &&   req?.body?.role === Role.ADMIN   ) {
-        throw new AppError(
-            httpStatus.BAD_REQUEST,
-            "Admins cannot modify their own role."
-        );
+    if (req?.user?.role === Role?.ADMIN && (req?.body?.role === Role?.ADMIN || req?.body?.role == Role?.USER)) {
+        throw new AppError( httpStatus.BAD_REQUEST, "Admins cannot modify their own role.");
     }
+
+    if (req?.user?.role === Role?.USER && req?.body?.status) {
+        throw new AppError(  httpStatus.BAD_REQUEST, "Users are not allowed to change their status.");
+    }
+
 
     const userId = req?.params?.id as string
     const updatedUserInfo = await userService.updateUser(userId, req?.body)
@@ -86,15 +90,15 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 
 
 // get singleUser
-const singleUser = catchAsync(async (req : Request, res : Response, next : NextFunction)=>{
+const singleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const id = req?.params?.id as string
 
     const user = await userService.singleUser(id)
     sendResponse(res, {
-        success : true,
-        message : "User Details Retrived Successfully",
-        data : user,
-        statusCode : httpStatus.OK
+        success: true,
+        message: "User Details Retrived Successfully",
+        data: user,
+        statusCode: httpStatus.OK
     })
 })
 

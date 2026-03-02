@@ -5,6 +5,7 @@ import app from "./app";
 import { Request, Response } from 'express';
 dotenv.config()
 import httpStatus from 'http-status-codes';
+import { seedAdmin } from './app/utils/seedAdmin';
 
 
 let server : Server
@@ -28,6 +29,7 @@ const startServer =async ()=>{
 (
     async ()=>{
         await startServer()
+        await seedAdmin()
     }
 )()
 

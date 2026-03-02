@@ -28,16 +28,12 @@ const loginUser = async (payload: Partial<IUser>) => {
 
 
 
-    const matchPassword = bcrypt.compare(password as string, isUserExits.password as string)
+    const matchPassword =await bcrypt.compare(password as string, isUserExits.password as string)
     if (!matchPassword) {
         throw new AppError(http_status_code.BAD_REQUEST, "Password doesn't match!")
     }
 
     const userTokens = await createUserTokens(isUserExits)
-
-
-
-
 
 
     const { password: pass, ...rest } = isUserExits.toObject()
