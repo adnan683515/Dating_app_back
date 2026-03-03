@@ -1,13 +1,13 @@
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status-codes';
 import { Types } from 'mongoose';
+import { excludeField } from '../../constant';
 import AppError from '../../errorHerlpers/AppError';
 import { sendEmail } from '../../utils/sendOTP';
 import { envVars } from './../../config/env';
+import { userFields } from './user.constants';
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
-import { userFields } from './user.constants';
-import { excludeField } from '../../constant';
 
 
 
@@ -125,22 +125,21 @@ const getAllUsers = async (query: Record<string, string>) => {
     }).find(filter).sort(sort).select(fields as string).skip(skip).limit(limit).populate('interests')
 
 
+    const userCount = await User.find({ email: { $ne: envVars.ADMIN_EMAIL } }).countDocuments()
 
 
+    const totalpage = Math.ceil(userCount / limit)
 
-    const totalUser = await User.find({
-        $and: [
-            searchArray,
-            { email: { $ne: envVars.ADMIN_EMAIL } }
-        ]
-    }).find(filter).sort(sort).select(fields as string).populate('interests').countDocuments()
-
+    const meta = {
+        total: userCount,
+        page: page,
+        limit: limit,
+        totalpage
+    }
 
     return {
         data: users,
-        meta: {
-            total: totalUser
-        }
+        meta
     }
 }
 
