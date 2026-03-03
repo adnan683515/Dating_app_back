@@ -24,12 +24,16 @@ interface EnvConfig {
 
     APP_PASSWORD : string,
 
+    CLOUD_API_SECRET: string,
+    CLOUD_API_KEY: string,
+    CLOUD_NAME : string,
+
 }
 
 
 const loadEnvVariables = () : EnvConfig => {
 
-    const requiredEnvVariables : string[] = ['PORT', 'BCRYPT_SALT_ROUND' , 'APP_PASSWORD',  'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET','JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT']
+    const requiredEnvVariables : string[] = ['PORT', 'BCRYPT_SALT_ROUND' , 'APP_PASSWORD',  'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET','JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME']
 
 
     requiredEnvVariables?.forEach(key =>{
@@ -59,7 +63,15 @@ const loadEnvVariables = () : EnvConfig => {
 
         APP_PASSWORD : process.env.APP_PASSWORD as string,
 
-        BCRYPT_SALT_ROUND : process.env.BCRYPT_SALT_ROUND as string
+        BCRYPT_SALT_ROUND : process.env.BCRYPT_SALT_ROUND as string, 
+
+
+
+        
+        CLOUD_API_SECRET : process.env.CLOUD_API_SECRET as string,
+
+        CLOUD_API_KEY : process.env.CLOUD_API_KEY as string,
+        CLOUD_NAME : process.env.CLOUD_NAME as string
 
     }
 }
