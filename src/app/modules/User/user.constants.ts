@@ -1,2 +1,2 @@
 
-export const userFields = ["displayName", "bio", "page", "limit"]
+export const userSearchableFields = ["displayName", "email"]

@@ -5,9 +5,10 @@ import { excludeField } from '../../constant';
 import AppError from '../../errorHerlpers/AppError';
 import { sendEmail } from '../../utils/sendOTP';
 import { envVars } from './../../config/env';
-import { userFields } from './user.constants';
+import { userSearchableFields } from './user.constants';
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
+import { QueryBuilder } from '../../utils/QueryBuilder';
 
 
 
@@ -81,17 +82,33 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 const getAllUsers = async (query: Record<string, string>) => {
 
 
+    const querybuilder = new QueryBuilder(User.find(), query)
 
-    const filter = query
-    const searchTerm = filter?.searchTerm || ""
-    const sort = query?.sort || "-createdAt"
-    const limit = Number(query?.limit) || 10
-    const page = Number(query?.page) || 1
-    const skip = (page - 1) * limit
+    const userdata = querybuilder
+    .filter()
+    .search(userSearchableFields)
+    .sort()
+    .fields()
+    .paginate();
+
+
+    const [data, meta] = await Promise.all([
+        userdata.build(),
+        querybuilder.getMeta()
+    ])
+
+
+
+    // const filter = query
+    // const searchTerm = filter?.searchTerm || ""
+    // const sort = query?.sort || "-createdAt"
+    // const limit = Number(query?.limit) || 10
+    // const page = Number(query?.page) || 1
+    // const skip = (page - 1) * limit
 
 
     // field filtering
-    const fields = query?.fields?.split(',').join(' ') || ""
+    // const fields = query?.fields?.split(',').join(' ') || ""
 
 
     // delete filter["searchTerm"]
@@ -100,14 +117,15 @@ const getAllUsers = async (query: Record<string, string>) => {
 
 
 
-    for (const field of excludeField) {
-        delete filter[field]
-    }
+    // for (const field of excludeField) {
+    //     delete filter[field]
+    // }
 
 
-    const searchArray = {
-        $or: userFields?.map((item) => ({ [item]: { $regex: searchTerm, $options: 'i' } }))
-    }
+    // const searchArray = {
+    //     $or: userFields?.map((item) => ({ [item]: { $regex: searchTerm, $options: 'i' } }))
+    // }
+
     // {
     //     $or : [
     //         {title : {$regex : value , $options : "i"}},
@@ -116,33 +134,33 @@ const getAllUsers = async (query: Record<string, string>) => {
     //     ]
     // }
 
-    console.log(filter)
-    const users = await User.find({
-        $and: [
-            searchArray,
-            { email: { $ne: envVars.ADMIN_EMAIL } }
-        ]
-    }).find(filter).sort(sort).select(fields as string).skip(skip).limit(limit).populate('interests')
+
+    // const users = await User.find({
+    //     $and: [
+    //         searchArray,
+    //         { email: { $ne: envVars.ADMIN_EMAIL } }
+    //     ]
+    // }).find(filter).sort(sort).select(fields as string).skip(skip).limit(limit).populate('interests')
 
 
-    const userCount = await User.find({ email: { $ne: envVars.ADMIN_EMAIL } }).countDocuments()
+    // const userCount = await User.find({ email: { $ne: envVars.ADMIN_EMAIL } }).countDocuments()
 
 
-    const totalpage = Math.ceil(userCount / limit)
+    // const totalpage = Math.ceil(userCount / limit)
 
-    const meta = {
-        total: userCount,
-        page: page,
-        limit: limit,
-        totalpage
-    }
+    // const meta = {
+    //     total: userCount,
+    //     page: page,
+    //     limit: limit,
+    //     totalpage
+    // }
+
 
     return {
-        data: users,
+        data,
         meta
     }
 }
-
 
 
 // get me 
@@ -153,10 +171,8 @@ const getMe = async (userId: string) => {
 }
 
 
-
 // get singleUser
 const singleUser = async (userId: string) => {
-
 
     const user = await User.findById(userId).select('-password')
     if (!user) {
@@ -164,6 +180,10 @@ const singleUser = async (userId: string) => {
     }
     return user
 }
+
+
+
+
 
 export const userService = {
     usercreate,
