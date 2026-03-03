@@ -2,6 +2,7 @@ import { Router } from "express";
 import { UserRoutes } from "../modules/User/user.route";
 import { authRoutes } from "../modules/auth/auth.routes";
 import { InterestRouter } from "../modules/Interest/interest.route";
+import { LineupRoute } from "../modules/EventLineup/lineup.route";
 
 
 
@@ -20,6 +21,9 @@ const moduleRoutes = [
     {
         path : '/interest',
         route : InterestRouter
+    }, {
+        path : "/lineup",
+        route : LineupRoute
     }
 ]
 

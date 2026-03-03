@@ -1,0 +1,64 @@
+import { NextFunction, Request, Response } from "express";
+import { catchAsync } from "../../utils/catchAsync";
+import { lineupService } from "./lineup.service";
+import { sendResponse } from "../../utils/sendResponse";
+import httpStatus from 'http-status-codes'
+import  http_status_code  from 'http-status-codes';
+
+
+
+// create controller
+const lineupcreated = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const result = await lineupService.lineupCreate(req?.body)
+
+    sendResponse(res, {
+        message: "Event Lineup  created successfully!",
+        statusCode: httpStatus.CREATED,
+        data: result,
+        success: true
+
+    })
+})
+
+
+const getLineup = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const query = req?.query
+    const lineupData =await lineupService.getLineup(query as Record<string, string>)
+
+    sendResponse(res, {
+        success: true,
+        message: "All Event Lineup Retrived Successfully",
+        statusCode: httpStatus.OK,
+        data: lineupData
+    })
+})
+
+// update lineup data
+const updateLineUp = catchAsync(async (req : Request, res : Response , next : NextFunction)=>{
+
+
+    const id = req?.params?.id as string
+
+    const data  = await lineupService.updateLineup(id , req?.body)
+
+
+    sendResponse(res, {
+        message : "Update line up data successfully!", 
+        success : true , 
+        data : data,
+        statusCode : httpStatus.OK
+    })
+
+
+})
+
+
+export const lineupController = {
+
+    lineupcreated,
+    getLineup,
+    updateLineUp
+
+}

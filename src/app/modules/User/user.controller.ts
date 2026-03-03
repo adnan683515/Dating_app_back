@@ -28,7 +28,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 // update use
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    if(req?.body?.password){
+    if (req?.body?.password) {
         throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
     }
     if (req?.user?.role === Role?.USER && req?.body?.role) {
@@ -39,11 +39,11 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     }
 
     if (req?.user?.role === Role?.ADMIN && (req?.body?.role === Role?.ADMIN || req?.body?.role == Role?.USER)) {
-        throw new AppError( httpStatus.BAD_REQUEST, "Admins cannot modify their own role.");
+        throw new AppError(httpStatus.BAD_REQUEST, "Admins cannot modify their own role.");
     }
 
     if (req?.user?.role === Role?.USER && req?.body?.status) {
-        throw new AppError(  httpStatus.BAD_REQUEST, "Users are not allowed to change their status.");
+        throw new AppError(httpStatus.BAD_REQUEST, "Users are not allowed to change their status.");
     }
 
 
@@ -66,7 +66,6 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
 
 
     const users = await userService.getAllUsers(query as Record<string, string>)
-
 
 
     sendResponse(res, {

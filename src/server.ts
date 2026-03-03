@@ -8,18 +8,18 @@ import httpStatus from 'http-status-codes';
 import { seedAdmin } from './app/utils/seedAdmin';
 
 
-let server : Server
+let server: Server
 
 
-const startServer =async ()=>{
-    
-    try{
+const startServer = async () => {
+
+    try {
         await mongoose.connect(process.env.DB_URL as string)
-        server = app.listen(process.env.PORT, ()=>{
+        server = app.listen(process.env.PORT, () => {
             console.log(`server is listening on port ${process.env.PORT}`)
         })
     }
-    catch(error){
+    catch (error) {
         console.log(error)
     }
 }
@@ -27,7 +27,7 @@ const startServer =async ()=>{
 
 // server start
 (
-    async ()=>{
+    async () => {
         await startServer()
         await seedAdmin()
     }
@@ -36,9 +36,73 @@ const startServer =async ()=>{
 
 
 
-app.get("/", (req : Request , res : Response)=>{
+app.get("/", (req: Request, res: Response) => {
     res.status(httpStatus.OK).json({
-        message : "Welcome To tour Dating App!!.."
+        message: "Welcome To tour Dating App!!.."
     })
-    
+
 })
+
+
+process.on("SIGTERM", () => {
+    console.log("SIGTERM signal recieved... Server shutting down..");
+
+    if (server) {
+        server.close(() => {
+            process.exit(1)
+        });
+    }
+
+    process.exit(1)
+})
+
+process.on("SIGINT", () => {
+    console.log("SIGINT signal recieved... Server shutting down..");
+
+    if (server) {
+        server.close(() => {
+            process.exit(1)
+        });
+    }
+
+    process.exit(1)
+})
+
+
+process.on("unhandledRejection", (err) => {
+    console.log("Unhandled Rejecttion detected... Server shutting down..", err);
+
+    if (server) {
+        server.close(() => {
+            process.exit(1)
+        });
+    }
+
+    process.exit(1)
+})
+
+process.on("uncaughtException", (err) => {
+    console.log("Uncaught Exception detected... Server shutting down..", err);
+
+    if (server) {
+        server.close(() => {
+            process.exit(1)
+        });
+    }
+
+    process.exit(1)
+})
+
+// Unhandler rejection error
+// Promise.reject(new Error("I forgot to catch this promise"))
+
+// Uncaught Exception Error
+// throw new Error("I forgot to handle this local erro")
+
+
+/**
+ * unhandled rejection error
+ * uncaught rejection error
+ * signal termination sigterm
+ */
+

@@ -1,14 +1,13 @@
 import bcrypt from 'bcrypt';
 import httpStatus from 'http-status-codes';
 import { Types } from 'mongoose';
-import { excludeField } from '../../constant';
 import AppError from '../../errorHerlpers/AppError';
+import { QueryBuilder } from '../../utils/QueryBuilder';
 import { sendEmail } from '../../utils/sendOTP';
 import { envVars } from './../../config/env';
 import { userSearchableFields } from './user.constants';
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
-import { QueryBuilder } from '../../utils/QueryBuilder';
 
 
 
@@ -60,9 +59,18 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 
     // Find user first
     const findUser = await User.findOne({ _id: idd });
+
+    // ck user
     if (!findUser) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
+
+    // ck interest
+    if ((findUser?.interests?.length ?? 0) > 6) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Maximum interest 6");
+    }
+
+
 
     // Update user dynamically
     const updatedUser = await User.findOneAndUpdate(
@@ -96,7 +104,7 @@ const getAllUsers = async (query: Record<string, string>) => {
     // jdi multiple populate korte hoi  tah hole populate([ {path : "interests"}, {path : "interests"} ])
 
 
-    
+
     const [data, meta] = await Promise.all([
         userdata.build(),
         querybuilder.getMeta()

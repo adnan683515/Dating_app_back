@@ -20,18 +20,18 @@ router.post('/register', validateRequest(createUserZodSchema), userController.cr
 
 
 // update user route
-router.patch('/updateuser/:id',checkAuth(...Object.values(Role)),  validateRequest(updatedUserSchema), userController.updateUser)
+router.patch('/updateuser/:id', checkAuth(...Object.values(Role)), validateRequest(updatedUserSchema), userController.updateUser)
 
 
 //get all users
 router.get('/users', checkAuth(Role.ADMIN), userController.getAllUsers)
 
 // get me
-router.get('/getMe', checkAuth(...Object.values(Role)) , userController.getMe)
+router.get('/getMe', checkAuth(...Object.values(Role)), userController.getMe)
 
 
 // get single user
-router.get('/singleUser/:id', checkAuth(...Object.values(Role)) , userController.singleUser)
+router.get('/singleUser/:id', checkAuth(...Object.values(Role)), userController.singleUser)
 
 
 

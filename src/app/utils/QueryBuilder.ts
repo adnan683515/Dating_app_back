@@ -10,13 +10,13 @@ export class QueryBuilder<T> {
     public readonly query: Record<string, string>;
 
     constructor(modelQuery: Query<T[], T>, query: Record<string, string>) {
-
         this.modelQuery = modelQuery;
         this.query = query;
     }
 
     // pagination, sorting, search related field গুলো বাদ দিয়ে actual filtering করা হচ্ছে
     filter(): this {
+
 
         const filter = { ...this.query }
 
@@ -36,10 +36,11 @@ export class QueryBuilder<T> {
     }
 
 
-
     // multiple field এ regex ব্যবহার করে case-insensitive search করা হচ্ছে
     search(searchableField: string[]): this {
         const searchTerm = this.query.searchTerm || ""
+        if (!searchTerm) return this; 
+
 
         const searchQeury = {
             $or: searchableField?.map((field) => ({ [field]: { $regex: searchTerm, $options: "i" } }))
@@ -66,6 +67,7 @@ export class QueryBuilder<T> {
 
     }
 
+
     // paginate koro jonno function
     paginate(): this {
         const page = Number(this.query.page) || 1
@@ -76,6 +78,7 @@ export class QueryBuilder<T> {
 
         return this
     }
+
 
 
     populate(field: any): this {
