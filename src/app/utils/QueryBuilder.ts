@@ -20,7 +20,11 @@ export class QueryBuilder<T> {
 
         const filter = { ...this.query }
 
-        // ai kahne amra sort skip limit searchTerm gula query theke niye filter theke bad diye dibo
+        // ai kahne amra sort,  skip ,  limit ,  searchTerm gula   filter theke bad diye dibo
+        // KARON filter diye sudu amra exac match korte parbo..
+
+        // sort , skip, searcterm kaj korbe na tay bad diye disi
+
         for (const field of excludeField) {
             delete filter[field]
         }
@@ -70,6 +74,12 @@ export class QueryBuilder<T> {
 
         this.modelQuery = this.modelQuery.skip(skip).limit(limit)
 
+        return this
+    }
+
+
+    populate(field: any): this {
+        this.modelQuery = this.modelQuery.populate(field)
         return this
     }
 

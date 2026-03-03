@@ -85,13 +85,18 @@ const getAllUsers = async (query: Record<string, string>) => {
     const querybuilder = new QueryBuilder(User.find(), query)
 
     const userdata = querybuilder
-    .filter()
-    .search(userSearchableFields)
-    .sort()
-    .fields()
-    .paginate();
+        .filter()
+        .search(userSearchableFields)
+        .sort()
+        .fields()
+        .paginate()
+        .populate([{ path: "interests" }])
 
 
+    // jdi multiple populate korte hoi  tah hole populate([ {path : "interests"}, {path : "interests"} ])
+
+
+    
     const [data, meta] = await Promise.all([
         userdata.build(),
         querybuilder.getMeta()

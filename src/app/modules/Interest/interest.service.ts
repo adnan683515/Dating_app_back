@@ -1,4 +1,6 @@
 import AppError from "../../errorHerlpers/AppError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { interestSearchAble } from "./interest.constant";
 import { IInterest } from "./interest.interface";
 import { Interest } from "./interest.model";
 import httpStatus from 'http-status-codes'
@@ -25,16 +27,31 @@ const interestCreate = async (payload: Partial<IInterest>) => {
 const interests = async (query: Record<string, string>) => {
 
 
-    const filter = query
-    const searchTerm = filter?.searchTerm || ""
+    // const filter = query
+    // const searchTerm = filter?.searchTerm || ""
+
+    const queryBuilder = new QueryBuilder(Interest.find(), query)
+
+    const interestData = queryBuilder
+        .search(interestSearchAble)
+        .paginate()
+        
+
+    const [data, meta] = await Promise.all([
+        interestData.build(),
+        queryBuilder.getMeta()
+    ])
 
 
-    const data = await Interest.find({
-        name: { $regex: searchTerm as string, $options: "i" }
-    })
+    // const data = await Interest.find({
+    //     name: { $regex: searchTerm as string, $options: "i" }
+    // })
 
 
-    return data
+    return {
+        data,
+        meta
+    }
 }
 
 export const interestService = {

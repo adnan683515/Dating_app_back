@@ -18,4 +18,6 @@ router.post('/create-interest',checkAuth(Role.ADMIN) ,  validateRequest(createIn
 router.get('/get-all-interest',checkAuth(...Object.values(Role)), interestController.getInterest)
 
 
+
+
 export const InterestRouter = router
