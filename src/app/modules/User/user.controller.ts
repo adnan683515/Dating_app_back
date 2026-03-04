@@ -4,7 +4,7 @@ import { userService } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes';
 import { JwtPayload } from "jsonwebtoken";
-import { Role, Status } from "./user.interface";
+import { IUser, Role, Status } from "./user.interface";
 import AppError from "../../errorHerlpers/AppError";
 
 
@@ -46,6 +46,14 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         throw new AppError(httpStatus.BAD_REQUEST, "Users are not allowed to change their status.");
     }
 
+
+ const payload: IUser = {
+        ...req.body,
+        image: req.file?.path
+    }
+
+    console.log("pyaload",payload,"data", req?.body)
+ 
 
     const userId = req?.params?.id as string
     const updatedUserInfo = await userService.updateUser(userId, req?.body)

@@ -4,6 +4,7 @@ import { userController } from "./user.controller";
 import { createUserZodSchema, updatedUserSchema } from "./user.validation";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "./user.interface";
+import { multerUpload } from "../../config/multer.config";
 
 
 
@@ -20,7 +21,12 @@ router.post('/register', validateRequest(createUserZodSchema), userController.cr
 
 
 // update user route
-router.patch('/updateuser/:id', checkAuth(...Object.values(Role)), validateRequest(updatedUserSchema), userController.updateUser)
+router.patch('/updateuser/:id',
+    checkAuth(...Object.values(Role)),
+    multerUpload.single("file"),
+    validateRequest(updatedUserSchema),
+    userController.updateUser
+)
 
 
 //get all users

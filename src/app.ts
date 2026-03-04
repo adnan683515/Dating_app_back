@@ -10,7 +10,7 @@ const app = express()
 
 app.use(express.json())// body theke data accepte korar jonno
 app.use(cors()) // frontend theke jno api gula access korte pare
-
+app.use(express.urlencoded({ extended: true }))
 
 app.use("/api/v1", router) 
 

@@ -35,7 +35,7 @@ export const updatedUserSchema = z.object({
         .max(300, { message: "Bio cannot exceed 300 characters." })
         .optional(),
 
-    image: z.string().url({ message: "Image must be a valid URL." }).optional(),
+    image: z.string().optional(),
 
     availableForDate: z.boolean().optional(),
     availableForDance: z.boolean().optional(),
