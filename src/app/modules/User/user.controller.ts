@@ -28,6 +28,8 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 // update use
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+
+
     if (req?.body?.password) {
         throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
     }
@@ -47,16 +49,37 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     }
 
 
- const payload: IUser = {
+    const payload: IUser = {
         ...req.body,
         image: req.file?.path
     }
 
-    console.log("pyaload",payload,"data", req?.body)
- 
+    const imageUrl = payload?.image
+
+    if (req.file) {
+
+    
+        if (req.file.size > 2 * 1024 * 1024) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                "File size must be less than 2MB"
+            );
+        }
+
+        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+
+        if (!allowedTypes.includes(req.file.mimetype)) {
+            throw new AppError(
+                httpStatus.BAD_REQUEST,
+                "Only PNG, JPG, and JPEG are allowed"
+            );
+        }
+    }
+
+
 
     const userId = req?.params?.id as string
-    const updatedUserInfo = await userService.updateUser(userId, req?.body)
+    const updatedUserInfo = await userService.updateUser(userId, payload)
 
     sendResponse(res, {
         success: true,

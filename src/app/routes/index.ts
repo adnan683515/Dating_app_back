@@ -3,6 +3,7 @@ import { UserRoutes } from "../modules/User/user.route";
 import { authRoutes } from "../modules/auth/auth.routes";
 import { InterestRouter } from "../modules/Interest/interest.route";
 import { LineupRoute } from "../modules/EventLineup/lineup.route";
+import { CetegoryRoute } from "../modules/ICategory/cetegory.route";
 
 
 
@@ -24,6 +25,9 @@ const moduleRoutes = [
     }, {
         path : "/lineup",
         route : LineupRoute
+    }, {
+        path : "/cetegory", 
+        route : CetegoryRoute
     }
 ]
 

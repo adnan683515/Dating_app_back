@@ -19,6 +19,7 @@ export class QueryBuilder<T> {
 
 
         const filter = { ...this.query }
+    
 
         // ai kahne amra sort,  skip ,  limit ,  searchTerm gula   filter theke bad diye dibo
         // KARON filter diye sudu amra exac match korte parbo..
@@ -28,6 +29,10 @@ export class QueryBuilder<T> {
         for (const field of excludeField) {
             delete filter[field]
         }
+
+        // console.log(typeof filter.isDelete)
+
+       
 
         this.modelQuery = this.modelQuery.find(filter) // User.find().find(filter)
 
@@ -39,7 +44,7 @@ export class QueryBuilder<T> {
     // multiple field এ regex ব্যবহার করে case-insensitive search করা হচ্ছে
     search(searchableField: string[]): this {
         const searchTerm = this.query.searchTerm || ""
-        if (!searchTerm) return this; 
+        if (!searchTerm) return this;
 
 
         const searchQeury = {

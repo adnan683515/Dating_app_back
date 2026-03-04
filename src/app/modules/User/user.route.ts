@@ -23,8 +23,11 @@ router.post('/register', validateRequest(createUserZodSchema), userController.cr
 // update user route
 router.patch('/updateuser/:id',
     checkAuth(...Object.values(Role)),
+
     multerUpload.single("file"),
+
     validateRequest(updatedUserSchema),
+    
     userController.updateUser
 )
 
