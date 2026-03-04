@@ -70,6 +70,8 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
         throw new AppError(httpStatus.BAD_REQUEST, "Maximum interest 6");
     }
 
+    
+
 
 
     // Update user dynamically

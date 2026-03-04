@@ -4,6 +4,7 @@ import { authRoutes } from "../modules/auth/auth.routes";
 import { InterestRouter } from "../modules/Interest/interest.route";
 import { LineupRoute } from "../modules/EventLineup/lineup.route";
 import { CetegoryRoute } from "../modules/ICategory/cetegory.route";
+import { ConnectionRouter } from "../modules/ConnectionRequest/connection.route";
 
 
 
@@ -28,6 +29,9 @@ const moduleRoutes = [
     }, {
         path : "/cetegory", 
         route : CetegoryRoute
+    }, {
+        path : '/connection',
+        route : ConnectionRouter
     }
 ]
 
