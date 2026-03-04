@@ -1,9 +1,5 @@
 
 
-// amader folder -> image -> form-data -> file -> multer -> nijer akta folder(temporary) -> req.file
-
-
-// req.file -> cloudinary(req.file) -> url -> mongoose -> mongodb set korbo
 
 
 
@@ -17,3 +13,8 @@ cloudinary.config({
 })
 
 
+
+//Amader folder -> image -> form-data -> file -> multer -> nijer folder(temporary) make korbe cloudinary te  -> req?.file -> package(req.file) -> url -> req.file-> mongoose -> mongodb
+
+
+export const cloudinaryUpload = cloudinary
