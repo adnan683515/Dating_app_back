@@ -12,6 +12,7 @@ const authProviderSchema = new Schema<IAuthProvider>({
     _id: false
 })
 
+
 const userSchema = new Schema<IUser>({
     displayName: { type: String, required: true , trim : true },
     email: { type: String, required: true, unique: true },
@@ -56,6 +57,7 @@ const userSchema = new Schema<IUser>({
 })
 
 
+
 const otpSchema = new Schema({
     email: {
         type: String,
@@ -76,8 +78,6 @@ const otpSchema = new Schema({
 }, {
     versionKey : false
 })
-
-
 
 
 

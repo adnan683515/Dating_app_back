@@ -1,9 +1,10 @@
 import AppError from "../../errorHerlpers/AppError";
 import { User } from "../User/user.model";
-import { ConnectTypes, IConnection, StatusConnect } from "./connection.interface";
+import { ConnectTypes, IConnection, StatusConnect, TconnectionRequest } from "./connection.interface";
 import httpStatus from 'http-status-codes'
 import { ConnectionReq } from "./connection.model";
-
+import { Connection, Types } from "mongoose";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 
 
@@ -66,10 +67,61 @@ const connectionSend = async (payload: Partial<IConnection>) => {
     return createConnection
 }
 
+// accepte connection request
+const connectionRequestAccept = async (payload: TconnectionRequest) => {
 
+
+    const { _id: connectionId, status, myId } = payload
+
+
+    const findConnection = await ConnectionReq.findById(connectionId)
+
+
+    if (!findConnection) {
+        throw new AppError(httpStatus.NOT_FOUND, "Connection Request Not found!")
+    }
+
+    
+
+    if (findConnection?.recivedReq !== myId) {
+        throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized to respond to this connection request because you are not the receiver.")
+    }
+    
+
+
+    const update = await ConnectionReq.findOneAndUpdate(
+        { _id: findConnection?._id },
+        { $set: { _id: connectionId, status } },
+        { returnDocument: "after", runValidators: true }
+    )
+
+    return update
+}
+
+
+// get connection 
+const getConection = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(ConnectionReq.find(), query)
+
+    const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq" }, {path : "recivedReq"}])
+
+
+    const [data, meta] = await Promise.all([connectData.build(), queryBuilder.getMeta()])
+
+
+
+    return {
+        data,
+        meta
+    }
+
+}
 
 
 
 export const connectionSerivce = {
-    connectionSend
+    connectionSend,
+    connectionRequestAccept,
+    getConection
 }

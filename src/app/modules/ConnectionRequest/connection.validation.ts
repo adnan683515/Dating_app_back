@@ -1,7 +1,7 @@
 import z from "zod";
 
 import { Types } from "mongoose";
-import { ConnectTypes } from "./connection.interface";
+import { ConnectTypes, StatusConnect } from "./connection.interface";
 
 
 
@@ -13,4 +13,10 @@ export const connectionSendZod = z.object({
             message: "Invalid ObjectId",
         }),
     type: z.nativeEnum(ConnectTypes),
+});
+
+
+
+export const connectionRequestBodyZod = z.object({
+    status: z.enum(["ACCEPTED", "DECLINE"]) 
 });
