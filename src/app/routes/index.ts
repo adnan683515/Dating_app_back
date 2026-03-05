@@ -5,6 +5,7 @@ import { InterestRouter } from "../modules/Interest/interest.route";
 import { LineupRoute } from "../modules/EventLineup/lineup.route";
 import { CetegoryRoute } from "../modules/ICategory/cetegory.route";
 import { ConnectionRouter } from "../modules/ConnectionRequest/connection.route";
+import { EventRoute } from "../modules/Events/event.route";
 
 
 
@@ -32,6 +33,9 @@ const moduleRoutes = [
     }, {
         path : '/connection',
         route : ConnectionRouter
+    }, {
+        path : '/event',
+        route : EventRoute
     }
 ]
 
