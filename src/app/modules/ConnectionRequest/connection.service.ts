@@ -9,6 +9,7 @@ import { ConnectionReq } from "./connection.model";
 
 
 
+// send connection request
 const connectionSend = async (payload: Partial<IConnection>) => {
 
 
@@ -32,6 +33,8 @@ const connectionSend = async (payload: Partial<IConnection>) => {
         ],
 
     } as any);
+
+
 
     if (requestExists) {
         const status = requestExists?.status
@@ -62,6 +65,9 @@ const connectionSend = async (payload: Partial<IConnection>) => {
 
     return createConnection
 }
+
+
+
 
 
 export const connectionSerivce = {
