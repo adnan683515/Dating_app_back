@@ -3,32 +3,38 @@ import { Types } from "mongoose";
 
 
 export enum EStatus {
-    NOSTART="nostart",
-    GOING="going",
-    END="end",
-    CANCELLED="cancelled"
+    NOSTART = "NOSTART",
+    GOING = "GOING",
+    END = "END",
+    CANCELLED = "CANCELLED"
 }
 
 
 
 export interface IEvent {
 
-    _id? : Types.ObjectId;
-    title : string;
-    fee : number; //event fee
-    user : Types.ObjectId; //who create this event(Only admin)
-    category : Types.ObjectId;
+    _id?: Types.ObjectId;
+    title: string;
+    fee: number; //event fee
+    user: Types.ObjectId; //who create this event(Only admin)
+    category: Types.ObjectId; //event cetegory
 
-    lat : string;
-    long : string;
+    lat: number;
+    long: number;
 
-    start_date : string;
-    end_date : string;
+    start_date: Date;
+    end_date: Date;
 
-    status : EStatus;
-    image : string;
-    descripton : string;
+    startTime: string; // "18:30"
+    endTime: string;   // "21:30"
+    openDoor: string; // "18:00"
 
-    eventlineup : Types.ObjectId[];
-    eventAttendance : Types.ObjectId[]
+    status: EStatus;
+
+    image: string;
+    descripton: string;
+
+    eventlineup: Types.ObjectId[];
+
+    attendanceTotatl: number
 }
