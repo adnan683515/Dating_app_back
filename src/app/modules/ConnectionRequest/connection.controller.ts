@@ -12,7 +12,18 @@ import httpStatus from 'http-status-codes'
 const connectionSend = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
-    const result = await connectionSerivce.connectionSend(req?.body)
+
+    const {...payload} = req?.body
+
+
+    // you sender
+    const sendId = req?.user?.id
+
+    // store sender id in payload
+    payload.sendReq  = sendId
+
+
+    const result = await connectionSerivce.connectionSend(payload)
 
     sendResponse(res, {
         success: true,

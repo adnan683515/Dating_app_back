@@ -54,6 +54,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         image: req.file?.path
     }
 
+
     const imageUrl = payload?.image
 
     if (req.file) {

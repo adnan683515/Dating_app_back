@@ -7,7 +7,7 @@ import { ConnectTypes, IConnection, StatusConnect } from "./connection.interface
 
 const connectionSchema = new Schema<IConnection>({
 
-    sendReq: { type: Schema.Types.ObjectId, required: true },
+    sendReq: { type: Schema.Types.ObjectId , required : true },
     recivedReq: { type: Schema.Types.ObjectId, required: true },
     status: {
         type: String,

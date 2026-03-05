@@ -11,7 +11,7 @@ const route = Router()
 
 
 // send connection requst
-route.post('/connection-request',  connectionController.connectionSend)
+route.post('/connection-request', checkAuth(...Object.values(Role)), connectionController.connectionSend)
 
 
 
