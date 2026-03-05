@@ -16,7 +16,7 @@ export enum ConnectTypes {
 
 export interface IConnection {
 
-    sendReq: Types.ObjectId;
+    sendReq?: Types.ObjectId;
     recivedReq: Types.ObjectId;
     status: StatusConnect,
     type : ConnectTypes

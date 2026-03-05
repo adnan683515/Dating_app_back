@@ -13,7 +13,7 @@ const route = Router()
 
 
 // send connection requst
-route.post('/connection-request', validateRequest(connectionSendZod), checkAuth(...Object.values(Role)), connectionController.connectionSend)
+route.post('/connection-request', checkAuth(...Object.values(Role)), connectionController.connectionSend)
 
 
 
