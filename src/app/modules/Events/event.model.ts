@@ -12,7 +12,7 @@ export const EventSchema = new Schema<IEvent>({
     },
 
     fee: {
-        type: String,
+        type: Number,
         required: [true, "Event fee is required"],
         // min: [0, "Fee must be a positive number"]  // positive only
     },
@@ -21,8 +21,8 @@ export const EventSchema = new Schema<IEvent>({
 
     category: { type: Schema.Types.ObjectId, ref: "Cetegory", required: true },
 
-    lat: { type: String, required: [true, "Latitude is required"] },
-    long: { type: String, required: [true, "Longitude is required"] },
+    lat: { type: Number, required: [true, "Latitude is required"] },
+    long: { type: Number, required: [true, "Longitude is required"] },
 
     start_date: { type: Date, required: [true, "Start date is required"] },
     end_date: { type: Date, required: [true, "End date is required"] },
@@ -55,7 +55,9 @@ export const EventSchema = new Schema<IEvent>({
         }
     ],
 
-    attendanceTotatl: { type: Number, default: 0 }
+    attendanceTotatl: { type: Number, default: 0 },
+    isDelete : {type : Boolean , default : false}
+
 
 }, {
     timestamps: true, // createdAt & updatedAt auto add

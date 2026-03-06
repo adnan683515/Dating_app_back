@@ -17,6 +17,19 @@ const route = Router()
 route.post('/create-event',  multerUpload.single("file"), validateRequest(createEventZod), checkAuth(Role.ADMIN), eventController.createEvent)
 
 
+// event details
+route.get('/get-event-details/:id', checkAuth(...Object.values(Role)) , eventController.eventDetails )
+
+
+// get-all events
+route.get('/events',checkAuth(...Object.values(Role)), eventController.getEvents)
+
+
+
+
+
+
+
 
 
 export const EventRoute = route

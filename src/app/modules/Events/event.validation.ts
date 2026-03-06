@@ -14,7 +14,7 @@ export const createEventZod = z.object({
         .max(50, "Title cannot exceed 50 characters")
         .trim(),
 
-    fee: z
+    fee: z.coerce
         .number({
             message: "Event fee is required"
         })
@@ -22,11 +22,11 @@ export const createEventZod = z.object({
 
     category: objectIdValidation,
 
-    lat: z.number({
+    lat: z.coerce.number({
         message: "Latitude is required"
     }),
 
-    long: z.number({
+    long: z.coerce.number({
         message: "Longitude is required"
     }),
 
@@ -55,7 +55,7 @@ export const createEventZod = z.object({
     descripton: z
         .string()
         .max(500, "Description cannot exceed 500 characters")
-        .optional(),
+        ,
 
     eventlineup: z
         .array(objectIdValidation)

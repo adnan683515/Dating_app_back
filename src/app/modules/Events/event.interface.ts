@@ -15,12 +15,12 @@ export interface IEvent {
 
     _id?: Types.ObjectId;
     title: string;
-    fee: string; //event fee
+    fee: Number; //event fee
     user : Types.ObjectId; //who create this event(Only admin)
     category: Types.ObjectId; //event cetegory
 
-    lat: string;
-    long: string;
+    lat: Number;
+    long: Number;
 
     start_date: Date;
     end_date: Date;
@@ -37,4 +37,6 @@ export interface IEvent {
     eventlineup: Types.ObjectId[];
 
     attendanceTotatl: number
+
+    isDelete? :boolean
 }
