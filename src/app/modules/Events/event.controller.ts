@@ -13,13 +13,15 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
 
     req.body.user = req?.user?.id
 
-    const data = await eventService.createEvent(req?.body)
+    console.log(req)
+
+    // const data = await eventService.createEvent(req?.body)
 
     sendResponse(res, {
         message: "Event Create Successfully!",
         success: true,
         statusCode: httpStatus.CREATED,
-        data: data
+        data: true
     })
 })
 

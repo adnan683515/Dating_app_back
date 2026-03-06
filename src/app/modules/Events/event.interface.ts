@@ -15,12 +15,12 @@ export interface IEvent {
 
     _id?: Types.ObjectId;
     title: string;
-    fee: number; //event fee
+    fee: string; //event fee
     user : Types.ObjectId; //who create this event(Only admin)
     category: Types.ObjectId; //event cetegory
 
-    lat: number;
-    long: number;
+    lat: string;
+    long: string;
 
     start_date: Date;
     end_date: Date;

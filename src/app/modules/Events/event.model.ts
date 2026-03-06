@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { EStatus, IEvent } from "./event.interface";
 
 
@@ -12,17 +12,17 @@ export const EventSchema = new Schema<IEvent>({
     },
 
     fee: {
-        type: Number,
+        type: String,
         required: [true, "Event fee is required"],
-        min: [0, "Fee must be a positive number"]  // positive only
+        // min: [0, "Fee must be a positive number"]  // positive only
     },
 
     user: { type: Schema.Types.ObjectId, ref: "User", required: true }, // event creator only admin
 
     category: { type: Schema.Types.ObjectId, ref: "Cetegory", required: true },
 
-    lat: { type: Number, required: [true, "Latitude is required"] },
-    long: { type: Number, required: [true, "Longitude is required"] },
+    lat: { type: String, required: [true, "Latitude is required"] },
+    long: { type: String, required: [true, "Longitude is required"] },
 
     start_date: { type: Date, required: [true, "Start date is required"] },
     end_date: { type: Date, required: [true, "End date is required"] },
