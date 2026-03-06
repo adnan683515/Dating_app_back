@@ -1,8 +1,8 @@
+import htttpStatus from 'http-status-codes';
 import AppError from "../../errorHerlpers/AppError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { IEvent } from "./event.interface";
 import { Event } from "./event.model";
-import htttpStatus from 'http-status-codes'
 
 
 

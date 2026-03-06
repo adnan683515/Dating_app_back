@@ -1,12 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import httpStatus from 'http-status-codes';
+import AppError from "../../errorHerlpers/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import httpStatus from 'http-status-codes'
 import { eventService } from "./event.service";
-import { validateRequest } from "../../middlewares/ValidateRequest";
-import { EventSchema } from "./event.model";
-import { createEventZod } from "./event.validation";
-import AppError from "../../errorHerlpers/AppError";
 
 
 
