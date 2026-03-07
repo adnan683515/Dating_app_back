@@ -21,14 +21,14 @@ const loginUser = async (payload: Partial<IUser>) => {
         throw new AppError(http_status_code.NOT_FOUND, "user not found")
     }
 
-    if (!isUserExits.isVerified) {
-        throw new AppError(http_status_code.BAD_REQUEST, "user not verified")
-    }
+    // if (!isUserExits.isVerified) {
+    //     throw new AppError(http_status_code.BAD_REQUEST, "user not verified")
+    // }
 
 
 
 
-    const matchPassword =await bcrypt.compare(password as string, isUserExits.password as string)
+    const matchPassword = await bcrypt.compare(password as string, isUserExits.password as string)
     if (!matchPassword) {
         throw new AppError(http_status_code.BAD_REQUEST, "Password doesn't match!")
     }
@@ -61,7 +61,7 @@ const verifyuser = async (payload: Partial<IOTP>) => {
     }
 
     if (user?.otp !== otp) {
-        throw new AppError(http_status_code.BAD_REQUEST, "OTP did not match")
+        throw new AppError(http_status_code.BAD_REQUEST, "Invalid OTP. Please try again")
     }
 
     // delete from otp model this email
@@ -93,12 +93,12 @@ const changePasswordService = async (payload: IChangePassword) => {
         throw new AppError(http_status_code.NOT_FOUND, "user not found!")
     }
 
-    const isMatchPass =await bcrypt.compare(currentPassword, user?.password as string)
+    const isMatchPass = await bcrypt.compare(currentPassword, user?.password as string)
     if (!isMatchPass) {
         throw new AppError(http_status_code.BAD_REQUEST, "password deosn't match!")
     }
 
-    const hassPass =await bcrypt.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND))
+    const hassPass = await bcrypt.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND))
 
 
     user.password = hassPass

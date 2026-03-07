@@ -31,9 +31,9 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
             throw new AppError(httpStatusCode.BAD_REQUEST, "user doesn't exits")
         }
 
-        if (!isUserExits.isVerified) {
-            throw new AppError(httpStatusCode.BAD_REQUEST, "user not verified!")
-        }
+        // if (!isUserExits.isVerified) {
+        //     throw new AppError(httpStatusCode.BAD_REQUEST, "user not verified!")
+        // }
 
 
         if (!authRoles.includes(varifiedToken.role)) {

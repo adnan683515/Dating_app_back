@@ -24,9 +24,7 @@ export const updatedUserSchema = z.object({
         .optional(),
 
     age: z
-        .number()
-        .min(18, { message: "Age must be greater than 18." })
-        .max(100, { message: "Age seems too high." })
+        .string()
         .optional(),
 
     bio: z
@@ -37,26 +35,38 @@ export const updatedUserSchema = z.object({
 
     image: z.string().optional(),
 
-    availableForDate: z.boolean().optional(),
-    availableForDance: z.boolean().optional(),
-    availableForFriend: z.boolean().optional(),
+    availableForDate: z.string().optional(),
+    availableForDance: z.string().optional(),
+    availableForFriend: z.string().optional(),
 
-    newMatchesNotification: z.boolean().optional(),
-    eventRemindersNotification: z.boolean().optional(),
-    messageAlertsNotification: z.boolean().optional(),
+    newMatchesNotification: z.string().optional(),
+    eventRemindersNotification: z.string().optional(),
+    messageAlertsNotification: z.string().optional(),
 
 
 
     lat: z.number().min(-90).max(90).optional(),
     long: z.number().min(-180).max(180).optional(),
 
-    interests: z
-        .array(
+    interests: z.preprocess((val) => {
+        if (typeof val === "string") {
+            try {
+                // JSON string array হলে parse করবে
+                const parsed = JSON.parse(val);
+                return Array.isArray(parsed) ? parsed : [parsed];
+            } catch {
+                // single string হলে array বানাবে
+                return [val];
+            }
+        }
+
+        return val;
+    },
+        z.array(
             z.string().regex(/^[0-9a-fA-F]{24}$/, {
                 message: "Invalid ObjectId format",
             })
-        )
-        .optional(),
+        )).optional(),
 
     status: z.enum(Object.values(Status) as [string]).optional(),
 

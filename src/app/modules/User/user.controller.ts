@@ -20,7 +20,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
         success: true,
-        message: "✅ OTP sent successfully. Check your email to verify.",
+        message: "✅ Registration Successfully.",
     })
 })
 
@@ -47,9 +47,28 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     if (req?.user?.role === Role?.USER && req?.body?.status) {
         throw new AppError(httpStatus.BAD_REQUEST, "Users are not allowed to change their status.");
     }
-    if((req?.user?.role === Role.USER) && req?.body?.isVerified){
+    if ((req?.user?.role === Role.USER) && req?.body?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "User can not modify their varification")
     }
+
+    req?.body?.availableForDate ? req.body.availableForDate = Boolean(req?.body?.availableForDate) : ''
+    req?.body?.availableForDance ? req.body.availableForDance = Boolean(req?.body?.availableForDance) : ''
+    req?.body?.availableForFriend ? req.body.availableForFriend = Boolean(req?.body?.availableForFriend) : ''
+    req?.body?.newMatchesNotification ? req.body.newMatchesNotification = Boolean(req?.body?.newMatchesNotification) : ''
+    req?.body?.messageAlertsNotification ? req.body.messageAlertsNotification = Boolean(req?.body?.messageAlertsNotification) : ''
+    req?.body?.eventRemindersNotification ? req.body.eventRemindersNotification = Boolean(req?.body?.eventRemindersNotification) : ''
+    req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
+    req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
+    req?.body?.age ? req.body.age = Number(req?.body?.age) : ''
+
+
+
+    if (req?.body?.age <= 18) {
+        throw new AppError(httpStatus.BAD_REQUEST, "You must be at least 18 years old to use this platform.")
+    }
+
+    req?.file ? req.body.image = req?.file ? req?.file?.path : "" : ''
+
 
 
     const payload: IUser = {
@@ -62,11 +81,11 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     if (req.file) {
 
-    
-        if (req.file.size > 2 * 1024 * 1024) {
+
+        if (req.file.size > 20 * 1024 * 1024) {
             throw new AppError(
                 httpStatus.BAD_REQUEST,
-                "File size must be less than 2MB"
+                "File size must be less than 20MB"
             );
         }
 
@@ -80,6 +99,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         }
     }
 
+    console.log(payload)
 
 
     const userId = req?.params?.id as string

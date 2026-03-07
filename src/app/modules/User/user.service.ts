@@ -33,7 +33,7 @@ const usercreate = async (payload: Partial<IUser>) => {
 
 
 
-    await sendEmail(email as string)
+    // await sendEmail(email as string)
 
 
     const user = await User.create({
@@ -54,11 +54,11 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     // Spread payload
     const { ...updatedFields } = payload;
 
-  
+
 
     // Convert to ObjectId
     const idd = new Types.ObjectId(userId);
-    
+
 
     // Find user first
     const findUser = await User.findOne({ _id: idd });
@@ -75,7 +75,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 
 
 
-    
+
 
 
 
@@ -185,7 +185,10 @@ const getAllUsers = async (query: Record<string, string>) => {
 
 // get me 
 const getMe = async (userId: string) => {
-    const user = await User.findById(userId).select('-password')
+    const user = await User.findById(userId).select('-password').populate({
+        path: "interests"
+    });
+    console.log(user)
     return user
 
 }

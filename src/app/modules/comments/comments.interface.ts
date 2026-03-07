@@ -7,5 +7,6 @@ export interface Icomment {
     userId : Types.ObjectId;
     postId : Types.ObjectId;
     comment : string;
-    parentId : Types.ObjectId | null
+    parentId : Types.ObjectId | null;
+    isDelete? : boolean
 }

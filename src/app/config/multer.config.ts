@@ -53,12 +53,11 @@ const storage = new CloudinaryStorage({
 export const multerUpload = multer({
     storage: storage,
 
-    // ✅ file size limit (2MB)
+  
     limits: {
-        fileSize: 10 * 1024 * 1024
+        fileSize: 20 * 1024 * 1024
     }
     ,
-    // ✅ allow only image
     fileFilter: (req, file, cb) => {
         const allowedTypes = [
             "image/png",

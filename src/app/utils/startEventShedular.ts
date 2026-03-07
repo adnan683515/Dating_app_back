@@ -3,7 +3,7 @@ import { Event } from '../modules/Events/event.model';
 import { EStatus } from '../modules/Events/event.interface';
 
 export function startEventScheduler() {
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("*/5 * * * *", async () => {
     const nowUTC = new Date(new Date().toISOString()); // force UTC
     console.log("Cron running at UTC:", nowUTC.toISOString());
 
