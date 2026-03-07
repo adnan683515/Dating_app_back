@@ -22,6 +22,7 @@ const postSchema = new Schema<postInterface>({
         default: "",
     },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    isDelete : {type : Boolean , default : false},
     location: {
         type: String,
         required: true,

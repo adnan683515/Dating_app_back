@@ -6,6 +6,7 @@ import { LineupRoute } from "../modules/EventLineup/lineup.route";
 import { CetegoryRoute } from "../modules/ICategory/cetegory.route";
 import { ConnectionRouter } from "../modules/ConnectionRequest/connection.route";
 import { EventRoute } from "../modules/Events/event.route";
+import { PostRoute } from "../modules/Post/post.route";
 
 
 
@@ -36,6 +37,9 @@ const moduleRoutes = [
     }, {
         path : '/event',
         route : EventRoute
+    },{
+        path:'/post',
+        route : PostRoute
     }
 ]
 
