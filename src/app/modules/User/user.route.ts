@@ -33,7 +33,7 @@ router.patch('/updateuser/:id',
 
 
 //get all users
-router.get('/users', checkAuth(Role.ADMIN), userController.getAllUsers)
+router.get('/users', checkAuth(...Object.values(Role)), userController.getAllUsers)
 
 // get me
 router.get('/getMe', checkAuth(...Object.values(Role)), userController.getMe)

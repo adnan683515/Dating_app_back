@@ -20,7 +20,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
         success: true,
-        message: "✅ Message sent successfully!",
+        message: "✅ OTP sent successfully. Check your email to verify.",
     })
 })
 
@@ -46,6 +46,9 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     if (req?.user?.role === Role?.USER && req?.body?.status) {
         throw new AppError(httpStatus.BAD_REQUEST, "Users are not allowed to change their status.");
+    }
+    if((req?.user?.role === Role.USER) && req?.body?.isVerified){
+        throw new AppError(httpStatus.BAD_REQUEST, "User can not modify their varification")
     }
 
 

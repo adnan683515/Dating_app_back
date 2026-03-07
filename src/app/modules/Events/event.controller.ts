@@ -12,7 +12,6 @@ import { eventService } from "./event.service";
 const createEvent = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
-
     req.body.user = req?.user?.id
     req.body.fee = Number(req?.body?.fee)
     req.body.lat = Number(req?.body?.lat)
@@ -53,18 +52,48 @@ const eventDetails = catchAsync(async (req: Request, res: Response, next: NextFu
 
 
 // get all events 
-const getEvents  = catchAsync(async (req : Request , res : Response , next : NextFunction)=>{
+const getEvents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
     const query = req?.query
-    const events = await eventService.getEvents(query as Record<string,string>)
+    const events = await eventService.getEvents(query as Record<string, string>)
 
 
-    sendResponse(res , {
-        success : true, 
-        message : "Get All Events", 
-        data : events, 
-        statusCode : httpStatus.OK
+    events.meta.total = events.data.length
+    sendResponse(res, {
+        success: true,
+        message: "Get All Events",
+        data: events,
+        statusCode: httpStatus.OK
+    })
+})
+
+
+
+// update events
+const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const eventId = req?.params?.id as string
+
+
+
+
+    req?.body?.fee ? req.body.fee = Number(req?.body?.fee) : ''
+    req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
+    req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
+
+    req?.file ? req.body.image = req?.file ? req?.file?.path : "" : ''
+
+    req?.body?.isDelete ? req.body.isDelete = Boolean(req.body.isDelete) : ""
+
+    const updatedata = await eventService.updateEvents(eventId, req?.body)
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        message: "Event Update Successfully!",
+        data: updatedata,
+        success: true
     })
 })
 
@@ -72,5 +101,6 @@ const getEvents  = catchAsync(async (req : Request , res : Response , next : Nex
 export const eventController = {
     createEvent,
     getEvents,
-    eventDetails
+    eventDetails,
+    updateEvents
 }

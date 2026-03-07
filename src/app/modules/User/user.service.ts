@@ -54,8 +54,11 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     // Spread payload
     const { ...updatedFields } = payload;
 
+  
+
     // Convert to ObjectId
     const idd = new Types.ObjectId(userId);
+    
 
     // Find user first
     const findUser = await User.findOne({ _id: idd });
@@ -69,6 +72,8 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     if ((findUser?.interests?.length ?? 0) > 6) {
         throw new AppError(httpStatus.BAD_REQUEST, "Maximum interest 6");
     }
+
+
 
     
 

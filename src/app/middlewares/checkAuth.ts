@@ -11,7 +11,11 @@ import { Status } from "../modules/User/user.interface";
 export const checkAuth = (...authRoles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const accessToken = req?.headers.authorization || req?.cookies?.accessToken;
+
+
+
+        const accessToken = req?.headers.authorization?.split(' ')[1] || req?.cookies?.accessToken || req?.headers?.authorization;
+
 
         if (!accessToken) {
             throw new AppError(httpStatusCode.BAD_REQUEST, "No Token Recived")
@@ -30,14 +34,12 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
         if (!isUserExits.isVerified) {
             throw new AppError(httpStatusCode.BAD_REQUEST, "user not verified!")
         }
-        
-     
 
-        
+
         if (!authRoles.includes(varifiedToken.role)) {
             throw new AppError(403, "You are not permitted to view this route!! ")
         }
-        
+
         if (isUserExits.status === Status.INACTIVE) {
             throw new AppError(httpStatusCode.BAD_REQUEST, `User is ${isUserExits?.status}`)
         }

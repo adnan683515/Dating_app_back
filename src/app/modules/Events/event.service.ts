@@ -1,8 +1,9 @@
 import htttpStatus from 'http-status-codes';
 import AppError from "../../errorHerlpers/AppError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
-import { IEvent } from "./event.interface";
+import { EStatus, IEvent } from "./event.interface";
 import { Event } from "./event.model";
+import { Cetegory } from '../ICategory/cetegory.model';
 
 
 
@@ -11,14 +12,14 @@ import { Event } from "./event.model";
 // event create only admin create events
 const createEvent = async (payload: Partial<IEvent>) => {
 
-    const { title, ...rest } = payload
+    const { category, ...rest } = payload
 
-    const isExitsEvent = await Event.findOne({ title: title as string })
 
-    if (isExitsEvent) {
-        throw new AppError(htttpStatus.BAD_REQUEST, "This Event Already Created!")
+    const isCategoryExits = await Cetegory.findById(category)
+
+    if (!isCategoryExits) {
+        throw new AppError(htttpStatus.NOT_FOUND, "This category was not found")
     }
-
     const creatEvent = await Event.create(payload)
 
     return creatEvent
@@ -42,24 +43,49 @@ const getEvents = async (quey: Record<string, string>) => {
 
 
 
-    const queryBuilder = new QueryBuilder(Event.find(),quey)
+    const queryBuilder = new QueryBuilder(Event.find({
+        status: { $nin: [EStatus.END, EStatus.CANCELLED] }
+    }), quey)
 
     const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate()
 
 
-    const [data,meta] = await Promise.all([
+    const [data, meta] = await Promise.all([
         eventsData.build(),
         queryBuilder.getMeta()
     ])
     return {
-        data , 
+        data,
         meta
     }
+}
+
+
+// update events 
+const updateEvents = async (eventId: string, payload: Partial<IEvent>) => {
+
+    const isExitsEvent = await Event.findById(eventId)
+
+    if (!isExitsEvent) {
+        throw new AppError(htttpStatus.NOT_FOUND, "This Event not found!")
+    }
+
+
+    const updatedEvent = await Event.findByIdAndUpdate(
+        { _id: eventId },
+        { $set: payload }, {
+        returnDocument: "after", runValidators: true
+    }
+    )
+
+    return updatedEvent
+
 }
 
 
 export const eventService = {
     createEvent,
     getEventDetails,
-    getEvents
+    getEvents,
+    updateEvents
 }

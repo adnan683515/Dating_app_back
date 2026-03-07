@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose";
-import { EStatus, IEvent } from "./event.interface";
+import { EStatus, EventTags, IEvent } from "./event.interface";
 
 
 export const EventSchema = new Schema<IEvent>({
@@ -27,14 +27,23 @@ export const EventSchema = new Schema<IEvent>({
     start_date: { type: Date, required: [true, "Start date is required"] },
     end_date: { type: Date, required: [true, "End date is required"] },
 
-    startTime: { type: String, required: [true, "Start time is required"] }, // "18:30"
-    endTime: { type: String, required: [true, "End time is required"] },       // "21:30"
-    openDoor: { type: String, required: [true, "Open door time is required"] }, // "18:00"
+    startTime: { type: Date, required: [true, "Start time is required"] }, // "18:30"
+    endTime: { type: Date, required: [true, "End time is required"] },       // "21:30"
+    openDoor: { type: Date, required: [true, "Open door time is required"] }, // "18:00"
+
+
 
     status: { type: String, enum: [...Object.values(EStatus)], default: EStatus.NOSTART },
 
     image: { type: String, default: "" },
 
+    tags: {
+        type: [String],             // it's an array of strings
+        enum: Object.values(EventTags), // only allow these enum values
+        required: true,             // must have at least one tag
+        validate: [(val: string[]) => val.length > 0, 'At least one tag is required']
+    },
+    
     descripton: {
         type: String,
         default: "",
@@ -55,8 +64,8 @@ export const EventSchema = new Schema<IEvent>({
         }
     ],
 
-    attendanceTotatl: { type: Number, default: 0 },
-    isDelete : {type : Boolean , default : false}
+    attendanceTotal: { type: Number, default: 0 },
+    isDelete: { type: Boolean, default: false }
 
 
 }, {
