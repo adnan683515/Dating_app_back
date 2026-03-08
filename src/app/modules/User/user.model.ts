@@ -23,7 +23,7 @@ const userSchema = new Schema<IUser>({
         enum: Object.values(Role),
         default: Role.USER
     },
-    age: { type: Number },
+    age: { type: Number , default : null },
     bio: { type: String, default: "" , trim : true },
 
     availableForDate: { type: Boolean, default: false },
@@ -36,8 +36,8 @@ const userSchema = new Schema<IUser>({
 
     isVerified: { type: Boolean, default: false },
 
-    lat: { type: Number },
-    long: { type: Number },
+    lat: { type: Number ,  default : null },
+    long: { type: Number, default : null },
 
     status: { type: String, default: Status.ACTIVE },
 

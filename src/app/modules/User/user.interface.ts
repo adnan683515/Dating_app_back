@@ -24,7 +24,7 @@ export interface IUser {
     _id? : Types.ObjectId;
     displayName : string; 
     email : string;
-    age? : number;
+    age? : number | null ;
     image? : string;
     password? : string;
     bio? : string;
@@ -39,8 +39,8 @@ export interface IUser {
 
     isVerified? : boolean;
 
-    lat ? : number;  
-    long ? : number;
+    lat ? : number | null;  
+    long ? : number | null;
 
     interests? : Types.ObjectId[];   
 
