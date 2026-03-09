@@ -2,11 +2,9 @@ import dotenv from 'dotenv';
 import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
-import { Request, Response } from 'express';
-dotenv.config()
-import httpStatus from 'http-status-codes';
 import { seedAdmin } from './app/utils/seedAdmin';
 import { startEventScheduler } from './app/utils/startEventShedular';
+dotenv.config()
 
 
 
@@ -40,12 +38,12 @@ const startServer = async () => {
 
 
 
-app.get("/", (req: Request, res: Response) => {
-    res.status(httpStatus.OK).json({
-        message: "Welcome To tour Dating App!!.."
-    })
+// app.get("/", (req: Request, res: Response) => {
+//     res.status(httpStatus.OK).json({
+//         message: "Welcome To tour Dating App!!.."
+//     })
 
-})
+// })
 
 
 process.on("SIGTERM", () => {

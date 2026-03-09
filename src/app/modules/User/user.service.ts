@@ -56,6 +56,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 
 
 
+
     // Convert to ObjectId
     const idd = new Types.ObjectId(userId);
 
@@ -74,20 +75,12 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     }
 
 
-
-
-
-
-
-    // Update user dynamically
     const updatedUser = await User.findOneAndUpdate(
         { _id: idd },
         { $set: updatedFields },
-        { returnDocument: "after", runValidators: true } // return updated doc,
-
-        // returnDocument after mane udpate hoyar por data daw
-        // runValidators dile schema ta kaj korbe
+        { returnDocument: "after", runValidators: true }
     );
+
 
     return updatedUser;
 };

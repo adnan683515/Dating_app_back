@@ -51,12 +51,26 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
         throw new AppError(httpStatus.BAD_REQUEST, "User can not modify their varification")
     }
 
-    req?.body?.availableForDate ? req.body.availableForDate = Boolean(req?.body?.availableForDate) : ''
-    req?.body?.availableForDance ? req.body.availableForDance = Boolean(req?.body?.availableForDance) : ''
-    req?.body?.availableForFriend ? req.body.availableForFriend = Boolean(req?.body?.availableForFriend) : ''
-    req?.body?.newMatchesNotification ? req.body.newMatchesNotification = Boolean(req?.body?.newMatchesNotification) : ''
-    req?.body?.messageAlertsNotification ? req.body.messageAlertsNotification = Boolean(req?.body?.messageAlertsNotification) : ''
-    req?.body?.eventRemindersNotification ? req.body.eventRemindersNotification = Boolean(req?.body?.eventRemindersNotification) : ''
+
+
+    const booleanFields = [
+        "availableForDate",
+        "availableForDance",
+        "availableForFriend",
+        "newMatchesNotification",
+        "messageAlertsNotification",
+        "eventRemindersNotification"
+    ];
+
+    booleanFields.forEach(field => {
+        if (req.body[field] !== undefined) {
+            req.body[field] = req.body[field] === "true";
+        }
+    });
+
+
+
+
     req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
     req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
     req?.body?.age ? req.body.age = Number(req?.body?.age) : ''
@@ -109,8 +123,6 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
             );
         }
     }
-
-    console.log(payload)
 
 
     const userId = req?.params?.id as string
