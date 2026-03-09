@@ -63,6 +63,9 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 
 
+
+
+
     if (req?.body?.age <= 18) {
         throw new AppError(httpStatus.BAD_REQUEST, "You must be at least 18 years old to use this platform.")
     }
@@ -74,6 +77,14 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     const payload: IUser = {
         ...req.body,
         image: req.file?.path
+    }
+
+
+    if (payload.lat && payload.long) {
+        payload.location = {
+            type: "Point",
+            coordinates: [payload.long, payload.lat] // always [long, lat]
+        }
     }
 
 

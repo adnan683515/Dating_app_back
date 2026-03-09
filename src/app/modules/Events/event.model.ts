@@ -24,6 +24,21 @@ export const EventSchema = new Schema<IEvent>({
     lat: { type: Number, required: [true, "Latitude is required"] },
     long: { type: Number, required: [true, "Longitude is required"] },
 
+
+    // GeoJSON location for geospatial queries
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+            required: true
+        },
+        coordinates: {
+            type: [Number], // [long, lat]
+            required: true
+        }
+    },
+
     start_date: { type: Date, required: [true, "Start date is required"] },
     end_date: { type: Date, required: [true, "End date is required"] },
 
@@ -43,7 +58,7 @@ export const EventSchema = new Schema<IEvent>({
         required: true,             // must have at least one tag
         validate: [(val: string[]) => val.length > 0, 'At least one tag is required']
     },
-    
+
     descripton: {
         type: String,
         default: "",
@@ -72,6 +87,10 @@ export const EventSchema = new Schema<IEvent>({
     timestamps: true, // createdAt & updatedAt auto add
     versionKey: false
 });
+
+// 2dsphere index lagao location er upor
+EventSchema.index({ location: '2dsphere' });
+
 
 // Model
 export const Event = model<IEvent>("Event", EventSchema);

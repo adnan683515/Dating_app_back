@@ -14,17 +14,17 @@ const authProviderSchema = new Schema<IAuthProvider>({
 
 
 const userSchema = new Schema<IUser>({
-    displayName: { type: String, required: true , trim : true },
+    displayName: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, trim : true },
+    password: { type: String, trim: true },
     image: { type: String, default: "" },
     role: {
         type: String,
         enum: Object.values(Role),
         default: Role.USER
     },
-    age: { type: Number , default : null },
-    bio: { type: String, default: "" , trim : true },
+    age: { type: Number, default: null },
+    bio: { type: String, default: "", trim: true },
 
     availableForDate: { type: Boolean, default: false },
     availableForDance: { type: Boolean, default: false },
@@ -36,8 +36,8 @@ const userSchema = new Schema<IUser>({
 
     isVerified: { type: Boolean, default: false },
 
-    lat: { type: Number ,  default : null },
-    long: { type: Number, default : null },
+    lat: { type: Number, default: null },
+    long: { type: Number, default: null },
 
     status: { type: String, default: Status.ACTIVE },
 
@@ -47,7 +47,18 @@ const userSchema = new Schema<IUser>({
         default: []
     }
     ],
-    
+
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point'
+        },
+        coordinates: {
+            type: [Number], // [long, lat]
+            default: [0, 0]
+        }
+    },
 
 
     auths: [authProviderSchema]
@@ -62,13 +73,13 @@ const otpSchema = new Schema({
     email: {
         type: String,
         required: true,
-        trim : true
+        trim: true
     },
 
     otp: {
         type: String,
         required: true,
-        trim :true
+        trim: true
     },
 
     expiresAt: {
@@ -76,12 +87,12 @@ const otpSchema = new Schema({
         required: true,
     },
 }, {
-    versionKey : false
+    versionKey: false
 })
 
 
 
-
+userSchema.index({ location: '2dsphere' });
 export const User = model<IUser>("User", userSchema)
 export const OTP = model<IOTP>("OTP", otpSchema)
 

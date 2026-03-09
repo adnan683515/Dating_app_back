@@ -30,12 +30,19 @@ export interface IEvent {
     lat: Number;
     long: Number;
 
+    // GeoJSON location for geospatial queries
+    location: {
+        type: "Point";
+        coordinates: [number, number]; // [long, lat]
+    };
+
+
     start_date: Date;
     end_date: Date;
 
-    startTime: Date; // "18:30"
-    endTime: Date;   // "21:30"
-    openDoor: Date; // "18:00"
+    startTime: Date;
+    endTime: Date;
+    openDoor: Date;
 
     status: EStatus;
 

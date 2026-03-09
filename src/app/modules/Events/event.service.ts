@@ -39,13 +39,33 @@ const getEventDetails = async (id: string) => {
 
 
 // get all events
-const getEvents = async (quey: Record<string, string>) => {
+const getEvents = async ( lat : Number , long : Number , quey: Record<string, string>) => {
 
 
 
-    const queryBuilder = new QueryBuilder(Event.find({
-        status: { $nin: [EStatus.END, EStatus.CANCELLED] }
-    }), quey)
+
+    let baseQuery: any = {
+        status: { $nin: [EStatus.END, EStatus.CANCELLED] },
+        isDelete: false
+    };
+
+    // user location থাকলে geo query add করবো
+    if (lat && long) {
+        console.log("hey lat long")
+        baseQuery.location = {
+            $nearSphere: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [long, lat]
+                },
+                $maxDistance: 1000
+            }
+        };
+    }
+
+
+
+    const queryBuilder = new QueryBuilder( Event.find(baseQuery) , quey)
 
     const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate()
 
@@ -54,6 +74,9 @@ const getEvents = async (quey: Record<string, string>) => {
         eventsData.build(),
         queryBuilder.getMeta()
     ])
+
+
+
     return {
         data,
         meta

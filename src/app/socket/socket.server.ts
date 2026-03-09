@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 
-let io: Server
+export let io: Server
 
 
 export const initSocket = async (httpServer: any) => {
@@ -10,6 +10,8 @@ export const initSocket = async (httpServer: any) => {
             origin: "*"
         }
     })
+
+    console.log("hey")
 
 
     io.on("connection", (socket) => {
@@ -25,7 +27,3 @@ export const initSocket = async (httpServer: any) => {
 }
 
 
-
-export const getIO = () => {
-    return io
-}

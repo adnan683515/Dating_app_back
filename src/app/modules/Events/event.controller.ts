@@ -4,6 +4,8 @@ import AppError from "../../errorHerlpers/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { eventService } from "./event.service";
+import { User } from "../User/user.model";
+import { number } from "zod";
 
 
 
@@ -19,14 +21,20 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
     req.body.image = req?.file ? req?.file?.path : ""
 
 
-    const MAX_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    const MAX_SIZE = 20 * 1024 * 1024; // 5MB in bytes
     if (req?.file) {
         if (req.file.size > MAX_SIZE) {
-            throw new AppError(httpStatus.BAD_REQUEST, "File size should not exceed 5MB")
+            throw new AppError(httpStatus.BAD_REQUEST, "File size should not exceed 20MB")
         }
     }
 
 
+    if (req?.body?.lat && req?.body?.long) {
+        req.body.location = {
+            type: "Point",
+            coordinates: [req?.body.long, req?.body?.lat] // always [long, lat]
+        }
+    }
 
     const data = await eventService.createEvent(req?.body)
 
@@ -56,7 +64,12 @@ const getEvents = catchAsync(async (req: Request, res: Response, next: NextFunct
 
 
     const query = req?.query
-    const events = await eventService.getEvents(query as Record<string, string>)
+    const user = await User.findOne({ email: req?.user?.email })
+    let lat = user?.lat
+    let long = user?.long
+
+
+    const events = await eventService.getEvents(lat as Number, long as Number, query as Record<string, string>)
 
 
     events.meta.total = events.data.length
@@ -86,6 +99,15 @@ const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFu
     req?.file ? req.body.image = req?.file ? req?.file?.path : "" : ''
 
     req?.body?.isDelete ? req.body.isDelete = Boolean(req.body.isDelete) : ""
+
+
+
+    if (req?.body?.lat && req?.body?.long) {
+        req.body.location = {
+            type: "Point",
+            coordinates: [req?.body.long, req?.body?.lat] // always [long, lat]
+        }
+    }
 
     const updatedata = await eventService.updateEvents(eventId, req?.body)
 
