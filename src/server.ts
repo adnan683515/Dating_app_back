@@ -9,7 +9,9 @@ import { seedAdmin } from './app/utils/seedAdmin';
 import { startEventScheduler } from './app/utils/startEventShedular';
 
 
+
 let server: Server
+
 
 
 const startServer = async () => {

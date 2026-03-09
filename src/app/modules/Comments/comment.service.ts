@@ -2,9 +2,10 @@ import { Types } from "mongoose";
 import AppError from "../../errorHerlpers/AppError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { Post } from "../Post/post.model";
-import { Comment } from "./comment.model";
-import { Icomment } from "./comments.interface";
+
 import httpStatus from 'http-status-codes'
+import { Icomment } from "./comments.interface";
+import { Comment } from "./comment.model";
 
 
 // Helper function: nested comment
