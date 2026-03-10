@@ -10,6 +10,7 @@ import { PostRoute } from "../modules/Post/post.route";
 import { CommentRoute } from "../modules/Comments/comment.route";
 import { LikeRoute } from "../modules/Like/like.route";
 import path from "node:path";
+import { MessageRoute } from "../modules/Message/message.route";
 
 
 
@@ -50,6 +51,9 @@ const moduleRoutes = [
         path:'/like',
         route : LikeRoute
 
+    },{
+        path : '/message',
+        route : MessageRoute
     }
 ]
 

@@ -32,6 +32,7 @@ const sendMessage = async (payload: Partial<IMessage>) => {
     }
 
 
+    // message create kora holo
     const message = await Message.create({
         senderId: senderId as Types.ObjectId,
         receiverId: receiverId as Types.ObjectId,
@@ -39,10 +40,12 @@ const sendMessage = async (payload: Partial<IMessage>) => {
         messageText: payload.messageText as string
     })
 
+    // receiver ar objectid k string a convert korlam
     let receiver = receiverId.toString()
 
+    // online user tar socket id ta nilam
     const socketId = onlineUsers[receiver] as string
-    console.log("socket id",socketId)
+
 
     if (socketId) {
         io.to(socketId).emit('direct_message', message);

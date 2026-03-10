@@ -10,6 +10,8 @@ const likeSchema = new Schema<likeInterface>({
         type: Types.ObjectId,
         required: [true, "Post ID must be provided"] 
     }
+}, {
+    versionKey : false
 });
 
 export const Like = model<likeInterface>("Like", likeSchema);

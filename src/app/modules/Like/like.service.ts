@@ -1,6 +1,7 @@
 import { Types } from "mongoose"
 import { likeInterface } from "./like.interface"
 import { Like } from "./like.model"
+import { Post } from "../Post/post.model";
 
 
 
@@ -25,6 +26,12 @@ const likeCreateOrDelete = async (payload: Partial<likeInterface>) => {
             postId: postId as Types.ObjectId
         });
 
+        await Post.findOneAndUpdate(
+            { _id: postId },
+            { $inc: { like: -1 } },
+            { new: true }
+        );
+
         return {
             liked: false,
             message: "Like removed successfully"
@@ -33,6 +40,12 @@ const likeCreateOrDelete = async (payload: Partial<likeInterface>) => {
 
     // If not liked → create like
     const like = await Like.create(payload);
+    await Post.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { like: 1 } },
+        { returnDocument: "after", runValidators: true }
+    );
+
 
     return {
         liked: true,

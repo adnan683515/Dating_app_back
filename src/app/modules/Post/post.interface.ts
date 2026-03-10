@@ -12,5 +12,7 @@ export interface postInterface {
     caption : string,
     location : string,
     userId : Types.ObjectId,
-    isDelete? : boolean
+    isDelete? : boolean,
+    like? : number,
+    comment? : number,
 }

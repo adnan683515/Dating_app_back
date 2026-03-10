@@ -8,9 +8,10 @@ import httpStatus from 'http-status-codes'
 const sendMessage = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
-    const senderId = req?.user?.id
+    const senderId = req?.user?.id 
     const { receiverId, messageText } = req?.body
 
+    console.log("hello boss")
     const sendmsg = await messageService.sendMessage({ senderId,  receiverId, messageText })
 
     sendResponse(res , {

@@ -10,6 +10,8 @@ import { messageController } from "./message.controller";
 
 const route = Router()
 
-route.post('/sendMessage/:reciverId', checkAuth(...Object.values(Role)) , messageController.sendMessage)
+route.post('/sendMessage', checkAuth(...Object.values(Role)) , messageController.sendMessage)
 
 
+
+export const MessageRoute = route

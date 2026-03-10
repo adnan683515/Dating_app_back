@@ -47,13 +47,10 @@ const createComment = async (payload: Partial<Icomment>) => {
 
     if (parentId) {
 
-
         const parentComment = await Comment.findOne({
             _id: parentId,
             postId: postId as Types.ObjectId
         });
-
-
 
         if (!parentComment) {
             throw new AppError(httpStatus.BAD_REQUEST, "Parent comment does not exist in this post");
@@ -62,6 +59,13 @@ const createComment = async (payload: Partial<Icomment>) => {
 
 
     const commentData = await Comment.create(payload);
+
+    await Post.findOneAndUpdate(
+        { _id: postId as Types.ObjectId },
+        { $inc: { comment: 1 } },
+        { new: true }
+    );
+
     return commentData;
 }
 
@@ -109,6 +113,7 @@ const updateComments = async (id: string) => {
 
         }
     )
+
 
     return data
 

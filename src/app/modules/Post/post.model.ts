@@ -17,12 +17,22 @@ const postSchema = new Schema<postInterface>({
         minlength: [5, "Caption must be at least 5 characters long"],
     },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    isDelete : {type : Boolean , default : false},
+    isDelete: { type: Boolean, default: false },
     location: {
         type: String,
         required: true,
         default: "",
     },
+    like: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    comment: {
+        type: Number,
+        default: 0,
+        min: 0
+    }
 }, { timestamps: true, versionKey: false });
 
 export const Post = model<postInterface>("Post", postSchema)
