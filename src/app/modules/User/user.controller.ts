@@ -10,6 +10,7 @@ import AppError from "../../errorHerlpers/AppError";
 
 
 
+
 // create a user
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -141,9 +142,10 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const query = req?.query
+    const userId = req?.user?.id
 
 
-    const users = await userService.getAllUsers(query as Record<string, string>)
+    const users = await userService.getAllUsers( userId as string , query as Record<string, string>)
 
 
     sendResponse(res, {

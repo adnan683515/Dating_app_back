@@ -87,11 +87,15 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 
 
 // get all users with out admin
-const getAllUsers = async (query: Record<string, string>) => {
+const getAllUsers = async (userId: string, query: Record<string, string>) => {
 
 
-    const querybuilder = new QueryBuilder(User.find(), query)
+    const querybuilder = new QueryBuilder(
+        User.find({ _id: { $ne: userId } }),
+        query
+    )
 
+    
     const userdata = querybuilder
         .filter()
         .search(userSearchableFields)

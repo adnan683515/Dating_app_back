@@ -34,6 +34,7 @@ const getpost = catchAsync(async (req: Request, res: Response, next: NextFunctio
 
     const postdata = await postService.getPosts(query as Record<string, string>)
 
+   
 
     sendResponse(res, {
         success: true,
