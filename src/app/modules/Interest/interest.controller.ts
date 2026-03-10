@@ -29,6 +29,7 @@ const getInterest = catchAsync(async (req: Request, res: Response, next: NextFun
 
     const interests = await interestService.interests(query as Record<string, string>)
 
+
     sendResponse(res, {
         data: interests,
         success: true,
@@ -48,7 +49,7 @@ const updateInterest = catchAsync(async (req: Request, res: Response, next: Next
 
     sendResponse(res, {
         message: "update interest successfully!!",
-        data,
+        data:data,
         success: true,
         statusCode: httpStatus.OK
     })
