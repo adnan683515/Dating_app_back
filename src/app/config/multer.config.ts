@@ -2,6 +2,11 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { cloudinaryUpload } from "./cloudinary.config";
 
+import { v2 as cloudinary } from "cloudinary";
+import AppError from "../errorHerlpers/AppError";
+
+
+
 // const storage = new CloudinaryStorage({
 //     cloudinary: cloudinaryUpload,
 //     params: {
@@ -55,7 +60,7 @@ export const multerUpload = multer({
 
   
     limits: {
-        fileSize: 20 * 1024 * 1024
+        fileSize: 100 * 1024 * 1024
     }
     ,
     fileFilter: (req, file, cb) => {
@@ -76,3 +81,37 @@ export const multerUpload = multer({
 
     }
 });
+
+
+
+
+
+
+export const deleteImageFromCloudinary = async (url: string) => {
+  try {
+    if (!url) return;
+
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname; // /demo/image/upload/v1680000000/myimage.jpg
+    const parts = pathname.split("/upload/");
+
+    if (parts.length < 2) {
+      throw new AppError(400, "Invalid Cloudinary URL");
+    }
+
+    const publicIdWithVersion = parts[1];
+
+    if (!publicIdWithVersion) {
+      throw new AppError(400, "Unable to extract publicId from URL");
+    }
+
+    // Safely extract publicId
+    const publicId = publicIdWithVersion
+      .replace(/v\d+\//, "")
+      .replace(/\.(jpg|jpeg|png|gif|webp|avif)$/i, "");
+
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error: any) {
+    throw new AppError(401, "Cloudinary image deletion failed", error.message);
+  }
+};

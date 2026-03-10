@@ -20,7 +20,7 @@ export const initSocket = async (httpServer: any) => {
         // user join 
         socket.on('join-user', (_userId: string) => {
 
-            userId = _userId
+            userId = _userId.toString()
             if (_userId) {
                 socket.join(_userId)
                 onlineUsers[_userId] = socket.id
@@ -36,8 +36,6 @@ export const initSocket = async (httpServer: any) => {
                 delete onlineUsers[userId] // remove kore dilam from online user object theke
                 io.emit('get_online_users', Object.keys(onlineUsers));
             }
-            console.log("online users", onlineUsers)
-
         })
 
 

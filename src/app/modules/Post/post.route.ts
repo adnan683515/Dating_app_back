@@ -13,9 +13,10 @@ const route = Router()
 route.post('/create-post', multerUpload.single('file'), checkAuth(...Object.values(Role)), postController.createPost)
 
 
-// get my post and all post
+//  get all post
 route.get('/get-post', checkAuth(...Object.values(Role)), postController.getpost)
 
+route.get('/get-my-post' , checkAuth(...Object.values(Role)) , postController.getMyPost)
 
 // update post
 route.patch('/update-post/:id', multerUpload.single('file'), checkAuth(...Object.values(Role)), postController.updatepost)

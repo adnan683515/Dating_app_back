@@ -65,19 +65,21 @@ export const EventSchema = new Schema<IEvent>({
         maxlength: [500, "Description cannot exceed 500 characters"]
     },
 
-    eventlineup: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "EventLineUp",
-            default: [],
-            validate: {
-                validator: function (arr: Types.ObjectId[]) {
-                    return arr.length <= 10; // max 10 elements
-                },
-                message: "Event lineup cannot have more than 10 entries"
+    eventlineup: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "EventLineUp"
             }
+        ],
+        default: [],
+        validate: {
+            validator: function (arr: Types.ObjectId[]) {
+                return arr.length <= 10;
+            },
+            message: "Event lineup cannot have more than 10 entries"
         }
-    ],
+    },
 
     attendanceTotal: { type: Number, default: 0 },
     isDelete: { type: Boolean, default: false }

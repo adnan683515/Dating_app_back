@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import httpStatus from 'http-status-codes';
+import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import httpStatus from 'http-status-codes'
 import { postService } from "./post.service";
 
 
@@ -34,13 +35,30 @@ const getpost = catchAsync(async (req: Request, res: Response, next: NextFunctio
 
     const postdata = await postService.getPosts(query as Record<string, string>)
 
-   
+
 
     sendResponse(res, {
         success: true,
         message: 'Post Retrived successfully!',
         data: postdata,
         statusCode: httpStatus.OK
+    })
+})
+// get my post
+const getMyPost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const user = req?.user as JwtPayload
+    const query = req?.query
+    const data = await postService.getMyPost(user, query as Record<string, string>)
+
+    
+
+    sendResponse(res, {
+        success : true, 
+        message : "Get All My post", 
+        data : data?.data,
+        meta : data?.meta , 
+        statusCode : httpStatus.OK
     })
 })
 
@@ -51,11 +69,11 @@ const updatepost = catchAsync(async (req: Request, res: Response, next: NextFunc
     req?.file ? req.body.imageOrVideo = req?.file ? req?.file?.path : "" : ''
 
 
-const user = req?.user?.id as string
-   
+    const user = req?.user?.id as string
 
 
-    const updatedata = await postService.updatePost(postId, req?.body , user)
+
+    const updatedata = await postService.updatePost(postId, req?.body, user)
 
     sendResponse(res, {
         success: true,
@@ -71,5 +89,6 @@ const user = req?.user?.id as string
 export const postController = {
     createPost,
     getpost,
-    updatepost
+    updatepost,
+    getMyPost
 }

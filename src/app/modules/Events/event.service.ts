@@ -30,7 +30,14 @@ const createEvent = async (payload: Partial<IEvent>) => {
 // event details 
 const getEventDetails = async (id: string) => {
 
-    const isExitsEvent = await Event.findById(id)
+    const isExitsEvent = await Event.findById(id).populate(
+        [
+            { path: 'eventlineup', select: 'name designation' },
+            { path: 'user', select: 'image displayName' },
+            { path: 'category', select: 'name' }]
+    )
+
+    
     if (!isExitsEvent) {
         throw new AppError(htttpStatus.NOT_FOUND, "This event not found!")
     }
@@ -39,9 +46,7 @@ const getEventDetails = async (id: string) => {
 
 
 // get all events
-const getEvents = async ( lat : Number , long : Number , quey: Record<string, string>) => {
-
-
+const getEvents = async (lat: Number, long: Number, quey: Record<string, string>) => {
 
 
     let baseQuery: any = {
@@ -49,9 +54,10 @@ const getEvents = async ( lat : Number , long : Number , quey: Record<string, st
         isDelete: false
     };
 
+
     // user location থাকলে geo query add করবো
     if (lat && long) {
-        console.log("hey lat long")
+
         baseQuery.location = {
             $nearSphere: {
                 $geometry: {
@@ -65,9 +71,12 @@ const getEvents = async ( lat : Number , long : Number , quey: Record<string, st
 
 
 
-    const queryBuilder = new QueryBuilder( Event.find(baseQuery) , quey)
+    const queryBuilder = new QueryBuilder(Event.find(baseQuery), quey)
 
-    const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate()
+    const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate().populate([
+        { path: 'eventlineup', select: 'designation name' },
+        { path: 'user', select: 'image displayName' }
+    ])
 
 
     const [data, meta] = await Promise.all([

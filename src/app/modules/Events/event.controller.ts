@@ -20,10 +20,15 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
     req.body.long = Number(req?.body?.long)
     req.body.image = req?.file ? req?.file?.path : ""
 
+    console.log("lineup",req?.body?.eventlineup)
 
-    const MAX_SIZE = 20 * 1024 * 1024; // 5MB in bytes
+
+    const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
+
     if (req?.file) {
+
         if (req.file.size > MAX_SIZE) {
+    
             throw new AppError(httpStatus.BAD_REQUEST, "File size should not exceed 20MB")
         }
     }

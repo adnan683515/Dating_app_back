@@ -5,6 +5,7 @@ import { postInterface } from "./post.interface";
 import { Post } from "./post.model";
 import { Types } from 'mongoose';
 import { object } from 'zod';
+import { JwtPayload } from 'jsonwebtoken';
 
 
 
@@ -27,7 +28,7 @@ const getPosts = async (query: Record<string, string>) => {
 
     const queryBuilder = new QueryBuilder(Post.find(), query)
 
-    const postdata = queryBuilder.filter().search(['caption', 'description']).sort().fields().paginate().populate([{ path: "userId" }])
+    const postdata = queryBuilder.filter().search(['caption', 'description']).sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
 
     const [data, meta] = await Promise.all([
         postdata.build(),
@@ -39,6 +40,23 @@ const getPosts = async (query: Record<string, string>) => {
         meta
     }
 
+}
+
+
+const getMyPost = async (user: JwtPayload, query: Record<string, string>) => {
+
+    const querybuilder = new QueryBuilder(Post.find({ userId: user?.id }), query)
+
+    const postdata = querybuilder.filter().sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
+    const [data, meta] = await Promise.all([
+        postdata.build(),
+        querybuilder.getMeta()
+    ])
+
+    return {
+        data,
+        meta
+    }
 }
 
 
@@ -74,8 +92,12 @@ const updatePost = async (postId: string, payload: Partial<postInterface>, userI
 }
 
 
+
+
+
 export const postService = {
     postCreate,
     getPosts,
-    updatePost
+    updatePost,
+    getMyPost
 }

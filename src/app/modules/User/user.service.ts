@@ -8,6 +8,8 @@ import { envVars } from './../../config/env';
 import { userSearchableFields } from './user.constants';
 import { IAuthProvider, IUser } from "./user.interface";
 import { User } from "./user.model";
+import { ConnectionReq } from '../ConnectionRequest/connection.model';
+import { StatusConnect } from '../ConnectionRequest/connection.interface';
 
 
 
@@ -95,7 +97,7 @@ const getAllUsers = async (userId: string, query: Record<string, string>) => {
         query
     )
 
-    
+
     const userdata = querybuilder
         .filter()
         .search(userSearchableFields)
@@ -182,10 +184,31 @@ const getAllUsers = async (userId: string, query: Record<string, string>) => {
 
 // get me 
 const getMe = async (userId: string) => {
+
+
     const user = await User.findById(userId).select('-password').populate({
         path: "interests"
     });
-    return user
+
+    const connected = await ConnectionReq.find({
+        status: StatusConnect.ACCEPTED,
+        $or: [
+            { sendReq: userId },
+            { recivedReq: userId }
+        ]
+    }).countDocuments();
+
+     const requestSend = await ConnectionReq.find({
+        status: StatusConnect.PENDING,
+       sendReq : userId
+    }).countDocuments();
+
+
+    return {
+        data:user,
+        connected,
+        requestSend
+    }
 
 }
 
