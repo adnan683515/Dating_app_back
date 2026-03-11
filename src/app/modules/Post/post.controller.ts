@@ -18,6 +18,9 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
     payload.imageOrVideo = req?.file?.path
 
 
+    console.log(req)
+
+
     const post = await postService.postCreate(payload)
 
     sendResponse(res, {
@@ -44,6 +47,8 @@ const getpost = catchAsync(async (req: Request, res: Response, next: NextFunctio
         statusCode: httpStatus.OK
     })
 })
+
+
 // get my post
 const getMyPost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -51,7 +56,8 @@ const getMyPost = catchAsync(async (req: Request, res: Response, next: NextFunct
     const query = req?.query
     const data = await postService.getMyPost(user, query as Record<string, string>)
 
-    
+    data.meta.total = data?.data?.length
+
 
     sendResponse(res, {
         success : true, 
@@ -62,7 +68,7 @@ const getMyPost = catchAsync(async (req: Request, res: Response, next: NextFunct
     })
 })
 
-
+// update post controller
 const updatepost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const postId = req?.params.id as string

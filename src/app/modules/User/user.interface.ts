@@ -23,6 +23,9 @@ export enum Status {
 export interface IUser {
     _id?: Types.ObjectId;
     displayName: string;
+    fullName : string ;
+
+
     email: string;
     age?: number | null;
     image?: string;
@@ -42,6 +45,7 @@ export interface IUser {
     lat?: number | null;
     long?: number | null;
 
+    userLocation? : string | null;
 
     location?: {
         type: "Point";

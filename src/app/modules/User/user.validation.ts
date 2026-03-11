@@ -4,7 +4,7 @@ import { Role, Status } from "./user.interface";
 
 export const createUserZodSchema = z.object({
 
-    displayName: z.string().min(2, { message: "Name must be at least 2 characters long" }).max(20, { message: "Name must be at most 20 characters long" }),
+    fullName: z.string().min(4, { message: "Name must be at least 4 characters long" }).max(30, { message: "Name must be at most 30 characters long" }),
 
     email: z.string().email({ message: "Please provide a valid email address" }),
 
@@ -20,6 +20,11 @@ export const updatedUserSchema = z.object({
     displayName: z
         .string()
         .min(2, { message: "Name must be at least 2 characters long." })
+        .max(20, { message: "Name cannot exceed 20 characters." })
+        .optional(),
+    fullName: z
+        .string()
+        .min(4, { message: "Name must be at least 4 characters long." })
         .max(50, { message: "Name cannot exceed 50 characters." })
         .optional(),
 

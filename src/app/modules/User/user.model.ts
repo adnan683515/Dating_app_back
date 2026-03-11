@@ -15,6 +15,7 @@ const authProviderSchema = new Schema<IAuthProvider>({
 
 const userSchema = new Schema<IUser>({
     displayName: { type: String, required: true, trim: true },
+    fullName : {type : String ,trim : true},
     email: { type: String, required: true, unique: true },
     password: { type: String, trim: true },
     image: { type: String, default: "" },
@@ -38,6 +39,8 @@ const userSchema = new Schema<IUser>({
 
     lat: { type: Number, default: null },
     long: { type: Number, default: null },
+
+    userLocation : {type : String , default : null},
 
     status: { type: String, default: Status.ACTIVE },
 

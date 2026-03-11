@@ -12,6 +12,20 @@ import { ConnectionReq } from '../ConnectionRequest/connection.model';
 import { StatusConnect } from '../ConnectionRequest/connection.interface';
 
 
+// w8 for google maps api key
+// const getAddressFromLatLong = async (lat: number, long: number): Promise<string | null> => {
+//     try {
+//         const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`;
+//         const { data } = await axios.get(url, {
+//             headers: { "User-Agent": "YourAppName/1.0" } // required by Nominatim
+//         });
+//         return data.display_name || null;
+//     } catch (error) {
+//         console.error("Error fetching address:", error);
+//         return null;
+//     }
+// };
+
 
 
 // create user service
@@ -56,9 +70,6 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     // Spread payload
     const { ...updatedFields } = payload;
 
-
-
-
     // Convert to ObjectId
     const idd = new Types.ObjectId(userId);
 
@@ -75,6 +86,16 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     if ((findUser?.interests?.length ?? 0) > 6) {
         throw new AppError(httpStatus.BAD_REQUEST, "Maximum interest 6");
     }
+
+
+    // If user updates lat/long, fetch address
+    // if (updatedFields?.lat && updatedFields?.long) {
+    //     const address = await getAddressFromLatLong(updatedFields.lat, updatedFields.long);
+    //     if (address) {
+    //         updatedFields.address = address; // store address in your User schema
+    //     }
+    //     console.log(updatedFields, "lat long + address");
+    // }
 
 
     const updatedUser = await User.findOneAndUpdate(
@@ -198,14 +219,14 @@ const getMe = async (userId: string) => {
         ]
     }).countDocuments();
 
-     const requestSend = await ConnectionReq.find({
+    const requestSend = await ConnectionReq.find({
         status: StatusConnect.PENDING,
-       sendReq : userId
+        sendReq: userId
     }).countDocuments();
 
 
     return {
-        data:user,
+        data: user,
         connected,
         requestSend
     }
@@ -216,7 +237,7 @@ const getMe = async (userId: string) => {
 // get singleUser
 const singleUser = async (userId: string) => {
 
-    const user = await User.findById(userId).select('-password')
+    const user = await User.findById(userId).select('-password').populate({ path: 'interests' })
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found!")
     }

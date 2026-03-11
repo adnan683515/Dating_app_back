@@ -14,7 +14,13 @@ import AppError from "../../errorHerlpers/AppError";
 // create a user
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+    const { fullName } = req?.body
 
+    const displayName = fullName.split(' ')[0]
+
+    req.body.displayName = displayName
+
+  
     await userService.usercreate(req?.body)
 
 
@@ -30,6 +36,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
+ console.log("hey ")
 
     if (req?.body?.password) {
         throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
@@ -70,22 +77,22 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     });
 
 
-
-
     req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
     req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
     req?.body?.age ? req.body.age = Number(req?.body?.age) : ''
-
-
-
-
 
 
     if (req?.body?.age <= 18) {
         throw new AppError(httpStatus.BAD_REQUEST, "You must be at least 18 years old to use this platform.")
     }
 
+
+
+    console.log(req)
+
     req?.file ? req.body.image = req?.file ? req?.file?.path : "" : ''
+
+    console.log(req?.file)
 
 
 
@@ -145,7 +152,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
     const userId = req?.user?.id
 
 
-    const users = await userService.getAllUsers( userId as string , query as Record<string, string>)
+    const users = await userService.getAllUsers(userId as string, query as Record<string, string>)
 
 
     sendResponse(res, {
