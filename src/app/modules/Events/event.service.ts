@@ -37,7 +37,7 @@ const getEventDetails = async (id: string) => {
             { path: 'category', select: 'name' }]
     )
 
-    
+
     if (!isExitsEvent) {
         throw new AppError(htttpStatus.NOT_FOUND, "This event not found!")
     }
@@ -75,7 +75,7 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
 
     const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate().populate([
         { path: 'eventlineup', select: 'designation name' },
-        { path: 'user', select: 'image displayName' }
+        {path : 'category', select : 'name'}
     ])
 
 
