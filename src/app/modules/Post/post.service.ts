@@ -25,25 +25,67 @@ const postCreate = async (payload: Partial<postInterface>) => {
 }
 
 
-const getPosts = async (query: Record<string, string>) => {
+// const getPosts = async (query: Record<string, string>) => {
 
-    const queryBuilder = new QueryBuilder(Post.find(), query)
+//     const queryBuilder = new QueryBuilder(Post.find(), query)
 
-    const postdata = queryBuilder.filter().search(['caption', 'description']).sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
+//     const postdata = queryBuilder.filter().search(['caption', 'description']).sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
 
-   
+
+
+//     const [data, meta] = await Promise.all([
+//         postdata.build(),
+//         queryBuilder.getMeta()
+//     ])
+
+//     return {
+//         data,
+//         meta
+//     }
+// }
+const getPosts = async (query: Record<string, string>, currentUserId: string) => {
+    const queryBuilder = new QueryBuilder(Post.find(), query);
+
+    const postData = queryBuilder
+        .filter()
+        .search(['caption', 'description'])
+        .sort()
+        .fields()
+        .paginate()
+        .populate([{ path: "userId", select: 'image displayName' }]);
 
     const [data, meta] = await Promise.all([
-        postdata.build(),
+        postData.build(),
         queryBuilder.getMeta()
-    ])
+    ]);
+
+    // post IDs
+    const postIds = data.map(post => post._id);
+
+    // likes of current user
+    const liked = await Like.find({
+        postId: { $in: postIds },
+        userId: currentUserId
+    }).lean();
+
+    // convert to string for safe comparison
+    const likedSet = new Set(liked.map(l => l.postId.toString()));
+
+    // attach likedByMe flag
+    const postsWithLikedFlag = data.map(post => ({
+        ...post.toObject(),
+        likedByMe: likedSet.has(post._id.toString()), // <-- MUST convert to string
+
+    }));
 
     return {
-        data,
+        data: postsWithLikedFlag,
         meta
-    }
+    };
+};
 
-}
+
+
 
 
 const getMyPost = async (user: JwtPayload, query: Record<string, string>) => {

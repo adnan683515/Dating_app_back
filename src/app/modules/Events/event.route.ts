@@ -30,4 +30,6 @@ route.get('/events', checkAuth(...Object.values(Role)), eventController.getEvent
 route.patch('/update-event/:id', multerUpload.single('file'), validateRequest(updateEventZod), checkAuth(Role.ADMIN), eventController.updateEvents)
 
 
+
+
 export const EventRoute = route

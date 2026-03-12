@@ -69,6 +69,10 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
         };
     }
 
+      if (quey?.tags) {
+        const tags = quey.tags.split(",");
+        baseQuery.tags = { $in: tags };
+    }
 
 
     const queryBuilder = new QueryBuilder(Event.find(baseQuery), quey)

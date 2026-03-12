@@ -113,6 +113,8 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 const getAllUsers = async (userId: string, query: Record<string, string>) => {
 
 
+
+
     const querybuilder = new QueryBuilder(
         User.find({ _id: { $ne: userId } }),
         query

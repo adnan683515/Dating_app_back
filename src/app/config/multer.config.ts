@@ -8,40 +8,6 @@ import { envVars } from "./env";
 import Stream from "stream";
 
 
-
-// const storage = new CloudinaryStorage({
-//     cloudinary: cloudinaryUpload,
-//     params: {
-//         public_id: (req, file) => {
-
-//             const fileName = file.originalname
-//                 .toLowerCase()
-//                 .replace(/\s+/g, "-") // space → dash
-//                 .replace(/\./g, "-")  // remove dot
-//                 .replace(/[^a-z0-9\-]/g, ""); // remove special chars
-
-//             const extension = file.originalname.split(".").pop();
-
-//             const uniqueFileName =
-//                 Math.random().toString(36).substring(2) +
-//                 "-" +
-//                 Date.now() +
-//                 "-" +
-//                 fileName +
-//                 "." +
-//                 extension;
-
-//             return uniqueFileName;
-//         }
-//     }
-// });
-
-
-
-
-
-
-
 // cloudinary.config({
 //   cloud_name: envVars?.CLOUD_NAME,
 //   api_key: envVars?.CLOUD_API_KEY,
@@ -98,23 +64,6 @@ import Stream from "stream";
 //     throw new AppError(401, 'Cloudinary image deletion failed', error.message);
 //   }
 // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
