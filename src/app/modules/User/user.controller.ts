@@ -6,6 +6,8 @@ import httpStatus from 'http-status-codes';
 import { JwtPayload } from "jsonwebtoken";
 import { IUser, Role, Status } from "./user.interface";
 import AppError from "../../errorHerlpers/AppError";
+import sharp from "sharp";
+import { uploadToCloudinary } from "../../config/multer.config";
 
 
 
@@ -20,7 +22,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     req.body.displayName = displayName
 
-  
+
     await userService.usercreate(req?.body)
 
 
@@ -36,7 +38,7 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
- console.log("hey ")
+
 
     if (req?.body?.password) {
         throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
@@ -87,48 +89,31 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     }
 
 
+    // upload image 
+    if (req.file) {
 
-    console.log(req)
+        // compress image
+        const compressedImage = await sharp(req.file.buffer)
+            .resize({ width: 1200 })
+            .jpeg({ quality: 70 })
+            .toBuffer()
 
-    req?.file ? req.body.image = req?.file ? req?.file?.path : "" : ''
-
-    console.log(req?.file)
-
+        // upload cloudinary
+        const result: any = await uploadToCloudinary(compressedImage)
+        req.body.image = result.secure_url
+    }
 
 
     const payload: IUser = {
-        ...req.body,
-        image: req.file?.path
+        ...req.body
     }
+
 
 
     if (payload.lat && payload.long) {
         payload.location = {
             type: "Point",
             coordinates: [payload.long, payload.lat] // always [long, lat]
-        }
-    }
-
-
-    const imageUrl = payload?.image
-
-    if (req.file) {
-
-
-        if (req.file.size > 20 * 1024 * 1024) {
-            throw new AppError(
-                httpStatus.BAD_REQUEST,
-                "File size must be less than 20MB"
-            );
-        }
-
-        const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-
-        if (!allowedTypes.includes(req.file.mimetype)) {
-            throw new AppError(
-                httpStatus.BAD_REQUEST,
-                "Only PNG, JPG, and JPEG are allowed"
-            );
         }
     }
 

@@ -4,7 +4,8 @@ import { Role } from "../User/user.interface";
 import { eventController } from "./event.controller";
 import { validateRequest } from "../../middlewares/ValidateRequest";
 import { createEventZod, updateEventZod } from "./event.validation";
-import { multerUpload } from "../../config/multer.config";
+import { upload } from "../../config/multer.config";
+// import { multerUpload } from "../../config/multer.config";
 
 
 
@@ -14,7 +15,7 @@ const route = Router()
 
 
 // event created
-route.post('/create-event', multerUpload.single("file"), validateRequest(createEventZod), checkAuth(Role.ADMIN), eventController.createEvent)
+route.post('/create-event', upload.single("file"), validateRequest(createEventZod), checkAuth(Role.ADMIN), eventController.createEvent)
 
 
 // event details
@@ -27,7 +28,7 @@ route.get('/events', checkAuth(...Object.values(Role)), eventController.getEvent
 
 
 // update route 
-route.patch('/update-event/:id', multerUpload.single('file'), validateRequest(updateEventZod), checkAuth(Role.ADMIN), eventController.updateEvents)
+route.patch('/update-event/:id', upload.single('file'), validateRequest(updateEventZod), checkAuth(Role.ADMIN), eventController.updateEvents)
 
 
 

@@ -3,29 +3,30 @@ import { catchAsync } from "../../utils/catchAsync";
 import { lineupService } from "./lineup.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes'
-import  http_status_code  from 'http-status-codes';
+import http_status_code from 'http-status-codes';
 
 
 
 // create controller
-const lineupcreated = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const lineupcreated = catchAsync(async (req: Request, res: Response) => {
 
-    const result = await lineupService.lineupCreate(req?.body)
+    const result = await lineupService.lineupCreate(req.body)
 
     sendResponse(res, {
-        message: "Event Lineup  created successfully!",
+        message: "Event Lineup created successfully!",
         statusCode: httpStatus.CREATED,
         data: result,
         success: true
-
     })
-})
 
+})
 
 const getLineup = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const query = req?.query
-    const lineupData =await lineupService.getLineup(query as Record<string, string>)
+    const lineupData = await lineupService.getLineup(query as Record<string, string>)
+
+    lineupData.meta.total = lineupData.data.length
 
     sendResponse(res, {
         success: true,
@@ -36,19 +37,19 @@ const getLineup = catchAsync(async (req: Request, res: Response, next: NextFunct
 })
 
 // update lineup data
-const updateLineUp = catchAsync(async (req : Request, res : Response , next : NextFunction)=>{
+const updateLineUp = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
     const id = req?.params?.id as string
 
-    const data  = await lineupService.updateLineup(id , req?.body)
+    const data = await lineupService.updateLineup(id, req?.body)
 
 
     sendResponse(res, {
-        message : "Update line up data successfully!", 
-        success : true , 
-        data : data,
-        statusCode : httpStatus.OK
+        message: "Update line up data successfully!",
+        success: true,
+        data: data,
+        statusCode: httpStatus.OK
     })
 
 

@@ -25,24 +25,7 @@ const postCreate = async (payload: Partial<postInterface>) => {
 }
 
 
-// const getPosts = async (query: Record<string, string>) => {
 
-//     const queryBuilder = new QueryBuilder(Post.find(), query)
-
-//     const postdata = queryBuilder.filter().search(['caption', 'description']).sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
-
-
-
-//     const [data, meta] = await Promise.all([
-//         postdata.build(),
-//         queryBuilder.getMeta()
-//     ])
-
-//     return {
-//         data,
-//         meta
-//     }
-// }
 const getPosts = async (query: Record<string, string>, currentUserId: string) => {
     const queryBuilder = new QueryBuilder(Post.find(), query);
 

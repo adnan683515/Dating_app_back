@@ -4,9 +4,11 @@ import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { postService } from "./post.service";
+import { uploadToCloudinary } from "../../config/multer.config";
 
 
-
+import sharp from "sharp"
+import AppError from "../../errorHerlpers/AppError";
 
 // create post
 const createPost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -15,10 +17,26 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     const payload = req?.body
     payload.userId = req?.user?.id
-    payload.imageOrVideo = req?.file?.path
+    // payload.imageOrVideo = req?.file?.path
 
+    if (req.file) {
+        if (req.file.mimetype.startsWith("image")) {
+            // image → sharp compress
+            const compressedBuffer = await sharp(req.file.buffer)
+                .resize({ width: 1200 })
+                .jpeg({ quality: 70 })
+                .toBuffer()
 
-    console.log(req)
+            const result: any = await uploadToCloudinary(compressedBuffer)
+            payload.imageOrVideo = result.secure_url
+        } else if (req.file.mimetype.startsWith("video")) {
+            // video → direct upload (no sharp)
+            const result: any = await uploadToCloudinary(req.file.buffer)
+            payload.imageOrVideo = result.secure_url
+        } else {
+            throw new AppError(400, "Only images or videos are allowed")
+        }
+    }
 
 
     const post = await postService.postCreate(payload)
@@ -31,12 +49,15 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+
+
+
 // get post
 const getpost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const query = req?.query
-
-    const postdata = await postService.getPosts(query as Record<string, string>)
+    const currentUserId = req?.user?.id
+    const postdata = await postService.getPosts(query as Record<string, string>, currentUserId)
 
 
 
@@ -60,11 +81,11 @@ const getMyPost = catchAsync(async (req: Request, res: Response, next: NextFunct
 
 
     sendResponse(res, {
-        success : true, 
-        message : "Get All My post", 
-        data : data?.data,
-        meta : data?.meta , 
-        statusCode : httpStatus.OK
+        success: true,
+        message: "Get All My post",
+        data: data?.data,
+        meta: data?.meta,
+        statusCode: httpStatus.OK
     })
 })
 

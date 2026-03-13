@@ -7,21 +7,32 @@ import httpStatus from 'http-status-codes'
 
 
 // create lineup
-const lineupCreate = async (payload: Partial<IEventLineup>) => {
+const lineupCreate = async (payload: any) => {
 
-    const { name } = payload
+    const { eventId, lineups } = payload
 
-    const lineup = await EventLineUp.findOne({ name: name as string })
+    // name গুলো collect করা
+    const names = lineups.map((item: any) => item.name)
 
-    if (lineup) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Lineup Already created")
+    // already exist check
+    const existing = await EventLineUp.find({
+        name: { $in: names }
+    })
+
+    if (existing.length > 0) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Some lineup already exists")
     }
-    const created = await EventLineUp.create(payload)
+
+    // eventId add করা
+    const data = lineups.map((item: any) => ({
+        name: item.name,
+        eventId
+    }))
+
+    const created = await EventLineUp.insertMany(data)
 
     return created
-
 }
-
 
 
 // get lineup
@@ -70,6 +81,8 @@ const updateLineup = async (userId : string, payload : Partial<IEventLineup>)=>{
     return updatedData
 
 }
+
+
 
 
 

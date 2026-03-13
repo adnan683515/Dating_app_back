@@ -4,6 +4,7 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { EStatus, IEvent } from "./event.interface";
 import { Event } from "./event.model";
 import { Cetegory } from '../ICategory/cetegory.model';
+import { EventLineUp } from '../EventLineup/lineup.model';
 
 
 
@@ -13,7 +14,6 @@ import { Cetegory } from '../ICategory/cetegory.model';
 const createEvent = async (payload: Partial<IEvent>) => {
 
     const { category, ...rest } = payload
-
 
     const isCategoryExits = await Cetegory.findById(category)
 
@@ -32,15 +32,18 @@ const getEventDetails = async (id: string) => {
 
     const isExitsEvent = await Event.findById(id).populate(
         [
-            { path: 'eventlineup', select: 'name designation' },
             { path: 'user', select: 'image displayName' },
             { path: 'category', select: 'name' }]
     )
 
-
     if (!isExitsEvent) {
         throw new AppError(htttpStatus.NOT_FOUND, "This event not found!")
     }
+
+    const lineupData = await EventLineUp.findOne({ eventId: id }).countDocuments()
+    isExitsEvent.lineupMember = lineupData
+
+
     return isExitsEvent
 }
 
@@ -56,6 +59,7 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
 
 
     // user location থাকলে geo query add করবো
+
     if (lat && long) {
 
         baseQuery.location = {
@@ -64,12 +68,13 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
                     type: "Point",
                     coordinates: [long, lat]
                 },
-                $maxDistance: 1000
+                $maxDistance: 28000
             }
         };
     }
 
-      if (quey?.tags) {
+
+    if (quey?.tags) {
         const tags = quey.tags.split(",");
         baseQuery.tags = { $in: tags };
     }
@@ -78,8 +83,7 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
     const queryBuilder = new QueryBuilder(Event.find(baseQuery), quey)
 
     const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate().populate([
-        { path: 'eventlineup', select: 'designation name' },
-        {path : 'category', select : 'name'}
+        { path: 'category', select: 'name' }
     ])
 
 

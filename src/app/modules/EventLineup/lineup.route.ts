@@ -14,8 +14,12 @@ route.post('/lineup-create', validateRequest(EventLineUpZod), checkAuth(Role.ADM
 
 route.get('/lineup-data', checkAuth(...Object.values(Role)), lineupController.getLineup)
 
-
 route.patch('/update-line/:id', checkAuth(Role.ADMIN), validateRequest(updateLineupZod), lineupController.updateLineUp)
+
+
+
+
+
 
 
 export const LineupRoute = route

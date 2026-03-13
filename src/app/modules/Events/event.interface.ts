@@ -37,13 +37,17 @@ export interface IEvent {
     };
 
 
-    start_date: Date;
-    end_date: Date;
-
-    startTime: Date;
-    endTime: Date;
+    start_date_time: Date;
+    end_date_time: Date;
     openDoor: Date;
 
+
+    // startTime: Date;
+    // endTime: Date;
+    venue : string;
+
+
+    serviceFee : number;
     status: EStatus;
 
     tags: EventTags[];
@@ -51,9 +55,8 @@ export interface IEvent {
     image: string;
     descripton: string;
 
-    eventlineup: Types.ObjectId[];
-
-    attendanceTotal: number
+    attendanceTotal: number;
+    lineupMember? : number;
 
     isDelete?: boolean
 }

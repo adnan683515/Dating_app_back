@@ -1,4 +1,4 @@
-import { model, Schema, Types } from "mongoose";
+import { model, Schema } from "mongoose";
 import { EStatus, EventTags, IEvent } from "./event.interface";
 
 
@@ -23,8 +23,7 @@ export const EventSchema = new Schema<IEvent>({
 
     lat: { type: Number, required: [true, "Latitude is required"] },
     long: { type: Number, required: [true, "Longitude is required"] },
-
-
+    lineupMember: { type: Number, default: 0 },
     // GeoJSON location for geospatial queries
     location: {
         type: {
@@ -39,13 +38,14 @@ export const EventSchema = new Schema<IEvent>({
         }
     },
 
-    start_date: { type: Date, required: [true, "Start date is required"] },
-    end_date: { type: Date, required: [true, "End date is required"] },
+    start_date_time: { type: Date, required: [true, "Start date is required"] },
+    end_date_time: { type: Date, required: [true, "End date is required"] },
 
-    startTime: { type: Date, required: [true, "Start time is required"] }, // "18:30"
-    endTime: { type: Date, required: [true, "End time is required"] },       // "21:30"
-    openDoor: { type: Date, required: [true, "Open door time is required"] }, // "18:00"
+    // startTime: { type: Date, required: [true, "Start time is required"] }, 
+    // endTime: { type: Date, required: [true, "End time is required"] }, 
+    venue: { type: String, required: [true, "venue must be added!"] },
 
+    openDoor: { type: Date, required: [true, "Open door time is required"] },
 
 
     status: { type: String, enum: [...Object.values(EStatus)], default: EStatus.NOSTART },
@@ -58,27 +58,11 @@ export const EventSchema = new Schema<IEvent>({
         required: true,             // must have at least one tag
         validate: [(val: string[]) => val.length > 0, 'At least one tag is required']
     },
-
+    serviceFee: { type: Number, default: 0 },
     descripton: {
         type: String,
         default: "",
-        maxlength: [500, "Description cannot exceed 500 characters"]
-    },
-
-    eventlineup: {
-        type: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "EventLineUp"
-            }
-        ],
-        default: [],
-        validate: {
-            validator: function (arr: Types.ObjectId[]) {
-                return arr.length <= 10;
-            },
-            message: "Event lineup cannot have more than 10 entries"
-        }
+        maxlength: [1000, "Description cannot exceed 500 characters"]
     },
 
     attendanceTotal: { type: Number, default: 0 },

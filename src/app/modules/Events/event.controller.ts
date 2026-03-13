@@ -6,6 +6,8 @@ import { sendResponse } from "../../utils/sendResponse";
 import { eventService } from "./event.service";
 import { User } from "../User/user.model";
 import { number } from "zod";
+import sharp from "sharp";
+import { uploadToCloudinary } from "../../config/multer.config";
 
 
 
@@ -18,20 +20,38 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
     req.body.fee = Number(req?.body?.fee)
     req.body.lat = Number(req?.body?.lat)
     req.body.long = Number(req?.body?.long)
-    req.body.image = req?.file ? req?.file?.path : ""
 
-    console.log("lineup",req?.body?.eventlineup)
+
+    if (req.file) {
+
+        // compress image
+        const compressedImage = await sharp(req.file.buffer)
+            .resize({ width: 1200 })
+            .jpeg({ quality: 70 })
+            .toBuffer()
+
+        // upload cloudinary
+        const result: any = await uploadToCloudinary(compressedImage)
+
+        console.log(result)
+
+        req.body.image = result.secure_url
+    }
+
+
+    // req.body.image = req?.file ? req?.file?.path : ""
+
 
 
     const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
 
-    if (req?.file) {
+    // if (req?.file) {
 
-        if (req.file.size > MAX_SIZE) {
-    
-            throw new AppError(httpStatus.BAD_REQUEST, "File size should not exceed 20MB")
-        }
-    }
+    //     if (req.file.size > MAX_SIZE) {
+
+    //         throw new AppError(httpStatus.BAD_REQUEST, "File size should not exceed 20MB")
+    //     }
+    // }
 
 
     if (req?.body?.lat && req?.body?.long) {
@@ -50,6 +70,8 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
         data: data
     })
 })
+
+
 
 const eventDetails = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -113,6 +135,8 @@ const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFu
             coordinates: [req?.body.long, req?.body?.lat] // always [long, lat]
         }
     }
+
+
 
     const updatedata = await eventService.updateEvents(eventId, req?.body)
 
