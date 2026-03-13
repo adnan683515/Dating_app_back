@@ -88,19 +88,13 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     }
 
 
-    // If user updates lat/long, fetch address
-    // if (updatedFields?.lat && updatedFields?.long) {
-    //     const address = await getAddressFromLatLong(updatedFields.lat, updatedFields.long);
-    //     if (address) {
-    //         updatedFields.address = address; // store address in your User schema
-    //     }
-    //     console.log(updatedFields, "lat long + address");
-    // }
 
+
+    const { password, ...fieldsWithoutPassword } = updatedFields;
 
     const updatedUser = await User.findOneAndUpdate(
         { _id: idd },
-        { $set: updatedFields },
+        { $set: fieldsWithoutPassword },
         { returnDocument: "after", runValidators: true }
     );
 
