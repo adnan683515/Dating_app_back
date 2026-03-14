@@ -38,14 +38,6 @@ const startServer = async () => {
 
 
 
-// app.get("/", (req: Request, res: Response) => {
-//     res.status(httpStatus.OK).json({
-//         message: "Welcome To tour Dating App!!.."
-//     })
-
-// })
-
-
 process.on("SIGTERM", () => {
     console.log("SIGTERM signal recieved... Server shutting down..");
 
@@ -54,7 +46,6 @@ process.on("SIGTERM", () => {
             process.exit(1)
         });
     }
-
     process.exit(1)
 })
 
