@@ -88,8 +88,6 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     }
 
 
-
-
     const { password, ...fieldsWithoutPassword } = updatedFields;
 
     const updatedUser = await User.findOneAndUpdate(

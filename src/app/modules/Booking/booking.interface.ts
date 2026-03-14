@@ -1,11 +1,13 @@
+import { Types } from "mongoose";
+import { PaymentStatusEnum } from "./booking.model";
 
 
 export interface IBooking {
-    userId: string;
-    eventId: string;
+    userId: Types.ObjectId;
+    eventId: Types.ObjectId;
     ticketCount: number;
     fee: number;
-    paymentStatus: "pending" | "succeeded" | "failed";
-    stripePaymentIntentId?: string;
-    createdAt: Date;
+    paymentStatus: PaymentStatusEnum.UNPAID | PaymentStatusEnum.PAID | PaymentStatusEnum.FAILED;
+    txId?: string;
+
 }

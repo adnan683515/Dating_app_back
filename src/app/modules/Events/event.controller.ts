@@ -1,13 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import httpStatus from 'http-status-codes';
-import AppError from "../../errorHerlpers/AppError";
-import { catchAsync } from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
-import { eventService } from "./event.service";
-import { User } from "../User/user.model";
-import { number } from "zod";
 import sharp from "sharp";
 import { uploadToCloudinary } from "../../config/multer.config";
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+import { User } from "../User/user.model";
+import { eventService } from "./event.service";
 
 
 
@@ -22,8 +20,8 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
     req.body.long = Number(req?.body?.long)
 
 
+    // jdi request ar modde file thake tayle amra buffer kore link create kortesi
     if (req.file) {
-
         // compress image
         const compressedImage = await sharp(req.file.buffer)
             .resize({ width: 1200 })
@@ -32,15 +30,11 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
 
         // upload cloudinary
         const result: any = await uploadToCloudinary(compressedImage)
-
-        console.log(result)
-
         req.body.image = result.secure_url
     }
 
 
     // req.body.image = req?.file ? req?.file?.path : ""
-
 
 
     const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
@@ -72,7 +66,7 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
 })
 
 
-
+// event details
 const eventDetails = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const data = await eventService.getEventDetails(req?.params?.id as string)
@@ -116,14 +110,23 @@ const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFu
 
     const eventId = req?.params?.id as string
 
-
-
-
     req?.body?.fee ? req.body.fee = Number(req?.body?.fee) : ''
     req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
     req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
 
-    req?.file ? req.body.image = req?.file ? req?.file?.path : "" : ''
+    
+
+    if (req.file) {
+        // compress image
+        const compressedImage = await sharp(req.file.buffer)
+            .resize({ width: 1200 })
+            .jpeg({ quality: 70 })
+            .toBuffer()
+
+        // upload cloudinary
+        const result: any = await uploadToCloudinary(compressedImage)
+        req.body.image = result.secure_url
+    }
 
     req?.body?.isDelete ? req.body.isDelete = Boolean(req.body.isDelete) : ""
 

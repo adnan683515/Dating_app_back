@@ -63,6 +63,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 
 
+    // form-data diye pathanor karone segula string hoye jacce ty ai khane abr boolen kore nilam
     const booleanFields = [
         "availableForDate",
         "availableForDance",
@@ -109,7 +110,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     }
 
 
-
+    // payload ar modde lat and long set kore dilam
     if (payload.lat && payload.long) {
         payload.location = {
             type: "Point",
@@ -120,6 +121,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     const userId = req?.params?.id as string
     const updatedUserInfo = await userService.updateUser(userId, payload)
+
 
     sendResponse(res, {
         success: true,

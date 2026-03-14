@@ -1,16 +1,50 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { IBooking } from "./booking.interface";
 
+export enum PaymentStatusEnum {
+    UNPAID = "UNPAID",
+    PAID = "PAID",
+    FAILED = "FAILED"
+}
 
-const BookingSchema = new Schema<IBooking>({
+const BookingSchema = new Schema<IBooking>(
+    {
+        userId: {
+            type: Types.ObjectId,
+            ref: "User",
+            required: [true, "User id must be included"],
+        },
 
-    userId: { type: String, required: true },
-    eventId: { type: String, required: true },
-    ticketCount: { type: Number, required: true },
-    fee: { type: Number, required: true },
-    paymentStatus: { type: String, default: "pending" },
-    stripePaymentIntentId: { type: String },
+        eventId: {
+            type: Types.ObjectId,
+            ref: "Event",
+            required: [true, "Event id must be included"],
+        },
 
-}, { timestamps: true, versionKey: false });
+        ticketCount: {
+            type: Number,
+            required: true,
+            min: 1,
+        },
+
+        fee: {
+            type: Number,
+            required: true,
+        },
+
+        paymentStatus: {
+            type: String,
+            enum: Object.values(PaymentStatusEnum),
+            default: PaymentStatusEnum.UNPAID,
+        },
+        txId: {
+            type: String
+        }
+    },
+    {
+        timestamps: true,
+        versionKey: false,
+    }
+);
 
 export const Booking = model<IBooking>("Booking", BookingSchema);

@@ -1,13 +1,5 @@
 import multer from "multer";
 import { cloudinaryUpload } from "./cloudinary.config";
-// import { CloudinaryStorage } from "multer-storage-cloudinary";
-// import { cloudinaryUpload } from "./cloudinary.config";
-
-// import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
-// import AppError from "../errorHerlpers/AppError";
-// import { envVars } from "./env";
-// import Stream from "stream";
-
 import streamifier from "streamifier"
 
 
@@ -65,6 +57,7 @@ import streamifier from "streamifier"
 
 
 const storage = multer.memoryStorage()
+
 
 export const upload = multer({ storage })
 

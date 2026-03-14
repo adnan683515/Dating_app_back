@@ -5,10 +5,10 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { postService } from "./post.service";
 import { uploadToCloudinary } from "../../config/multer.config";
-
-
 import sharp from "sharp"
 import AppError from "../../errorHerlpers/AppError";
+
+
 
 // create post
 const createPost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -17,6 +17,7 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     const payload = req?.body
     payload.userId = req?.user?.id
+
     // payload.imageOrVideo = req?.file?.path
 
     if (req.file) {
@@ -93,14 +94,32 @@ const getMyPost = catchAsync(async (req: Request, res: Response, next: NextFunct
 const updatepost = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const postId = req?.params.id as string
-    req?.file ? req.body.imageOrVideo = req?.file ? req?.file?.path : "" : ''
+
+
+
+    if (req.file) {
+        if (req.file.mimetype.startsWith("image")) {
+            // image → sharp compress
+            const compressedBuffer = await sharp(req.file.buffer)
+                .resize({ width: 1200 })
+                .jpeg({ quality: 70 })
+                .toBuffer()
+
+            const result: any = await uploadToCloudinary(compressedBuffer)
+            req.body.imageOrVideo = result.secure_url
+        } else if (req.file.mimetype.startsWith("video")) {
+            // video → direct upload (no sharp)
+            const result: any = await uploadToCloudinary(req.file.buffer)
+            req.body.imageOrVideo = result.secure_url
+        } else {
+            throw new AppError(400, "Only images or videos are allowed")
+        }
+    }
 
 
     const user = req?.user?.id as string
-
-
-
     const updatedata = await postService.updatePost(postId, req?.body, user)
+    
 
     sendResponse(res, {
         success: true,

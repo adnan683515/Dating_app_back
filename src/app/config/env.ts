@@ -5,40 +5,41 @@ dotenv.config()
 
 interface EnvConfig {
 
-    PORT  : string , 
-    DB_URL : string, 
+    PORT: string,
+    DB_URL: string,
 
-    NODE_ENV : "development" | "production", 
+    NODE_ENV: "development" | "production",
 
-    JWT_ACCESS_EXPIRES : string, 
-    JWT_ACCESS_SECRET : string, 
+    JWT_ACCESS_EXPIRES: string,
+    JWT_ACCESS_SECRET: string,
 
 
-    JWT_REFRESH_EXPIRES : string, 
-    JWT_REFRESH_SECRET : string,
+    JWT_REFRESH_EXPIRES: string,
+    JWT_REFRESH_SECRET: string,
 
-    ADMIN_EMAIL : string, 
-    ADMIN_PASSWORD : string, 
-    
-    BCRYPT_SALT_ROUND : string,
+    ADMIN_EMAIL: string,
+    ADMIN_PASSWORD: string,
 
-    APP_PASSWORD : string,
+    BCRYPT_SALT_ROUND: string,
+
+    APP_PASSWORD: string,
 
     CLOUD_API_SECRET: string,
     CLOUD_API_KEY: string,
-    CLOUD_NAME : string,
-
+    CLOUD_NAME: string,
+    STRIPE_SECRET_KEY: string,
+WEB_HOOK_SECRET : string
 }
 
 
-const loadEnvVariables = () : EnvConfig => {
+const loadEnvVariables = (): EnvConfig => {
 
-    const requiredEnvVariables : string[] = ['PORT', 'BCRYPT_SALT_ROUND' , 'APP_PASSWORD',  'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET','JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME']
+    const requiredEnvVariables: string[] = ['PORT', 'BCRYPT_SALT_ROUND', 'APP_PASSWORD', 'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET', 'JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME', 'STRIPE_SECRET_KEY','WEB_HOOK_SECRET']
 
 
-    requiredEnvVariables?.forEach(key =>{
+    requiredEnvVariables?.forEach(key => {
 
-        if(!process.env[key]){
+        if (!process.env[key]) {
             throw new Error(`Missing require enviroment variable  ${key}`)
         }
     })
@@ -46,32 +47,38 @@ const loadEnvVariables = () : EnvConfig => {
 
     return {
 
-        PORT : process.env.PORT as string, 
-        DB_URL  : process.env.DB_URL  as string,
+        PORT: process.env.PORT as string,
+        DB_URL: process.env.DB_URL as string,
 
-        ADMIN_EMAIL : process.env.ADMIN_EMAIL as string, 
-        ADMIN_PASSWORD : process.env.ADMIN_PASSWORD as string,
+        ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
+        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
 
-        JWT_REFRESH_EXPIRES : process.env.JWT_REFRESH_EXPIRES as string, 
-        JWT_REFRESH_SECRET : process.env.JWT_REFRESH_SECRET as string, 
-
-
-        JWT_ACCESS_SECRET : process.env.JWT_ACCESS_SECRET as string,
-        JWT_ACCESS_EXPIRES : process.env.JWT_ACCESS_EXPIRES as string,
-
-        NODE_ENV : process.env.NODE_ENV as "development" | "production",
-
-        APP_PASSWORD : process.env.APP_PASSWORD as string,
-
-        BCRYPT_SALT_ROUND : process.env.BCRYPT_SALT_ROUND as string, 
+        JWT_REFRESH_EXPIRES: process.env.JWT_REFRESH_EXPIRES as string,
+        JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
 
 
+        JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
+        JWT_ACCESS_EXPIRES: process.env.JWT_ACCESS_EXPIRES as string,
 
-        
-        CLOUD_API_SECRET : process.env.CLOUD_API_SECRET as string,
+        NODE_ENV: process.env.NODE_ENV as "development" | "production",
 
-        CLOUD_API_KEY : process.env.CLOUD_API_KEY as string,
-        CLOUD_NAME : process.env.CLOUD_NAME as string
+        APP_PASSWORD: process.env.APP_PASSWORD as string,
+
+        BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
+
+
+
+
+        CLOUD_API_SECRET: process.env.CLOUD_API_SECRET as string,
+        CLOUD_API_KEY: process.env.CLOUD_API_KEY as string,
+        CLOUD_NAME: process.env.CLOUD_NAME as string,
+
+
+        // stripe
+        STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+        WEB_HOOK_SECRET : process.env.WEB_HOOK_SECRET as string
+
+
 
     }
 }

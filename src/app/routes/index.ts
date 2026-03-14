@@ -11,6 +11,7 @@ import { CommentRoute } from "../modules/Comments/comment.route";
 import { LikeRoute } from "../modules/Like/like.route";
 import path from "node:path";
 import { MessageRoute } from "../modules/Message/message.route";
+import { BookingRouter } from "../modules/Booking/booking.route";
 
 
 
@@ -54,6 +55,10 @@ const moduleRoutes = [
     },{
         path : '/message',
         route : MessageRoute
+    },
+    {
+        path : "/booking",
+        route : BookingRouter
     }
 ]
 
