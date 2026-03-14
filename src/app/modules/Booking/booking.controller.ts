@@ -30,10 +30,10 @@ const eventBooking = catchAsync(async (req: Request, res: Response, next: NextFu
 const webHookController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
+  console.log("hellow")
 
   const sig = req.headers["stripe-signature"]!;
 
-  console.log("hellow")
 
   const endpointSecret = envVars.WEB_HOOK_SECRET;
   let event: Stripe.Event;

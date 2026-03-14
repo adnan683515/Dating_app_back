@@ -14,11 +14,7 @@ const server = http.createServer(app)
 
 
 // web hoook route
-app.post("/webhook", (req, res, next) => {
-    console.log("Webhook route hit");
-    next();
-},
-    express.raw({ type: "application/json" }), bookingController.webHookController);
+app.post("/webhook", express.raw({ type: "application/json" }), bookingController.webHookController);
 
 initSocket(server) //socket ta initialize korlam
 

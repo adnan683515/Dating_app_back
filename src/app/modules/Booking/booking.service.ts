@@ -1,12 +1,12 @@
 
 import Stripe from "stripe";
 
-import { IBooking } from "./booking.interface";
-import { Event } from "../Events/event.model";
-import AppError from "../../errorHerlpers/AppError";
-import httpStatus from 'http-status-codes'
-import { User } from "../User/user.model";
+import httpStatus from 'http-status-codes';
 import { envVars } from "../../config/env";
+import AppError from "../../errorHerlpers/AppError";
+import { Event } from "../Events/event.model";
+import { User } from "../User/user.model";
+import { IBooking } from "./booking.interface";
 import { Booking, PaymentStatusEnum } from "./booking.model";
 
 // Initialize Stripe
@@ -101,7 +101,8 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
       const userId = session.metadata?.userId;
       const eventId = session.metadata?.eventId;
-      console.log(userId, eventId, "from booking web hook service");
+      // console.log(userId, eventId, "from booking web hook service");
+      console.log(session, "from booking web hook service");
       break;
 
     case "payment_intent.payment_failed":
