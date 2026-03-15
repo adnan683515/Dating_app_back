@@ -229,12 +229,25 @@ const getMe = async (userId: string) => {
 
 
 // get singleUser
-const singleUser = async (userId: string) => {
+const singleUser = async (userId: string, myId: string) => {
 
     const user = await User.findById(userId).select('-password').populate({ path: 'interests' })
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found!")
     }
+
+
+    const isFriend =
+        await ConnectionReq.findOne({
+            $or: [
+                { senderId: myId, receiverId: user?._id },
+                { senderId: user?._id, receiverId: myId }
+            ]
+        })
+
+
+    const result = { request: isFriend?.status, ...user.toObject() }
+    return result
     return user
 }
 

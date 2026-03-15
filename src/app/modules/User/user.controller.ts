@@ -171,8 +171,8 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 // get singleUser
 const singleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const id = req?.params?.id as string
-
-    const user = await userService.singleUser(id)
+    const myId = req?.user?.id
+    const user = await userService.singleUser(id, myId)
     sendResponse(res, {
         success: true,
         message: "User Details Retrived Successfully",
