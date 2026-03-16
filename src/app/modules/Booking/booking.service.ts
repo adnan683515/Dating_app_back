@@ -69,7 +69,8 @@ const createBooking = async (payload: Partial<IBooking>) => {
 
     metadata: {
       userId: findUser._id.toString(),
-      eventId: findEvent._id.toString()
+      eventId: findEvent._id.toString(),
+      ticketCount: (payload.ticketCount ?? 1).toString()
     },
   });
 
@@ -109,7 +110,14 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
           userId: new mongoose.Types.ObjectId(userId),
         },
         { paymentStatus: PaymentStatusEnum.PAID },
-        { new: true, runValidators: true }
+        { returnDocument: 'after', runValidators: true }
+      );
+
+
+      await Event.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(eventId) },
+        { $inc: { attendanceTotal: session.metadata?.ticketCount } },
+        { returnDocument: 'after' }
       );
 
       break;
@@ -121,6 +129,19 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       console.log(`Unhandled event type ${stripeEvent.type}`);
   }
 };
+
+
+
+
+// get all my bookings
+const getAllBookings = async (myId: string) => {
+
+  
+}
+
+
+
+
 
 
 
