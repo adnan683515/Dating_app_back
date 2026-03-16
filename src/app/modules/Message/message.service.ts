@@ -50,6 +50,14 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
     if (socketId) {
         io.to(socketId).emit('direct_message', message);
+
+
+        io.to(socketId).emit("new_notification", {
+            type: "message",
+            senderId: senderId,
+            roomId: roomCk._id,
+            message: payload.messageText
+        })
     }
 
     await Room.findOneAndUpdate({
