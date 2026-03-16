@@ -81,12 +81,12 @@ const connectionRequestAccept = async (payload: TconnectionRequest) => {
         throw new AppError(httpStatus.NOT_FOUND, "Connection Request Not found!")
     }
 
-    
+
 
     if (findConnection?.recivedReq !== myId) {
         throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized to respond to this connection request because you are not the receiver.")
     }
-    
+
 
 
     const update = await ConnectionReq.findOneAndUpdate(
@@ -100,11 +100,16 @@ const connectionRequestAccept = async (payload: TconnectionRequest) => {
 
 
 // get connection 
-const getConection = async (query: Record<string, string>) => {
+const getConection = async (myId: string, query: Record<string, string>) => {
 
-    const queryBuilder = new QueryBuilder(ConnectionReq.find(), query)
+    const queryBuilder = new QueryBuilder(ConnectionReq.find({
+        $or: [
+            { sendReq: myId },
+            { recivedReq: myId }
+        ]
+    }), query)
 
-    const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq" }, {path : "recivedReq"}])
+    const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq" }, { path: "recivedReq" }])
 
 
     const [data, meta] = await Promise.all([connectData.build(), queryBuilder.getMeta()])
@@ -119,9 +124,31 @@ const getConection = async (query: Record<string, string>) => {
 }
 
 
+// request by me
+const mySendRequest = async (myId: string, query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(ConnectionReq.find({
+        sendReq: myId
+    }), query)
+
+    const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq" }, { path: "recivedReq" }])
+
+
+    const [data, meta] = await Promise.all([connectData.build(), queryBuilder.getMeta()])
+
+
+    return {
+        data,
+        meta
+    }
+
+}
+
+
 
 export const connectionSerivce = {
     connectionSend,
     connectionRequestAccept,
-    getConection
+    getConection,
+    mySendRequest
 }

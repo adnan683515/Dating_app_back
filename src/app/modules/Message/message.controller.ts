@@ -4,25 +4,42 @@ import { messageService } from "./message.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes'
 
-
 const sendMessage = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
-    const senderId = req?.user?.id 
+    const senderId = req?.user?.id
     const { receiverId, messageText } = req?.body
 
     console.log("hello boss")
-    const sendmsg = await messageService.sendMessage({ senderId,  receiverId, messageText })
+    const sendmsg = await messageService.sendMessage({ senderId, receiverId, messageText })
 
-    sendResponse(res , {
-        success : true,
-        statusCode : httpStatus.OK,
-        data : sendmsg,
-        message : 'send message successfully!'
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        data: sendmsg,
+        message: 'send message successfully!'
+    })
+
+})
+
+
+
+const getAllMessages = catchAsync(async (req:Request, res : Response , next : NextFunction) => {
+
+    const { roomId } = req.params 
+    const query = req?.query 
+    const messages = await messageService.getAllMessages(roomId as string , query as Record<string,string>)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        data: messages?.data?.length,
+        message: "messages fetched successfully"
     })
 
 })
 
 export const messageController = {
-    sendMessage
+    sendMessage,
+    getAllMessages
 }

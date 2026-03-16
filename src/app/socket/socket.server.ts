@@ -21,7 +21,7 @@ export const initSocket = async (httpServer: any) => {
         socket.on('join-user', (_userId: string) => {
 
             userId = _userId.toString()
-            if (_userId) {
+            if (userId) {
                 socket.join(_userId)
                 onlineUsers[_userId] = socket.id
                 console.log(onlineUsers)

@@ -19,6 +19,12 @@ const startServer = async () => {
         server = app.listen(process.env.PORT, () => {
             console.log(`server is listening on port ${process.env.PORT}`)
         })
+
+        server.on("error", (err: any) => {
+            if (err.code === "EADDRINUSE") {
+                console.log("Port already in use");
+            }
+        });
     }
     catch (error) {
         console.log(error)

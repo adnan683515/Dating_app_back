@@ -81,20 +81,38 @@ const connectionRequestAccept = catchAsync(async (req: Request, res: Response, n
 const getConnect = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const query = req?.query
+    const myId = req?.user?.id
+
+    // query.sendReq = req?.user?.id // ami kare kare send korsi oi gula just amk dekhaw tar joono sender id te amr id bosai disi
+
+    const connectData = await connectionSerivce.getConection(myId as string, query as Record<string, string>)
 
 
-    query.sendReq = req?.user?.id // ami kare kare send korsi oi gula just amk dekhaw tar joono sender id te amr id bosai disi
-
-    const connectData = await connectionSerivce.getConection(query as Record<string, string>)
-
-   
     connectData.meta.total = connectData.data.length
 
-    sendResponse(res , {
-        success : true,
-        statusCode : httpStatus.OK,
-        message : "Connects Data Retreived Successfully",
-        data : connectData
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Connects Data Retreived Successfully",
+        data: connectData
+    })
+})
+
+
+// send request 
+const sendRequest = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const myId = req?.user?.id
+    const query = req?.query
+    const data = await connectionSerivce.mySendRequest(myId, query as Record<string, string>)
+    data.meta.total = data.data.length
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Connects Data Retreived Successfully",
+        data: data
     })
 })
 
@@ -103,5 +121,6 @@ const getConnect = catchAsync(async (req: Request, res: Response, next: NextFunc
 export const connectionController = {
     connectionSend,
     connectionRequestAccept,
-    getConnect
+    getConnect,
+    sendRequest
 }

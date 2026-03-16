@@ -20,10 +20,13 @@ route.post('/connection-request', validateRequest(connectionSendZod), checkAuth(
 route.patch('/connection-request/:id/status', validateRequest(connectionRequestBodyZod), checkAuth(...Object.values(Role)), connectionController.connectionRequestAccept)
 
 
-// get connect data
+// my  connect data
 route.get('/get-connect', checkAuth(...Object.values(Role)), connectionController.getConnect)
 
 
+
+// ami kare kare send korsi 
+route.get('/get-my-request', checkAuth(...Object.values(Role)), connectionController.sendRequest)
 
 
 export const ConnectionRouter = route
