@@ -4,13 +4,13 @@ import { messageService } from "./message.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes'
 
+// send message
 const sendMessage = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
     const senderId = req?.user?.id
     const { receiverId, messageText } = req?.body
 
-    console.log("hello boss")
     const sendmsg = await messageService.sendMessage({ senderId, receiverId, messageText })
 
     sendResponse(res, {
@@ -30,10 +30,12 @@ const getAllMessages = catchAsync(async (req:Request, res : Response , next : Ne
     const query = req?.query 
     const messages = await messageService.getAllMessages(roomId as string , query as Record<string,string>)
 
+    messages.meta.total = messages?.data?.length
+
     sendResponse(res, {
         success: true,
         statusCode: 200,
-        data: messages?.data?.length,
+        data: messages,
         message: "messages fetched successfully"
     })
 

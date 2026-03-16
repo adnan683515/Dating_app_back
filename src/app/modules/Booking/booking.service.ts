@@ -1,6 +1,5 @@
 
 import Stripe from "stripe";
-
 import httpStatus from 'http-status-codes';
 import { envVars } from "../../config/env";
 import AppError from "../../errorHerlpers/AppError";
@@ -8,14 +7,13 @@ import { Event } from "../Events/event.model";
 import { User } from "../User/user.model";
 import { IBooking } from "./booking.interface";
 import { Booking, PaymentStatusEnum } from "./booking.model";
+import { EStatus } from "../Events/event.interface";
+import mongoose, { Types } from "mongoose";
 
 // Initialize Stripe
 export const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
-/////////////////////////
+
 // Booking Service
-/////////////////////////
-
-
 const createBooking = async (payload: Partial<IBooking>) => {
 
 
@@ -27,6 +25,20 @@ const createBooking = async (payload: Partial<IBooking>) => {
   }
   if (!findUser) {
     throw new AppError(httpStatus.NOT_FOUND, "This user not found!")
+  }
+
+
+  const ticketCount = Number(payload.ticketCount);
+  const feePerTicket = Number(findEvent.fee);
+
+
+
+  if (isNaN(ticketCount) || ticketCount < 1) {
+    throw new Error("Invalid ticket count");
+  }
+
+  if (isNaN(feePerTicket) || feePerTicket < 0) {
+    throw new Error("Invalid fee");
   }
 
 
@@ -52,27 +64,15 @@ const createBooking = async (payload: Partial<IBooking>) => {
     customer_email: findUser.email,  // <-- your user email here
 
 
-    success_url: `https://next.programming-hero.com/skills/live-order-tracking-system-with-socketio/outline`,
-    cancel_url: `https://console.cloudinary.com/app/c-b8b38954d79c3da125544d8aa32227/image/getting-started`,
+    success_url: "http://localhost:3000/payment-success",
+    cancel_url: "http://localhost:3000/payment-cancel",
 
     metadata: {
       userId: findUser._id.toString(),
-      eventId: findEvent._id.toString(),
+      eventId: findEvent._id.toString()
     },
   });
 
-
-
-  const ticketCount = Number(payload.ticketCount);
-  const feePerTicket = Number(findEvent.fee);
-
-  if (isNaN(ticketCount) || ticketCount < 1) {
-    throw new Error("Invalid ticket count");
-  }
-
-  if (isNaN(feePerTicket) || feePerTicket < 0) {
-    throw new Error("Invalid fee");
-  }
 
   // Calculate total fee
   const totalFee = feePerTicket * ticketCount;
@@ -93,18 +93,26 @@ const createBooking = async (payload: Partial<IBooking>) => {
 
 
 
-// webHook
+// when payment will be success this webhook will be call
 const handleEvent = async (stripeEvent: Stripe.Event) => {
-  console.log("kiew")
+
   switch (stripeEvent.type) {
+
     case "checkout.session.completed":
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
       const userId = session.metadata?.userId;
       const eventId = session.metadata?.eventId;
       // console.log(userId, eventId, "from booking web hook service");
-      console.log(session, "from booking web hook service");
-      break;
+      await Booking.findOneAndUpdate(
+        {
+          eventId: new mongoose.Types.ObjectId(eventId),
+          userId: new mongoose.Types.ObjectId(userId),
+        },
+        { paymentStatus: PaymentStatusEnum.PAID },
+        { new: true, runValidators: true }
+      );
 
+      break;
     case "payment_intent.payment_failed":
       console.log("hello your payment is failed");
       break;
@@ -113,9 +121,6 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       console.log(`Unhandled event type ${stripeEvent.type}`);
   }
 };
-
-
-
 
 
 

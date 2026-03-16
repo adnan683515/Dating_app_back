@@ -1,10 +1,9 @@
+import httpStatus from 'http-status-codes';
 import AppError from "../../errorHerlpers/AppError";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 import { User } from "../User/user.model";
 import { ConnectTypes, IConnection, StatusConnect, TconnectionRequest } from "./connection.interface";
-import httpStatus from 'http-status-codes'
 import { ConnectionReq } from "./connection.model";
-import { Connection, Types } from "mongoose";
-import { QueryBuilder } from "../../utils/QueryBuilder";
 
 
 
@@ -131,7 +130,7 @@ const mySendRequest = async (myId: string, query: Record<string, string>) => {
         sendReq: myId
     }), query)
 
-    const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq" }, { path: "recivedReq" }])
+    const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq", select: 'displayName image' }, { path: "recivedReq", select: 'displayName image' }])
 
 
     const [data, meta] = await Promise.all([connectData.build(), queryBuilder.getMeta()])

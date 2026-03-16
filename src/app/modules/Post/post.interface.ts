@@ -2,7 +2,10 @@ import { Types } from "mongoose";
 
 
 
-
+export enum PostImageVideoType {
+    IMAGE="IMAGE",
+    VIDEO="VIDEO"
+}
 
 
 export interface postInterface {
@@ -15,4 +18,5 @@ export interface postInterface {
     isDelete? : boolean,
     like? : number,
     comment? : number,
+    postType? : PostImageVideoType | null,
 }

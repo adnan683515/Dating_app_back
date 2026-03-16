@@ -10,13 +10,13 @@ export enum PaymentStatusEnum {
 const BookingSchema = new Schema<IBooking>(
     {
         userId: {
-            type: Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "User",
             required: [true, "User id must be included"],
         },
 
         eventId: {
-            type: Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: "Event",
             required: [true, "Event id must be included"],
         },

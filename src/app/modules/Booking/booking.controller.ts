@@ -7,7 +7,7 @@ import Stripe from "stripe";
 import { envVars } from "../../config/env";
 
 
-
+// booking event
 const eventBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
@@ -27,17 +27,13 @@ const eventBooking = catchAsync(async (req: Request, res: Response, next: NextFu
 
 
 
+// when payment will be successfull
 const webHookController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
-
-  console.log("hellow")
 
   const sig = req.headers["stripe-signature"]!;
 
-
   const endpointSecret = envVars.WEB_HOOK_SECRET;
   let event: Stripe.Event;
-
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);

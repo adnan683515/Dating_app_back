@@ -13,7 +13,6 @@ export const initSocket = async (httpServer: any) => {
         }
     })
 
-
     io.on("connection", (socket) => {
 
         let userId: string | null = null
@@ -24,11 +23,8 @@ export const initSocket = async (httpServer: any) => {
             if (userId) {
                 socket.join(_userId)
                 onlineUsers[_userId] = socket.id
-                console.log(onlineUsers)
                 io.emit("get_online_users", Object.keys(onlineUsers)) // emit kore pathai dilam online users gula k 
             }
-
-
         })
 
         socket.on("disconnect", () => {

@@ -51,6 +51,7 @@ const userSchema = new Schema<IUser>({
     }
     ],
 
+    fcmToken : {type : String , default : null},
     location: {
         type: {
             type: String,
@@ -62,8 +63,6 @@ const userSchema = new Schema<IUser>({
             default: [0, 0]
         }
     },
-
-
     auths: [authProviderSchema]
 }, {
     timestamps: true,

@@ -1,12 +1,14 @@
 import httpStatus from 'http-status-codes';
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import AppError from "../../errorHerlpers/AppError";
 import { IMessage } from "./message.interface";
 import { Message, Room } from "./message.model";
 import { io, onlineUsers } from '../../socket/socket.server';
 import { QueryBuilder } from '../../utils/QueryBuilder';
+import { User } from '../User/user.model';
+import admin from "firebase-admin";
 
-
+// send message service
 const sendMessage = async (payload: Partial<IMessage>) => {
 
     const { senderId, receiverId } = payload
@@ -48,6 +50,7 @@ const sendMessage = async (payload: Partial<IMessage>) => {
     const socketId = onlineUsers[receiver] as string
 
 
+    // if jdi user online a thake
     if (socketId) {
         io.to(socketId).emit('direct_message', message);
 
@@ -58,20 +61,47 @@ const sendMessage = async (payload: Partial<IMessage>) => {
             roomId: roomCk._id,
             message: payload.messageText
         })
+    } else {
+        // user offline -> FCM push
+        const user = await User.findById(receiverId); // receiverId from message
+        if (user?.fcmToken) {
+            const fcmMessage: admin.messaging.Message = {
+                token: user.fcmToken,
+                notification: { title: "New Message", body: message.messageText },
+                data: { senderId: message.senderId.toString() as string, roomId: message.roomId.toString() as string },
+            };
+
+            try {
+                await admin.messaging().send(fcmMessage);
+                console.log("Notification sent");
+            } catch (err) {
+                console.error("FCM error:", err);
+            }
+        }
     }
 
-    await Room.findOneAndUpdate({
-        _id: roomCk._id
-    }, {
-        lastMessage: payload?.messageText as string
-    })
 
+
+    await Room.findOneAndUpdate(
+        { _id: roomCk._id as mongoose.Types.ObjectId },
+        {
+            lastMessage: payload?.messageText as string
+        },
+        {
+            new: true,
+            runValidators: true
+        }
+    )
+
+
+    return message
 }
 
 
 
 
 
+// get-all-message
 const getAllMessages = async (roomId: string, query: Record<string, string>) => {
 
     if (!roomId) {

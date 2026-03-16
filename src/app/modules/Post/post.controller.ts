@@ -7,6 +7,7 @@ import { postService } from "./post.service";
 import { uploadToCloudinary } from "../../config/multer.config";
 import sharp from "sharp"
 import AppError from "../../errorHerlpers/AppError";
+import { PostImageVideoType } from "./post.interface";
 
 
 
@@ -30,10 +31,14 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
 
             const result: any = await uploadToCloudinary(compressedBuffer)
             payload.imageOrVideo = result.secure_url
+
+            payload.postType = PostImageVideoType.IMAGE
+
         } else if (req.file.mimetype.startsWith("video")) {
             // video → direct upload (no sharp)
             const result: any = await uploadToCloudinary(req.file.buffer)
             payload.imageOrVideo = result.secure_url
+            payload.postType = PostImageVideoType.VIDEO
         } else {
             throw new AppError(400, "Only images or videos are allowed")
         }
@@ -119,7 +124,7 @@ const updatepost = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     const user = req?.user?.id as string
     const updatedata = await postService.updatePost(postId, req?.body, user)
-    
+
 
     sendResponse(res, {
         success: true,

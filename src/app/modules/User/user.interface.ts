@@ -58,6 +58,7 @@ export interface IUser {
 
     role: Role;
     auths?: IAuthProvider[];
+    fcmToken? : string;
 }
 
 // otp schema

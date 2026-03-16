@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { postInterface } from "./post.interface";
+import { PostImageVideoType, postInterface } from "./post.interface";
 
 
 
@@ -32,7 +32,8 @@ const postSchema = new Schema<postInterface>({
         type: Number,
         default: 0,
         min: 0
-    }
+    },
+    postType: { type: String, default: null, enum: Object.values(PostImageVideoType), }
 }, { timestamps: true, versionKey: false });
 
 export const Post = model<postInterface>("Post", postSchema)

@@ -28,13 +28,26 @@ interface EnvConfig {
     CLOUD_API_KEY: string,
     CLOUD_NAME: string,
     STRIPE_SECRET_KEY: string,
-WEB_HOOK_SECRET : string
+    WEB_HOOK_SECRET: string,
+
+
+    UNIVERSE_DOMAIN : string,
+    CLIENT_X509_CERT_URL : string,
+    AUTH_PROVIDER_X509_CERT_URL : string,
+    TOKEN_URI : string,
+    AUTH_URI : string,
+    CLIENT_EMAIL : string,
+    CLIENT_ID : string,
+    PRIVATE_KEY : string,
+    PRIVATE_KEY_ID : string,
+    PROJECT_ID : string,
+    TYPE : string,
 }
 
 
 const loadEnvVariables = (): EnvConfig => {
 
-    const requiredEnvVariables: string[] = ['PORT', 'BCRYPT_SALT_ROUND', 'APP_PASSWORD', 'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET', 'JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME', 'STRIPE_SECRET_KEY','WEB_HOOK_SECRET']
+    const requiredEnvVariables: string[] = ['PORT', 'BCRYPT_SALT_ROUND', 'APP_PASSWORD', 'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET', 'JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME', 'STRIPE_SECRET_KEY', 'WEB_HOOK_SECRET' , 'UNIVERSE_DOMAIN', 'CLIENT_X509_CERT_URL', 'AUTH_PROVIDER_X509_CERT_URL', 'TOKEN_URI', 'AUTH_URI', 'CLIENT_EMAIL', 'CLIENT_ID', 'PRIVATE_KEY', 'PRIVATE_KEY_ID', 'PROJECT_ID', 'TYPE']
 
 
     requiredEnvVariables?.forEach(key => {
@@ -76,9 +89,21 @@ const loadEnvVariables = (): EnvConfig => {
 
         // stripe
         STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
-        WEB_HOOK_SECRET : process.env.WEB_HOOK_SECRET as string
+        WEB_HOOK_SECRET: process.env.WEB_HOOK_SECRET as string, 
 
 
+        // firebase config
+        UNIVERSE_DOMAIN : process.env.UNIVERSE_DOMAIN as string,
+        CLIENT_X509_CERT_URL : process.env.CLIENT_X509_CERT_URL as string, 
+        AUTH_PROVIDER_X509_CERT_URL : process.env.AUTH_PROVIDER_X509_CERT_URL as string,
+        TOKEN_URI : process.env.TOKEN_URI as string, 
+        AUTH_URI : process.env.TOKEN_URI as string, 
+        CLIENT_EMAIL : process.env.CLIENT_EMAIL as string, 
+        CLIENT_ID : process.env.CLIENT_ID as string , 
+        PRIVATE_KEY : process.env.PRIVATE_KEY as string ,
+        PRIVATE_KEY_ID : process.env.PRIVATE_KEY_ID as string, 
+        PROJECT_ID : process.env.PROJECT_ID as string , 
+        TYPE : process.env.TYPE as string
 
     }
 }
