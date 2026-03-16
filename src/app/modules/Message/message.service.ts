@@ -6,7 +6,7 @@ import { Message, Room } from "./message.model";
 import { io, onlineUsers } from '../../socket/socket.server';
 import { QueryBuilder } from '../../utils/QueryBuilder';
 import { User } from '../User/user.model';
-import admin from "firebase-admin";
+import admin from "../../config/firebaseConfiq";
 
 // send message service
 const sendMessage = async (payload: Partial<IMessage>) => {
@@ -55,7 +55,7 @@ const sendMessage = async (payload: Partial<IMessage>) => {
         io.to(socketId).emit('direct_message', message);
 
 
-        io.to(socketId).emit("new_notification", {
+        io.to(socketId).emit("new_notification_by_socket", {
             type: "message",
             senderId: senderId,
             roomId: roomCk._id,
@@ -93,11 +93,8 @@ const sendMessage = async (payload: Partial<IMessage>) => {
         }
     )
 
-
     return message
 }
-
-
 
 
 

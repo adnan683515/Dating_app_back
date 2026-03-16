@@ -11,9 +11,12 @@ router.post('/login', authController.loginUser)
 
 router.post('/verifyUser', authController.verifyUser)
 
+// when user authenticated
 router.patch('/changePassword', checkAuth(...Object.values(Role)), authController.changePassword)
 
 router.post('/logout', checkAuth(...Object.values(Role)),  authController.logout)
+
+
 
 
 export const authRoutes = router
