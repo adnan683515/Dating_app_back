@@ -25,9 +25,11 @@ const createPost = catchAsync(async (req: Request, res: Response, next: NextFunc
         if (req.file.mimetype.startsWith("image")) {
             // image → sharp compress
             const compressedBuffer = await sharp(req.file.buffer)
+                .rotate() // fixes orientation automatically
                 .resize({ width: 1200 })
                 .jpeg({ quality: 70 })
-                .toBuffer()
+                .toBuffer();
+
 
             const result: any = await uploadToCloudinary(compressedBuffer)
             payload.imageOrVideo = result.secure_url
