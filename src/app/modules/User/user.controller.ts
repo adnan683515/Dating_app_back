@@ -8,6 +8,7 @@ import { IUser, Role, Status } from "./user.interface";
 import AppError from "../../errorHerlpers/AppError";
 import sharp from "sharp";
 import { uploadToCloudinary } from "../../config/multer.config";
+import { getCoordinates } from "../../utils/GeocodingAddress";
 
 
 
@@ -36,9 +37,6 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 // update use
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
-
-
 
     if (req?.body?.password) {
         throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
@@ -92,7 +90,6 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     // upload image 
     if (req.file) {
-
         // compress image
         const compressedImage = await sharp(req.file.buffer)
             .resize({ width: 1200 })
@@ -112,10 +109,15 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
     // payload ar modde lat and long set kore dilam
     if (payload.lat && payload.long) {
+
         payload.location = {
             type: "Point",
             coordinates: [payload.long, payload.lat] // always [long, lat]
         }
+
+        const location = await getCoordinates(req, res)
+        payload.userLocation = location
+
     }
 
 

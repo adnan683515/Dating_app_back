@@ -41,6 +41,7 @@ const userSchema = new Schema<IUser>({
     long: { type: Number, default: null },
 
     userLocation : {type : String , default : null},
+    
 
     status: { type: String, default: Status.ACTIVE },
 
