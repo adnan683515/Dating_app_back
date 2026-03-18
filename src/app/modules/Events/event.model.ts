@@ -58,7 +58,6 @@ export const EventSchema = new Schema<IEvent>({
         required: true,             // must have at least one tag
         validate: [(val: string[]) => val.length > 0, 'At least one tag is required']
     },
-    serviceFee: { type: Number, default: 0 },
     descripton: {
         type: String,
         default: "",
@@ -66,8 +65,9 @@ export const EventSchema = new Schema<IEvent>({
     },
 
     attendanceTotal: { type: Number, default: 0 },
-    isDelete: { type: Boolean, default: false }
+    isDelete: { type: Boolean, default: false },
 
+    addRess : {type : String , default : ""}
 
 }, {
     timestamps: true, // createdAt & updatedAt auto add

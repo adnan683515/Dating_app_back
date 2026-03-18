@@ -16,7 +16,6 @@ export const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
 // Booking Service
 const createBooking = async (payload: Partial<IBooking>) => {
 
-
   const findEvent = await Event.findById(payload.eventId)
   const findUser = await User.findById(payload.userId)
 
@@ -25,6 +24,11 @@ const createBooking = async (payload: Partial<IBooking>) => {
   }
   if (!findUser) {
     throw new AppError(httpStatus.NOT_FOUND, "This user not found!")
+  }
+
+  if([EStatus.GOING, EStatus.END, EStatus.CANCELLED].includes(findEvent.status) ){
+
+    throw new AppError(httpStatus.BAD_REQUEST, "sfsdfdsf")
   }
 
 

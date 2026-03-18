@@ -6,6 +6,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { User } from "../User/user.model";
 import { eventService } from "./event.service";
+import { getCoordinates } from "../../utils/GeocodingAddress";
 
 
 
@@ -53,6 +54,12 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
             type: "Point",
             coordinates: [req?.body.long, req?.body?.lat] // always [long, lat]
         }
+
+  
+
+        const location = await getCoordinates(req , res)
+
+        req.body.addRess = location
     }
 
     const data = await eventService.createEvent(req?.body)

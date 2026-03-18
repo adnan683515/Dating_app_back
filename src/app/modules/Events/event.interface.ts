@@ -41,13 +41,7 @@ export interface IEvent {
     end_date_time: Date;
     openDoor: Date;
 
-
-    // startTime: Date;
-    // endTime: Date;
     venue : string;
-
-
-    serviceFee : number;
     status: EStatus;
 
     tags: EventTags[];
@@ -57,6 +51,8 @@ export interface IEvent {
 
     attendanceTotal: number;
     lineupMember? : number;
+    isDelete?: boolean,
 
-    isDelete?: boolean
+
+    addRess? : string,
 }

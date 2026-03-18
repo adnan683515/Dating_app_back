@@ -50,6 +50,8 @@ export const getCoordinates = async (req: Request, res: Response) => {
       .filter(Boolean)
       .join(", ");
 
+      console.log(fullAddress)
+
     return fullAddress
 
   } catch (error) {

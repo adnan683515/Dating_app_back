@@ -5,6 +5,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status-codes'
 import Stripe from "stripe";
 import { envVars } from "../../config/env";
+import AppError from "../../errorHerlpers/AppError";
 
 
 // booking event
@@ -13,12 +14,15 @@ const eventBooking = catchAsync(async (req: Request, res: Response, next: NextFu
 
   const userId = req?.user?.id
   req.body.userId = userId
-  console.log(req.body)
+  if (req?.body?.ticketCount > 10) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Maximum ticket count is 10");
+  }
+
   const bookingRes = await bookingService.createBooking(req?.body)
 
   sendResponse(res, {
     message: 'payment successfully!',
-    data: bookingRes,
+    data: { url: bookingRes },
     statusCode: httpStatus.OK,
     success: true
   })
