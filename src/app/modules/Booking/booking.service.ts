@@ -9,6 +9,8 @@ import { IBooking } from "./booking.interface";
 import { Booking, PaymentStatusEnum } from "./booking.model";
 import { EStatus } from "../Events/event.interface";
 import mongoose, { Types } from "mongoose";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { generateTxId } from "../../utils/transectionId";
 
 // Initialize Stripe
 export const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
@@ -26,7 +28,7 @@ const createBooking = async (payload: Partial<IBooking>) => {
     throw new AppError(httpStatus.NOT_FOUND, "This user not found!")
   }
 
-  if([EStatus.GOING, EStatus.END, EStatus.CANCELLED].includes(findEvent.status) ){
+  if ([EStatus.GOING, EStatus.END, EStatus.CANCELLED].includes(findEvent.status)) {
 
     throw new AppError(httpStatus.BAD_REQUEST, "sfsdfdsf")
   }
@@ -45,6 +47,19 @@ const createBooking = async (payload: Partial<IBooking>) => {
     throw new Error("Invalid fee");
   }
 
+  // Calculate total fee
+  const totalFee = feePerTicket * ticketCount;
+
+  const txid = generateTxId()
+
+ const bookId =  await Booking.create({
+    userId: findUser._id,
+    eventId: findEvent._id,
+    ticketCount: payload.ticketCount as number,
+    fee: totalFee,
+    paymentStatus: PaymentStatusEnum.UNPAID,
+    txId: txid
+  })
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
@@ -74,23 +89,12 @@ const createBooking = async (payload: Partial<IBooking>) => {
     metadata: {
       userId: findUser._id.toString(),
       eventId: findEvent._id.toString(),
-      ticketCount: (payload.ticketCount ?? 1).toString()
+      ticketCount: (payload.ticketCount ?? 1).toString(),
+      bookId : bookId?._id.toString()
     },
   });
 
 
-  // Calculate total fee
-  const totalFee = feePerTicket * ticketCount;
-
-
-  await Booking.create({
-    userId: findUser._id,
-    eventId: findEvent._id,
-    ticketCount: payload.ticketCount as number,
-    fee: totalFee,
-    paymentStatus: PaymentStatusEnum.UNPAID,
-    txId: session.id
-  })
 
   return session.url;
 
@@ -107,14 +111,16 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
       const userId = session.metadata?.userId;
       const eventId = session.metadata?.eventId;
+      const bookId = session?.metadata?.bookId;
       // console.log(userId, eventId, "from booking web hook service");
-      await Booking.findOneAndUpdate(
+      const res = await Booking.findOneAndUpdate(
         {
-          eventId: new mongoose.Types.ObjectId(eventId),
-          userId: new mongoose.Types.ObjectId(userId),
+          _id : bookId as string,
+          eventId: eventId as string,
+          userId: userId as string,
         },
-        { paymentStatus: PaymentStatusEnum.PAID },
-        { returnDocument: 'after', runValidators: true }
+        { $set: { paymentStatus: PaymentStatusEnum.PAID } },
+        { returnDocument: 'after' }
       );
 
 
@@ -123,6 +129,8 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
         { $inc: { attendanceTotal: session.metadata?.ticketCount } },
         { returnDocument: 'after' }
       );
+
+
 
       break;
     case "payment_intent.payment_failed":
@@ -138,9 +146,41 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
 
 
 // get all my bookings
-const getAllBookings = async (myId: string) => {
+const getAllMyBookings = async (myId: string, query: Record<string, string>) => {
 
-  
+  const userFind = await User.findById(myId)
+
+  if (!userFind) {
+    throw new AppError(httpStatus.NOT_FOUND, "this user not found")
+  }
+
+  const queribuilder = new QueryBuilder(Booking.find({ userId: myId }), query)
+
+
+  const userdata = queribuilder
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+    .populate([{ path: "userId", select: "image displayName" }, { path: "eventId" }])
+
+
+  // jdi multiple populate korte hoi  tah hole populate([ {path : "interests"}, {path : "interests"} ])
+
+
+
+  const [data, meta] = await Promise.all([
+    userdata.build(),
+    queribuilder.getMeta()
+  ])
+
+
+  return {
+    data,
+    meta
+  }
+
+
 }
 
 
@@ -152,5 +192,6 @@ const getAllBookings = async (myId: string) => {
 
 export const bookingService = {
   createBooking,
-  handleEvent
+  handleEvent,
+  getAllMyBookings
 }

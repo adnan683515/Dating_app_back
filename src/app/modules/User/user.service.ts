@@ -12,19 +12,6 @@ import { ConnectionReq } from '../ConnectionRequest/connection.model';
 import { StatusConnect } from '../ConnectionRequest/connection.interface';
 
 
-// w8 for google maps api key
-// const getAddressFromLatLong = async (lat: number, long: number): Promise<string | null> => {
-//     try {
-//         const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`;
-//         const { data } = await axios.get(url, {
-//             headers: { "User-Agent": "YourAppName/1.0" } // required by Nominatim
-//         });
-//         return data.display_name || null;
-//     } catch (error) {
-//         console.error("Error fetching address:", error);
-//         return null;
-//     }
-// };
 
 
 

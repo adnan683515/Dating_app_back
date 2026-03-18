@@ -12,4 +12,9 @@ const route = Router()
 
 route.post('/create-booking', validateRequest(bookingZod), checkAuth(...Object.values(Role)), bookingController.eventBooking)
 
+
+route.get('/get-all-my-bookings' , checkAuth(...Object.values(Role)), bookingController.getAllMyBookings )
+
+
+
 export const BookingRouter = route

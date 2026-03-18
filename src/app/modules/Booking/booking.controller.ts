@@ -42,6 +42,7 @@ const webHookController = catchAsync(async (req: Request, res: Response, next: N
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
 
+
     // Object method call
     await bookingService.handleEvent(event);
 
@@ -52,7 +53,31 @@ const webHookController = catchAsync(async (req: Request, res: Response, next: N
   }
 });
 
+
+
+
+
+
+
+// my bookings 
+const getAllMyBookings = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+  const myId = req?.user?.id
+  const query = req?.query
+  const data = await bookingService.getAllMyBookings(myId as string, query as Record<string, string>)
+  sendResponse(res, {
+    message: 'All my bookings',
+    data: data,
+    statusCode: httpStatus.OK,
+    success: true
+  })
+
+
+})
+
 export const bookingController = {
   eventBooking,
-  webHookController
+  webHookController,
+  getAllMyBookings
 }
