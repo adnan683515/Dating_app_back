@@ -6,7 +6,7 @@ import crypto from 'crypto';
  * @param {string} prefix - optional prefix like "cs_test_"
  * @returns {string} - unique TX ID
  */
-export function generateTxId(prefix = 'cs_test_') {
+export function generateTxId(prefix = 'tr_uth_') {
   // 16 bytes random -> hex string
   const randomHex = crypto.randomBytes(16).toString('hex');
   // timestamp to make it more unique
