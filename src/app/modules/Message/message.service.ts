@@ -1,12 +1,12 @@
 import httpStatus from 'http-status-codes';
 import mongoose, { Types } from "mongoose";
+import admin from "../../config/firebaseConfiq";
 import AppError from "../../errorHerlpers/AppError";
-import { IMessage } from "./message.interface";
-import { Message, Room } from "./message.model";
 import { io, onlineUsers } from '../../socket/socket.server';
 import { QueryBuilder } from '../../utils/QueryBuilder';
 import { User } from '../User/user.model';
-import admin from "../../config/firebaseConfiq";
+import { IMessage } from "./message.interface";
+import { Message, Room } from "./message.model";
 
 // send message service
 const sendMessage = async (payload: Partial<IMessage>) => {
@@ -42,6 +42,7 @@ const sendMessage = async (payload: Partial<IMessage>) => {
         roomId: roomCk._id,
         messageText: payload.messageText as string
     })
+
 
     // receiver ar objectid k string a convert korlam
     let receiver = receiverId.toString()

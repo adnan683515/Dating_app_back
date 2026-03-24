@@ -2,7 +2,9 @@ import { Server } from "socket.io";
 
 export let io: Server
 
-export const onlineUsers: Record<string, string> = {}
+export const onlineUsers: Record<string, string> = {
+    
+}
 // { userId : socketId }
 
 export const initSocket = async (httpServer: any) => {
