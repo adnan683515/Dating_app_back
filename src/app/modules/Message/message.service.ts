@@ -48,20 +48,18 @@ const sendMessage = async (payload: Partial<IMessage>) => {
     let receiver = receiverId.toString()
 
     // online user tar socket id ta nilam
-    const socketId = onlineUsers[receiver] as string
+    const receiverSocketId = onlineUsers[receiver]; // exact socket.id of the receiver
 
+    console.log(receiverId,"reciver")
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit('direct_message', message);
 
-    // if jdi user online a thake
-    if (socketId) {
-        io.to(socketId).emit('direct_message', message);
-
-
-        io.to(socketId).emit("new_notification_by_socket", {
+        io.to(receiverSocketId).emit('new_notification_by_socket', {
             type: "message",
-            senderId: senderId,
+            senderId,
             roomId: roomCk._id,
             message: payload.messageText
-        })
+        });
     } else {
         // user offline -> FCM push
         const user = await User.findById(receiverId); // receiverId from message
@@ -89,7 +87,7 @@ const sendMessage = async (payload: Partial<IMessage>) => {
             lastMessage: payload?.messageText as string
         },
         {
-            new: true,
+            returnDocument: "after",
             runValidators: true
         }
     )
@@ -100,14 +98,42 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
 
 // get-all-message
-const getAllMessages = async (roomId: string, query: Record<string, string>) => {
+const getAllMessages = async (myId: string, otherUserId: string, query: Record<string, string>) => {
 
-    if (!roomId) {
+
+
+
+    if (!otherUserId) {
         throw new AppError(400, "roomId required")
     }
 
+    const othersUser = await User.findById(otherUserId)
 
-    const queryBuilder = new QueryBuilder(Message.find({ roomId: roomId }), query)
+    if (!othersUser) {
+        throw new AppError(httpStatus.NOT_FOUND, "Others user not found!")
+    }
+
+
+
+    const sortUser = [myId, otherUserId].sort()
+    const roomck = await Room.findOne({ user1: sortUser[0] as string, user2: sortUser[1] as string })
+
+
+    if (!roomck) {
+        return {
+            data: [],
+            meta: {
+                total: 0,
+                page: 1,
+                limit: query.limit ? Number(query.limit) : 10,
+                totalPages: 0,
+            },
+        };
+    }
+
+    console.log(roomck, "room")
+
+    const queryBuilder = new QueryBuilder(Message.find(), query,{ roomId: roomck?._id })
 
     const messagesDat = queryBuilder.filter().sort().fields().paginate().populate([{ path: "senderId", select: 'displayName image' }, { path: "receiverId", select: 'displayName image' }])
 

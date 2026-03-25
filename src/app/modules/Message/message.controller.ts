@@ -24,13 +24,19 @@ const sendMessage = catchAsync(async (req: Request, res: Response, next: NextFun
 
 
 
-const getAllMessages = catchAsync(async (req:Request, res : Response , next : NextFunction) => {
+const getAllMessages = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    const { roomId } = req.params 
-    const query = req?.query 
-    const messages = await messageService.getAllMessages(roomId as string , query as Record<string,string>)
+    const { otherUserId } = req.params
+    const query = req?.query
+    const myId = req?.user?.id
+    const messages = await messageService.getAllMessages(myId as string, otherUserId as string, query as Record<string, string>)
 
-    messages.meta.total = messages?.data?.length
+
+
+    // messages.meta.total = messages?.data?.length as number
+    // const limit = Number(req?.query.limit) || 10;
+    // messages.meta.totalpage = Math.ceil(messages.meta.total / limit) as number;
+    // // Math.ceil(totalDocuments / limit)
 
     sendResponse(res, {
         success: true,

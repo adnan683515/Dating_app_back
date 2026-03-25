@@ -25,7 +25,7 @@ const messageSchema = new Schema<IMessage>(
     messageText: { type: String, required: [true, "message must be included"] , trim : true },
     isRead: { type: Boolean, default: false },
   },
-  { timestamps: { createdAt: true, updatedAt: false }, versionKey : false } // only createdAt
+  { timestamps:  true, versionKey : false } // only createdAt
 );
 
 

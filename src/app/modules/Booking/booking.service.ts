@@ -52,7 +52,7 @@ const createBooking = async (payload: Partial<IBooking>) => {
 
   const txid = generateTxId()
 
- const bookId =  await Booking.create({
+  const bookId = await Booking.create({
     userId: findUser._id,
     eventId: findEvent._id,
     ticketCount: payload.ticketCount as number,
@@ -90,7 +90,7 @@ const createBooking = async (payload: Partial<IBooking>) => {
       userId: findUser._id.toString(),
       eventId: findEvent._id.toString(),
       ticketCount: (payload.ticketCount ?? 1).toString(),
-      bookId : bookId?._id.toString()
+      bookId: bookId?._id.toString()
     },
   });
 
@@ -115,7 +115,7 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       // console.log(userId, eventId, "from booking web hook service");
       const res = await Booking.findOneAndUpdate(
         {
-          _id : bookId as string,
+          _id: bookId as string,
           eventId: eventId as string,
           userId: userId as string,
         },
@@ -185,6 +185,39 @@ const getAllMyBookings = async (myId: string, query: Record<string, string>) => 
 
 
 
+// get all attendance member of event
+const getJoinedMembers = async (eventId: string, query: Record<string, string>) => {
+
+  const eventCk = await Event.findById(eventId)
+
+  if (!eventCk) {
+    throw new AppError(httpStatus.NOT_FOUND, "Event Not found!")
+  }
+
+  const querybuilder = new QueryBuilder(Booking.find(), query,{ eventId: eventId  , paymentStatus : PaymentStatusEnum.PAID })
+
+  const userdata = querybuilder
+    .filter()
+    .sort()
+    .fields()
+    .paginate()
+    .populate([{ path: "userId", select: "image displayName" }])
+
+
+  const [data, meta] = await Promise.all([
+    userdata.build(),
+    querybuilder.getMeta()
+  ])
+
+
+  return {
+    data,
+    meta
+  }
+
+
+}
+
 
 
 
@@ -193,5 +226,6 @@ const getAllMyBookings = async (myId: string, query: Record<string, string>) => 
 export const bookingService = {
   createBooking,
   handleEvent,
-  getAllMyBookings
+  getAllMyBookings,
+  getJoinedMembers
 }

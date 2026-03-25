@@ -17,6 +17,11 @@ router.patch('/changePassword', checkAuth(...Object.values(Role)), authControlle
 router.post('/logout', checkAuth(...Object.values(Role)),  authController.logout)
 
 
+router.post('/send-email-forget-password/:email', authController.sendOtpUseingEmail)
+
+
+router.post('/verify-otp/:otp', checkAuth(...Object.values(Role)), authController.verifyController)
+
 
 
 export const authRoutes = router

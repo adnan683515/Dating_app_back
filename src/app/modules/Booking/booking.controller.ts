@@ -66,6 +66,7 @@ const getAllMyBookings = catchAsync(async (req: Request, res: Response, next: Ne
   const myId = req?.user?.id
   const query = req?.query
   const data = await bookingService.getAllMyBookings(myId as string, query as Record<string, string>)
+
   sendResponse(res, {
     message: 'All my bookings',
     data: data,
@@ -76,8 +77,31 @@ const getAllMyBookings = catchAsync(async (req: Request, res: Response, next: Ne
 
 })
 
+
+const getJoinedMembers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+  const eventId = req?.params?.eventId as string
+
+  const query = req?.query
+
+  const data = await bookingService.getJoinedMembers(eventId, query as Record<string, string>)
+
+  // data.meta.total = data.data.length
+
+
+  sendResponse(res, {
+    message: 'Get All joined members!',
+    data: data,
+    statusCode: httpStatus.OK,
+    success: true
+  })
+})
+
+
 export const bookingController = {
   eventBooking,
   webHookController,
-  getAllMyBookings
+  getAllMyBookings,
+  getJoinedMembers
 }

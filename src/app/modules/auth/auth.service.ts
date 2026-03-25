@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt'
 import { createUserTokens } from "../../utils/createUserTokens";
 import { IChangePassword } from "./auth.interface";
 import { envVars } from "../../config/env";
+import { sendEmail } from "../../utils/sendOTP";
+import { generateTokenFn } from "../../utils/jwt";
 
 
 // login service
@@ -110,6 +112,38 @@ const changePasswordService = async (payload: IChangePassword) => {
 }
 
 
+// forget password send otp when is forgot his password ..give me email send otp and token send 
+const sendOtpUseingEmail = async (email: string) => {
+
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        throw new AppError(http_status_code.NOT_FOUND, "This user not found!")
+    }
+
+    const otp = await sendEmail(email)
+
+
+
+    const userPayLoad = {
+        email: user.email,
+        id: user._id,
+        role: user.role,
+        otp
+    }
+
+    const accessToken = await generateTokenFn(userPayLoad, envVars.JWT_ACCESS_SECRET, "1m")
+
+
+
+    return accessToken
+
+
+}
+
+
+
 
 
 
@@ -117,5 +151,6 @@ const changePasswordService = async (payload: IChangePassword) => {
 export const loginService = {
     loginUser,
     verifyuser,
-    changePasswordService
+    changePasswordService,
+    sendOtpUseingEmail
 }

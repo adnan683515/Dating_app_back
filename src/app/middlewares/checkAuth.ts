@@ -56,3 +56,4 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
     }
 
 }
+

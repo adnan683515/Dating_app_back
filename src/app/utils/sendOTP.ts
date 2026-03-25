@@ -115,9 +115,10 @@ export const sendEmail = async (email: string) => {
 
   const expiresAt = new Date(Date.now() + 4 * 60 * 1000) // 2 minutes
 
-  await OTP.create({
-    email,
-    otp,
-    expiresAt,
-  })
+  // await OTP.create({
+  //   email,
+  //   otp,
+  //   expiresAt,
+  // })
+  return otp
 }

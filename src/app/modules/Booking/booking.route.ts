@@ -16,5 +16,9 @@ route.post('/create-booking', validateRequest(bookingZod), checkAuth(...Object.v
 route.get('/get-all-my-bookings' , checkAuth(...Object.values(Role)), bookingController.getAllMyBookings )
 
 
+// get all attandance member of event
+route.get('/get-all-joined-member/:eventId' , checkAuth(...Object.values(Role)) , bookingController.getJoinedMembers)
+
+
 
 export const BookingRouter = route

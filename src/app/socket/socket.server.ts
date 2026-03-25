@@ -29,10 +29,16 @@ export const initSocket = async (httpServer: any) => {
             userId = _userId.toString()
 
             if (userId) {
+
                 console.log("join user", userId)
-                socket.join(_userId)
-                onlineUsers[_userId] = socket.id
+
+                socket.join(userId)
+
+                onlineUsers[userId] = socket.id
+                
                 io.emit("get_online_users", Object.keys(onlineUsers)) // emit kore pathai dilam online users gula k 
+
+                console.log("online users",onlineUsers)
             }
         })
 

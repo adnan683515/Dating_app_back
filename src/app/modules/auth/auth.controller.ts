@@ -5,6 +5,7 @@ import { loginService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import http_status_code from "http-status-codes"
 import { clearTokens, setTokens } from "../../utils/UserTokens";
+import AppError from "../../errorHerlpers/AppError";
 
 
 
@@ -73,6 +74,38 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
 })
 
 
+const sendOtpUseingEmail = (async (req: Request, res: Response, next: NextFunction) => {
+
+    const email = req?.params?.email
+
+    const result = await loginService.sendOtpUseingEmail(email as string)
+
+
+    sendResponse(res, {
+        statusCode: http_status_code.OK,
+        message: "✅ Otp send your email!",
+        success: true,
+        data: result
+    })
+
+})
+
+
+
+const verifyController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const otp = req?.params?.otp
+    if(otp !== req?.user?.otp){
+        throw new AppError(http_status_code.BAD_REQUEST, "Otp Doesn't match!")
+    }
+    sendResponse(res, {
+        statusCode: http_status_code.OK,
+        message: "✅ verify successfully!",
+        success: true,
+    })
+
+})
+
 
 
 
@@ -81,6 +114,8 @@ export const authController = {
     loginUser,
     verifyUser,
     changePassword,
-    logout
+    logout,
+    sendOtpUseingEmail,
+    verifyController
 
 }

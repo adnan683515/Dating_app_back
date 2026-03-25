@@ -8,18 +8,24 @@ export class QueryBuilder<T> {
 
     public modelQuery: Query<T[], T>;
     public readonly query: Record<string, string>;
+    private filterQuery: Record<string, any> = {};
 
-    constructor(modelQuery: Query<T[], T>, query: Record<string, string>) {
+    constructor(
+        modelQuery: Query<T[], T>,
+        query: Record<string, string>,
+        baseFilter: Record<string, any> = {}
+    ) {
         this.modelQuery = modelQuery;
         this.query = query;
+        this.filterQuery = baseFilter; // 🔥 important
     }
 
     // pagination, sorting, search related field গুলো বাদ দিয়ে actual filtering করা হচ্ছে
     filter(): this {
 
 
-        const filter = { ...this.query }
-    
+        const filter = {     ...this.filterQuery, ...this.query }
+
 
         // ai kahne amra sort,  skip ,  limit ,  searchTerm gula   filter theke bad diye dibo
         // KARON filter diye sudu amra exac match korte parbo..
@@ -30,9 +36,7 @@ export class QueryBuilder<T> {
             delete filter[field]
         }
 
-        // console.log(typeof filter.isDelete)
 
-       
 
         this.modelQuery = this.modelQuery.find(filter) // User.find().find(filter)
 
@@ -98,17 +102,35 @@ export class QueryBuilder<T> {
     }
 
     // meta deta gula niye nibo ai funciton call kore 
-    async getMeta() {
+    // async getMeta() {
 
-        const totalDocuments = await this.modelQuery.model.countDocuments()
+    //     const totalDocuments = await this.modelQuery.model.countDocuments()
 
 
-        const page = Number(this.query.page) || 1
-        const limit = Number(this.query.limit) || 10
+    //     const page = Number(this.query.page) || 1
+    //     const limit = Number(this.query.limit) || 10
 
-        const totalpage = Math.ceil(totalDocuments / limit)
+    //     const totalpage = Math.ceil(totalDocuments / limit)
 
-        return { page, limit, total: totalDocuments, totalpage }
-    }
+    //     return { page, limit, total: totalDocuments, totalpage }
+    // }
+
+  async getMeta() {
+    const page = Number(this.query.page) || 1;
+    const limit = Number(this.query.limit) || 10;
+
+    console.log(this.filterQuery)
+
+    const totalDocuments = await this.modelQuery.model.countDocuments(this.filterQuery);
+
+    const totalpage = totalDocuments > 0 ? Math.ceil(totalDocuments / limit) : 0;
+
+    return {
+        page,
+        limit,
+        total: totalDocuments,
+        totalpage,
+    };
+}
 
 }

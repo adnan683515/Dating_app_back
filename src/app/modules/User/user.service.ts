@@ -57,7 +57,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     // Spread payload
     const { ...updatedFields } = payload;
 
-    
+
 
     // Convert to ObjectId
     const idd = new Types.ObjectId(userId);
@@ -97,8 +97,9 @@ const getAllUsers = async (userId: string, query: Record<string, string>) => {
 
 
     const querybuilder = new QueryBuilder(
-        User.find({ _id: { $ne: userId } }),
-        query
+        User.find(),
+        query,
+        { _id: { $ne: userId } }
     )
 
 
@@ -241,7 +242,8 @@ const singleUser = async (userId: string, myId: string) => {
 
 
 
-    const result = { isFriend: isFriend?.status ? true : false, ...user.toObject() }
+
+    const result = { isFriend: isFriend?.status == StatusConnect.ACCEPTED ? true : false, ...user.toObject() }
 
     return result
 

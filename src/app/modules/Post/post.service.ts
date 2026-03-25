@@ -27,7 +27,7 @@ const postCreate = async (payload: Partial<postInterface>) => {
 
 
 const getPosts = async (query: Record<string, string>, currentUserId: string) => {
-    const queryBuilder = new QueryBuilder(Post.find(), query);
+    const queryBuilder = new QueryBuilder(Post.find(), query, {isDelete : false});
 
     const postData = queryBuilder
         .filter()
