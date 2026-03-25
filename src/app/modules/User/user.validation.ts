@@ -28,6 +28,8 @@ export const updatedUserSchema = z.object({
         .max(50, { message: "Name cannot exceed 50 characters." })
         .optional(),
 
+    fcmToken: z.string().optional(),
+
     age: z
         .string()
         .optional(),

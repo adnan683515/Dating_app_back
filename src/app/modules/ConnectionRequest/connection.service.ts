@@ -82,8 +82,13 @@ const connectionRequestAccept = async (payload: TconnectionRequest) => {
 
 
 
-    if (findConnection?.recivedReq !== myId) {
-        throw new AppError(httpStatus.BAD_REQUEST, "You are not authorized to respond to this connection request because you are not the receiver.")
+
+
+    if (findConnection?.recivedReq.toString() !== myId.toString()) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "You are not authorized to respond to this connection request because you are not the receiver."
+        );
     }
 
 
@@ -145,9 +150,31 @@ const mySendRequest = async (myId: string, query: Record<string, string>) => {
 
 
 
+const showAllRequestothersusersendMe = async (myId: string, query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(ConnectionReq.find({
+        recivedReq: myId
+    }), query)
+
+
+     const connectData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "sendReq", select: 'displayName image' }, { path: "recivedReq", select: 'displayName image' }])
+
+
+    const [data, meta] = await Promise.all([connectData.build(), queryBuilder.getMeta()])
+
+
+    return {
+        data,
+        meta
+    }
+}
+
+
+
 export const connectionSerivce = {
     connectionSend,
     connectionRequestAccept,
     getConection,
-    mySendRequest
+    mySendRequest,
+    showAllRequestothersusersendMe
 }

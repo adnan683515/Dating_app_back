@@ -38,6 +38,8 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 // update use
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+
+
     if (req?.body?.password) {
         throw new AppError(httpStatus.BAD_REQUEST, "This is not permitted!")
     }
@@ -47,6 +49,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
             "Users are not allowed to change their role."
         );
     }
+
 
     if (req?.user?.role === Role?.ADMIN && (req?.body?.role === Role?.ADMIN || req?.body?.role == Role?.USER)) {
         throw new AppError(httpStatus.BAD_REQUEST, "Admins cannot modify their own role.");
@@ -58,7 +61,6 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     if ((req?.user?.role === Role.USER) && req?.body?.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "User can not modify their varification")
     }
-
 
 
     // form-data diye pathanor karone segula string hoye jacce ty ai khane abr boolen kore nilam
@@ -81,6 +83,8 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
     req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
     req?.body?.age ? req.body.age = Number(req?.body?.age) : ''
+
+
 
 
     if (req?.body?.age <= 18) {

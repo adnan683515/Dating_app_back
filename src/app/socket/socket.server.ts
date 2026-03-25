@@ -3,7 +3,7 @@ import { Server } from "socket.io";
 export let io: Server
 
 export const onlineUsers: Record<string, string> = {
-    
+
 }
 // { userId : socketId }
 
@@ -19,10 +19,17 @@ export const initSocket = async (httpServer: any) => {
 
         let userId: string | null = null
         // user join 
+
+
+
+
+
         socket.on('join-user', (_userId: string) => {
 
             userId = _userId.toString()
+
             if (userId) {
+                console.log("join user", userId)
                 socket.join(_userId)
                 onlineUsers[_userId] = socket.id
                 io.emit("get_online_users", Object.keys(onlineUsers)) // emit kore pathai dilam online users gula k 

@@ -31,6 +31,8 @@ const lineupCreate = async (payload: any) => {
 
     const created = await EventLineUp.insertMany(data)
 
+
+    
     return created
 }
 

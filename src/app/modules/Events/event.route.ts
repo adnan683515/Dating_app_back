@@ -31,6 +31,10 @@ route.get('/events', checkAuth(...Object.values(Role)), eventController.getEvent
 route.patch('/update-event/:id', upload.single('file'), validateRequest(updateEventZod), checkAuth(Role.ADMIN), eventController.updateEvents)
 
 
+// get events for admin
+route.get('/getEventsForAdmin', checkAuth(Role.ADMIN), eventController.getEventsForAdmin)
+
+
 
 
 export const EventRoute = route

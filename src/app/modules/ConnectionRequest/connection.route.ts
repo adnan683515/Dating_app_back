@@ -29,4 +29,7 @@ route.get('/get-connect', checkAuth(...Object.values(Role)), connectionControlle
 route.get('/get-my-request', checkAuth(...Object.values(Role)), connectionController.sendRequest)
 
 
+route.get('/others-user-sendMe', checkAuth(...Object.values(Role)) , connectionController.showAllRequestothersusersendMe)
+
+
 export const ConnectionRouter = route

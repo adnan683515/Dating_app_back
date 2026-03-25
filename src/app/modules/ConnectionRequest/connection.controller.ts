@@ -118,9 +118,32 @@ const sendRequest = catchAsync(async (req: Request, res: Response, next: NextFun
 
 
 
+const showAllRequestothersusersendMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+
+    const myId = req?.user?.id
+
+    console.log(myId)
+    const query = req?.query
+    const data = await connectionSerivce.showAllRequestothersusersendMe(myId, query as Record<string, string>)
+    data.meta.total = data.data.length
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Connects Data Retreived Successfully",
+        data: data
+    })
+
+})
+
+
+
 export const connectionController = {
     connectionSend,
     connectionRequestAccept,
     getConnect,
-    sendRequest
+    sendRequest,
+    showAllRequestothersusersendMe
 }

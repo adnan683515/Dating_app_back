@@ -55,9 +55,9 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
             coordinates: [req?.body.long, req?.body?.lat] // always [long, lat]
         }
 
-  
 
-        const location = await getCoordinates(req , res)
+
+        const location = await getCoordinates(req, res)
 
         req.body.addRess = location
     }
@@ -97,6 +97,7 @@ const getEvents = catchAsync(async (req: Request, res: Response, next: NextFunct
     let long = user?.long
 
 
+
     const events = await eventService.getEvents(lat as Number, long as Number, query as Record<string, string>)
 
 
@@ -110,6 +111,22 @@ const getEvents = catchAsync(async (req: Request, res: Response, next: NextFunct
 })
 
 
+// get evetns for admin 
+const getEventsForAdmin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const query = req?.query
+
+    const data = await eventService.getEventsForAdmin(query as Record<string, string>)
+
+    sendResponse(res, {
+        success: true,
+        message: "Get All Events",
+        data: data,
+        statusCode: httpStatus.OK
+    })
+})
+
 
 // update events
 const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -121,7 +138,7 @@ const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFu
     req?.body?.lat ? req.body.lat = Number(req?.body?.lat) : ''
     req?.body?.long ? req.body.long = Number(req?.body?.long) : ''
 
-    
+
 
     if (req.file) {
         // compress image
@@ -163,5 +180,6 @@ export const eventController = {
     createEvent,
     getEvents,
     eventDetails,
-    updateEvents
+    updateEvents,
+    getEventsForAdmin
 }

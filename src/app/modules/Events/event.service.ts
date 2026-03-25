@@ -43,7 +43,7 @@ const getEventDetails = async (id: string) => {
     const lineupData = await EventLineUp.findOne({ eventId: id }).countDocuments()
     isExitsEvent.lineupMember = lineupData
 
-
+  
     return isExitsEvent
 }
 
@@ -68,7 +68,7 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
                     type: "Point",
                     coordinates: [long, lat]
                 },
-                $maxDistance: 28000
+                $maxDistance: 500000
             }
         };
     }
@@ -80,7 +80,35 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
     }
 
 
+
     const queryBuilder = new QueryBuilder(Event.find(baseQuery), quey)
+
+
+   
+    const eventsData = queryBuilder.filter().search(['title','venue']).sort().fields().paginate().populate([
+        { path: 'category', select: 'name ' }
+    ])
+
+
+
+    const [data, meta] = await Promise.all([
+        eventsData.build(),
+        queryBuilder.getMeta()
+    ])
+
+
+    return {
+        data,
+        meta
+    }
+}
+
+
+
+// admin for this service
+const getEventsForAdmin = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(Event.find(), query)
 
     const eventsData = queryBuilder.filter().search(['title']).sort().fields().paginate().populate([
         { path: 'category', select: 'name' }
@@ -91,7 +119,6 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
         eventsData.build(),
         queryBuilder.getMeta()
     ])
-
 
 
     return {
@@ -127,5 +154,6 @@ export const eventService = {
     createEvent,
     getEventDetails,
     getEvents,
-    updateEvents
+    updateEvents,
+    getEventsForAdmin
 }

@@ -11,7 +11,7 @@ import { User } from "./user.model";
 import { ConnectionReq } from '../ConnectionRequest/connection.model';
 import { StatusConnect } from '../ConnectionRequest/connection.interface';
 
-
+import { ObjectId } from 'mongodb';
 
 
 
@@ -57,6 +57,8 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     // Spread payload
     const { ...updatedFields } = payload;
 
+    
+
     // Convert to ObjectId
     const idd = new Types.ObjectId(userId);
 
@@ -68,6 +70,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
     if (!findUser) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found");
     }
+
 
     // ck interest
     if ((findUser?.interests?.length ?? 0) > 6) {
@@ -223,18 +226,25 @@ const singleUser = async (userId: string, myId: string) => {
     }
 
 
+
+    const myObjectId = new ObjectId(myId); // convert string to ObjectId
+
+
+
     const isFriend =
         await ConnectionReq.findOne({
             $or: [
-                { senderId: myId, receiverId: user?._id },
-                { senderId: user?._id, receiverId: myId }
+                { sendReq: myObjectId, recivedReq: user?._id },
+                { sendReq: user?._id, recivedReq: myObjectId }
             ]
         })
 
 
-    const result = { request: isFriend?.status, ...user.toObject() }
+
+    const result = { isFriend: isFriend?.status ? true : false, ...user.toObject() }
+
     return result
-    return user
+
 }
 
 

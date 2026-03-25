@@ -14,5 +14,4 @@ route.post('/sendMessage', checkAuth(...Object.values(Role)) , messageController
 
 route.get("/messages/:roomId", checkAuth(...Object.values(Role)), messageController.getAllMessages)
 
-
 export const MessageRoute = route
