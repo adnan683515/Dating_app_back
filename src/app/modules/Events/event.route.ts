@@ -36,5 +36,10 @@ route.get('/getEventsForAdmin', checkAuth(Role.ADMIN), eventController.getEvents
 
 
 
+// admin status count
+
+route.get('/admin-events-status-count' , checkAuth(Role.ADMIN), eventController.eventStatusCountContrller)
+
+
 
 export const EventRoute = route

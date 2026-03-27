@@ -21,7 +21,5 @@ export const updateLineupZod = z.object({
         .string()
         .min(2, { message: "Name must be at least 2 characters long." })
         .max(30, { message: "Name cannot exceed 30 characters." })
-        .optional(),
-
-    isDelete: z.boolean().optional()
+        .optional()
 });

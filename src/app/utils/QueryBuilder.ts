@@ -24,7 +24,8 @@ export class QueryBuilder<T> {
     filter(): this {
 
 
-        const filter = {     ...this.filterQuery, ...this.query }
+        const filter = { ...this.filterQuery, ...this.query }
+        console.log(this.filter)
 
 
         // ai kahne amra sort,  skip ,  limit ,  searchTerm gula   filter theke bad diye dibo
@@ -36,10 +37,8 @@ export class QueryBuilder<T> {
             delete filter[field]
         }
 
-
-
+        this.filterQuery = filter  // ← update here
         this.modelQuery = this.modelQuery.find(filter) // User.find().find(filter)
-
         return this
 
     }
@@ -101,36 +100,22 @@ export class QueryBuilder<T> {
         return this.modelQuery
     }
 
-    // meta deta gula niye nibo ai funciton call kore 
-    // async getMeta() {
 
-    //     const totalDocuments = await this.modelQuery.model.countDocuments()
+    async getMeta() {
+        const page = Number(this.query.page) || 1;
+        const limit = Number(this.query.limit) || 10;
 
 
-    //     const page = Number(this.query.page) || 1
-    //     const limit = Number(this.query.limit) || 10
+        const totalDocuments = await this.modelQuery.model.countDocuments(this.filterQuery);
+        const totalpage = totalDocuments > 0 ? Math.ceil(totalDocuments / limit) : 0;
 
-    //     const totalpage = Math.ceil(totalDocuments / limit)
 
-    //     return { page, limit, total: totalDocuments, totalpage }
-    // }
-
-  async getMeta() {
-    const page = Number(this.query.page) || 1;
-    const limit = Number(this.query.limit) || 10;
-
-    console.log(this.filterQuery)
-
-    const totalDocuments = await this.modelQuery.model.countDocuments(this.filterQuery);
-
-    const totalpage = totalDocuments > 0 ? Math.ceil(totalDocuments / limit) : 0;
-
-    return {
-        page,
-        limit,
-        total: totalDocuments,
-        totalpage,
-    };
-}
+        return {
+            page,
+            limit,
+            total: totalDocuments,
+            totalpage,
+        };
+    }
 
 }

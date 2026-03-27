@@ -176,10 +176,29 @@ const updateEvents = catchAsync(async (req: Request, res: Response, next: NextFu
 })
 
 
+
+
+
+const eventStatusCountContrller = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const data = await eventService.eventServiceStatus()
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        message: "Event Update Successfully!",
+        data: data,
+        success: true
+    })
+
+})
+
+
 export const eventController = {
     createEvent,
     getEvents,
     eventDetails,
     updateEvents,
-    getEventsForAdmin
+    getEventsForAdmin,
+    eventStatusCountContrller
 }

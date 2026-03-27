@@ -43,7 +43,7 @@ const getEventDetails = async (id: string) => {
     const lineupData = await EventLineUp.findOne({ eventId: id }).countDocuments()
     isExitsEvent.lineupMember = lineupData
 
-  
+
     return isExitsEvent
 }
 
@@ -84,8 +84,8 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
     const queryBuilder = new QueryBuilder(Event.find(baseQuery), quey)
 
 
-   
-    const eventsData = queryBuilder.filter().search(['title','venue']).sort().fields().paginate().populate([
+
+    const eventsData = queryBuilder.filter().search(['title', 'venue']).sort().fields().paginate().populate([
         { path: 'category', select: 'name ' }
     ])
 
@@ -150,10 +150,44 @@ const updateEvents = async (eventId: string, payload: Partial<IEvent>) => {
 }
 
 
+
+
+const eventServiceStatus = async () => {
+    const counts = await Event.aggregate([
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 },
+            },
+        },
+    ]);
+
+    // Initialize result with all statuses
+    const result = {
+        [EStatus.NOSTART]: 0,
+        [EStatus.OPPENDOOR]: 0,
+        [EStatus.GOING]: 0,
+        [EStatus.END]: 0,
+        [EStatus.CANCELLED]: 0,
+    };
+
+    // Fill result with actual counts
+    counts.forEach((c) => {
+        result[c._id as EStatus] = c.count;
+    });
+
+    return result;
+}
+
+
+
+
+
 export const eventService = {
     createEvent,
     getEventDetails,
     getEvents,
     updateEvents,
-    getEventsForAdmin
+    getEventsForAdmin,
+    eventServiceStatus
 }

@@ -11,36 +11,33 @@ const lineupCreate = async (payload: any) => {
 
     const { eventId, lineups } = payload
 
-    // name গুলো collect করা
-    const names = lineups.map((item: any) => item.name)
 
-    // already exist check
-    const existing = await EventLineUp.find({
-        name: { $in: names }
-    })
+    const data = await Promise.all(
+        lineups.map(async (item: { name: string }) => {
 
-    if (existing.length > 0) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Some lineup already exists")
-    }
+            const ckLineup = await EventLineUp.findOne({ eventId, name: item.name });
+            if (ckLineup) {
+                throw new AppError(httpStatus.BAD_REQUEST, `Lineup "${item.name}" already created`);
+            }
 
-    // eventId add করা
-    const data = lineups.map((item: any) => ({
-        name: item.name,
-        eventId
-    }))
+            // return object to insert
+            return {
+                name: item.name,
+                eventId
+            };
+        })
+    );
 
-    const created = await EventLineUp.insertMany(data)
+    // bulk insert
+    const created = await EventLineUp.insertMany(data);
 
 
-    
     return created
 }
 
 
 // get lineup
 const getLineup = async (query: Record<string, string>) => {
-
-
 
     const queryBuilder = new QueryBuilder(EventLineUp.find(), query)
         .filter()
@@ -66,23 +63,42 @@ const getLineup = async (query: Record<string, string>) => {
 
 
 // update line data
-const updateLineup = async (userId : string, payload : Partial<IEventLineup>)=>{
+const updateLineup = async (userId: string, payload: Partial<IEventLineup>) => {
 
-    const {...updatedFields} = payload
+    const { ...updatedFields } = payload
 
     const lineup = await EventLineUp.findById(userId)
-    if(!lineup){
+    if (!lineup) {
         throw new AppError(httpStatus.NOT_FOUND, "Lineup Not found!!")
     }
 
     const updatedData = await EventLineUp.findOneAndUpdate(
-        {_id : userId},
-        {$set : updatedFields}, 
-        {returnDocument : "after", runValidators : true }
+        { _id: userId },
+        { $set: updatedFields },
+        { returnDocument: "after", runValidators: true }
     )
     return updatedData
 
 }
+
+
+const deleteLineup = async (lineupId: string) => {
+
+    const cklineup = await EventLineUp.findById(lineupId)
+    if (!cklineup) {
+        throw new AppError(httpStatus.NOT_FOUND, "Line up not found!")
+    }
+
+    const result = await EventLineUp.deleteOne({ _id: lineupId })
+
+    return true
+}
+
+
+
+
+
+// count all event no start koita , startkoita 
 
 
 
@@ -92,5 +108,6 @@ const updateLineup = async (userId : string, payload : Partial<IEventLineup>)=>{
 export const lineupService = {
     lineupCreate,
     getLineup,
-    updateLineup
+    updateLineup,
+    deleteLineup
 }

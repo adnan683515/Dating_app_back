@@ -46,15 +46,18 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
     // receiver ar objectid k string a convert korlam
     let receiver = receiverId.toString()
+    let sender = senderId.toString()
 
-    // online user tar socket id ta nilam
-    const receiverSocketId = onlineUsers[receiver]; // exact socket.id of the receiver
 
-    console.log(receiverId,"reciver")
-    if (receiverSocketId) {
-        io.to(receiverSocketId).emit('direct_message', message);
+    if (receiver && sender) {
+        
+        io.to(receiver).emit('direct_message', message);
 
-        io.to(receiverSocketId).emit('new_notification_by_socket', {
+        // sender (own UI update)
+        // io.to(sender).emit('direct_message', message);
+
+
+        io.to(receiver).emit('new_notification_by_socket', {
             type: "message",
             senderId,
             roomId: roomCk._id,
@@ -133,7 +136,7 @@ const getAllMessages = async (myId: string, otherUserId: string, query: Record<s
 
     console.log(roomck, "room")
 
-    const queryBuilder = new QueryBuilder(Message.find(), query,{ roomId: roomck?._id })
+    const queryBuilder = new QueryBuilder(Message.find(), query, { roomId: roomck?._id })
 
     const messagesDat = queryBuilder.filter().sort().fields().paginate().populate([{ path: "senderId", select: 'displayName image' }, { path: "receiverId", select: 'displayName image' }])
 

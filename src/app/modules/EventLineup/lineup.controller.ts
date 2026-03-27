@@ -56,10 +56,26 @@ const updateLineUp = catchAsync(async (req: Request, res: Response, next: NextFu
 })
 
 
+const deleteLineup = catchAsync(async(req : Request , res :Response , next : NextFunction)=>{
+
+    const id  = req?.params?.lineupId as string
+
+    const data = await lineupService.deleteLineup(id)
+
+   sendResponse(res, {
+        message: "Delete line up  successfully!",
+        success: true,
+        data: data,
+        statusCode: httpStatus.OK
+    })
+})
+
+
 export const lineupController = {
 
     lineupcreated,
     getLineup,
-    updateLineUp
+    updateLineUp,
+    deleteLineup
 
 }

@@ -20,27 +20,21 @@ export const initSocket = async (httpServer: any) => {
         let userId: string | null = null
         // user join 
 
-
-
-
-
+        // Event: join-user
         socket.on('join-user', (_userId: string) => {
 
-            userId = _userId.toString()
+            userId = _userId;
 
-            if (userId) {
+            socket.join(userId);
+            console.log("joinuser",userId)
 
-                console.log("join user", userId)
+            onlineUsers[userId] = socket.id;
 
-                socket.join(userId)
+            io.emit('get_online_users', Object.keys(onlineUsers));
 
-                onlineUsers[userId] = socket.id
-                
-                io.emit("get_online_users", Object.keys(onlineUsers)) // emit kore pathai dilam online users gula k 
+            console.log("Online users",onlineUsers)
+        });
 
-                console.log("online users",onlineUsers)
-            }
-        })
 
         socket.on("disconnect", () => {
             if (userId) {
