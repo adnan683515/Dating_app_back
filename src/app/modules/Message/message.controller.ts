@@ -6,8 +6,6 @@ import httpStatus from 'http-status-codes'
 
 // send message
 const sendMessage = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
-
     const senderId = req?.user?.id
     const { receiverId, messageText } = req?.body
 

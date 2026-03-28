@@ -95,7 +95,7 @@ const sendOtpUseingEmail = (async (req: Request, res: Response, next: NextFuncti
 const verifyController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const otp = req?.params?.otp
-    if(otp !== req?.user?.otp){
+    if (otp !== req?.user?.otp) {
         throw new AppError(http_status_code.BAD_REQUEST, "Otp Doesn't match!")
     }
     sendResponse(res, {
@@ -109,6 +109,35 @@ const verifyController = catchAsync(async (req: Request, res: Response, next: Ne
 
 
 
+const changePassNewAndConfirm = async (req: Request, res: Response) => {
+    const { newpassword, confirmpassword } = req.body;
+
+    // Check if both passwords are provided
+    if (!newpassword || !confirmpassword) {
+        throw new AppError(http_status_code.BAD_REQUEST, "Both fields are required");
+    }
+
+    // Check if passwords match
+    if (newpassword !== confirmpassword) {
+        throw new AppError(http_status_code.BAD_REQUEST, "Passwords do not match");
+    }
+
+    const email = req.user?.email; // assuming you have auth middleware
+
+    await loginService.changePasswordNewAndConfirmed(email, newpassword);
+
+
+
+    sendResponse(res, {
+        statusCode: http_status_code.OK,
+        message: "✅ Password changed successfully",
+        success: true,
+    })
+};
+
+
+
+
 
 export const authController = {
     loginUser,
@@ -116,6 +145,7 @@ export const authController = {
     changePassword,
     logout,
     sendOtpUseingEmail,
-    verifyController
+    verifyController,
+    changePassNewAndConfirm
 
 }

@@ -50,11 +50,8 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
 
     if (receiver && sender) {
-        
-        io.to(receiver).emit('direct_message', message);
 
-        // sender (own UI update)
-        // io.to(sender).emit('direct_message', message);
+        io.to(receiver).emit('direct_message', message);
 
 
         io.to(receiver).emit('new_notification_by_socket', {

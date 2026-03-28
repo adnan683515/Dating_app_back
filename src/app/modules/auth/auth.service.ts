@@ -124,8 +124,6 @@ const sendOtpUseingEmail = async (email: string) => {
 
     const otp = await sendEmail(email)
 
-
-
     const userPayLoad = {
         email: user.email,
         id: user._id,
@@ -133,7 +131,7 @@ const sendOtpUseingEmail = async (email: string) => {
         otp
     }
 
-    const accessToken = await generateTokenFn(userPayLoad, envVars.JWT_ACCESS_SECRET, "1m")
+    const accessToken = await generateTokenFn(userPayLoad, envVars.JWT_ACCESS_SECRET, "10m")
 
 
 
@@ -143,8 +141,28 @@ const sendOtpUseingEmail = async (email: string) => {
 }
 
 
+// change password new password
 
+const changePasswordNewAndConfirmed = async (email: string, password: string) => {
+    const user = await User.findOne({ email });
 
+    if (!user) {
+        throw new AppError(http_status_code.NOT_FOUND, "User not found!");
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(
+        password,
+        Number(envVars.BCRYPT_SALT_ROUND)
+    );
+
+    // Update the user's password
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return true
+};
 
 
 
@@ -152,5 +170,6 @@ export const loginService = {
     loginUser,
     verifyuser,
     changePasswordService,
-    sendOtpUseingEmail
+    sendOtpUseingEmail,
+    changePasswordNewAndConfirmed
 }

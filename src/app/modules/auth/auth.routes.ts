@@ -14,7 +14,8 @@ router.post('/verifyUser', authController.verifyUser)
 // when user authenticated
 router.patch('/changePassword', checkAuth(...Object.values(Role)), authController.changePassword)
 
-router.post('/logout', checkAuth(...Object.values(Role)),  authController.logout)
+router.post('/logout', checkAuth(...Object.values(Role)), authController.logout)
+
 
 
 router.post('/send-email-forget-password/:email', authController.sendOtpUseingEmail)
@@ -22,6 +23,8 @@ router.post('/send-email-forget-password/:email', authController.sendOtpUseingEm
 
 router.post('/verify-otp/:otp', checkAuth(...Object.values(Role)), authController.verifyController)
 
+
+router.post('/chnage-pass', checkAuth(...Object.values(Role)), authController.changePassNewAndConfirm)
 
 
 export const authRoutes = router
