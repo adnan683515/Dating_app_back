@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 
 export enum EStatus {
     NOSTART = "NOSTART",
-    OPPENDOOR = "OPEN DOOR",
+    OPPENDOOR = "OPENDOOR",
     GOING = "GOING",
     END = "END",
     CANCELLED = "CANCELLED"

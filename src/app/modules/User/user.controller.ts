@@ -49,6 +49,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
             "Users are not allowed to change their role."
         );
     }
+    
 
 
     if (req?.user?.role === Role?.ADMIN && (req?.body?.role === Role?.ADMIN || req?.body?.role == Role?.USER)) {

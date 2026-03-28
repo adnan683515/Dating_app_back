@@ -22,22 +22,16 @@ export class QueryBuilder<T> {
 
     // pagination, sorting, search related field গুলো বাদ দিয়ে actual filtering করা হচ্ছে
     filter(): this {
-
-
         const filter = { ...this.filterQuery, ...this.query }
-        console.log(this.filter)
-
-
         // ai kahne amra sort,  skip ,  limit ,  searchTerm gula   filter theke bad diye dibo
         // KARON filter diye sudu amra exac match korte parbo..
 
         // sort , skip, searcterm kaj korbe na tay bad diye disi
-
         for (const field of excludeField) {
             delete filter[field]
         }
-
         this.filterQuery = filter  // ← update here
+
         this.modelQuery = this.modelQuery.find(filter) // User.find().find(filter)
         return this
 
@@ -54,6 +48,20 @@ export class QueryBuilder<T> {
             $or: searchableField?.map((field) => ({ [field]: { $regex: searchTerm, $options: "i" } }))
         }
 
+    
+        const { _id } = this.filterQuery || {};
+
+        this.filterQuery = {  ...(_id && { _id }),  };
+        
+        this.filterQuery = {
+            ...(_id && { _id }),
+
+            ...(searchTerm && {
+                $or: searchableField.map((field) => ({
+                    [field]: { $regex: searchTerm, $options: "i" },
+                })),
+            }),
+        };
 
         this.modelQuery = this.modelQuery.find(searchQeury)
         return this

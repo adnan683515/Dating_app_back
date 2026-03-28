@@ -47,4 +47,7 @@ router.get('/singleUser/:id', checkAuth(...Object.values(Role)), userController.
 
 
 
+
+
+
 export const UserRoutes = router
