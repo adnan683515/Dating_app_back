@@ -56,3 +56,9 @@ export interface IEvent {
 
     addRess? : string,
 }
+
+
+
+export interface EventServiceInterface {
+    fee : number
+}

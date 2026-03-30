@@ -44,13 +44,17 @@ interface EnvConfig {
     TYPE : string,
 
 
-    GOOGLE_MAP_API_KEY : string
+    GOOGLE_MAP_API_KEY : string,
+
+
+    OAUTH_CLIENT_ID:string,
+    OAUTH_CLIENT_SECRET : string
 }
 
 
 const loadEnvVariables = (): EnvConfig => {
 
-    const requiredEnvVariables: string[] = ['PORT', 'BCRYPT_SALT_ROUND', 'APP_PASSWORD', 'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET', 'JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME', 'STRIPE_SECRET_KEY', 'WEB_HOOK_SECRET' , 'UNIVERSE_DOMAIN', 'CLIENT_X509_CERT_URL', 'AUTH_PROVIDER_X509_CERT_URL', 'TOKEN_URI', 'AUTH_URI', 'CLIENT_EMAIL', 'CLIENT_ID', 'PRIVATE_KEY', 'PRIVATE_KEY_ID', 'PROJECT_ID', 'TYPE','GOOGLE_MAP_API_KEY']
+    const requiredEnvVariables: string[] = ['PORT', 'BCRYPT_SALT_ROUND', 'APP_PASSWORD', 'DB_URL', 'ADMIN_EMAIL', 'ADMIN_PASSWORD', 'JWT_REFRESH_EXPIRES', 'JWT_REFRESH_SECRET', 'JWT_ACCESS_EXPIRES', 'JWT_ACCESS_SECRET', 'DB_URL', 'PORT', 'CLOUD_API_SECRET', 'CLOUD_API_KEY', 'CLOUD_NAME', 'STRIPE_SECRET_KEY', 'WEB_HOOK_SECRET' , 'UNIVERSE_DOMAIN', 'CLIENT_X509_CERT_URL', 'AUTH_PROVIDER_X509_CERT_URL', 'TOKEN_URI', 'AUTH_URI', 'CLIENT_EMAIL', 'CLIENT_ID', 'PRIVATE_KEY', 'PRIVATE_KEY_ID', 'PROJECT_ID', 'TYPE','GOOGLE_MAP_API_KEY','OAUTH_CLIENT_ID','OAUTH_CLIENT_SECRET']
 
 
     requiredEnvVariables?.forEach(key => {
@@ -110,7 +114,12 @@ const loadEnvVariables = (): EnvConfig => {
 
 
         // google map api key
-        GOOGLE_MAP_API_KEY : process.env.GOOGLE_MAP_API_KEY as string
+        GOOGLE_MAP_API_KEY : process.env.GOOGLE_MAP_API_KEY as string,
+
+
+        // google login
+        OAUTH_CLIENT_ID : process.env.OAUTH_CLIENT_ID as string,
+        OAUTH_CLIENT_SECRET : process.env.OAUTH_CLIENT_SECRET as string
 
     }
 }

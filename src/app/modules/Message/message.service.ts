@@ -7,6 +7,8 @@ import { QueryBuilder } from '../../utils/QueryBuilder';
 import { User } from '../User/user.model';
 import { IMessage } from "./message.interface";
 import { Message, Room } from "./message.model";
+import { createNotification } from '../../utils/Notifications';
+import { NotificationTypes } from '../Notifications/notification.interface';
 
 // send message service
 const sendMessage = async (payload: Partial<IMessage>) => {
@@ -51,23 +53,44 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
     if (receiver && sender) {
 
+        const notification = await createNotification({
+            receiver,
+            sender,
+            type: NotificationTypes.MESSAGE,
+            title: "New Message",
+            body: payload.messageText,
+        });
+
+
+
         io.to(receiver).emit('direct_message', message);
 
 
-        io.to(receiver).emit('new_notification_by_socket', {
-            type: "message",
-            senderId,
-            roomId: roomCk._id,
-            message: payload.messageText
-        });
+        io.to(receiver).emit('new_notification_by_socket', notification);
+
     } else {
+
+
+        const notification = await createNotification({
+            receiverId: receiver,
+            senderId: sender,
+            type: NotificationTypes.MESSAGE,
+            title: "New Message",
+            body: payload.messageText,
+        });
+
+
         // user offline -> FCM push
         const user = await User.findById(receiverId); // receiverId from message
         if (user?.fcmToken) {
+
             const fcmMessage: admin.messaging.Message = {
                 token: user.fcmToken,
-                notification: { title: "New Message", body: message.messageText },
-                data: { senderId: message.senderId.toString() as string, roomId: message.roomId.toString() as string },
+                notification: { title: notification?.title, body: notification?.body },
+                data: {
+                    notificationId: notification._id.toString(),
+                    type: notification.type,
+                },
             };
 
             try {
@@ -76,6 +99,9 @@ const sendMessage = async (payload: Partial<IMessage>) => {
             } catch (err) {
                 console.error("FCM error:", err);
             }
+
+
+
         }
     }
 

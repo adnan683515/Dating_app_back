@@ -8,6 +8,7 @@ import { IChangePassword } from "./auth.interface";
 import { envVars } from "../../config/env";
 import { sendEmail } from "../../utils/sendOTP";
 import { generateTokenFn } from "../../utils/jwt";
+import { verifyGoogleToken } from "../../utils/VerifyIdTokenForGoogleLogin";
 
 
 // login service
@@ -80,7 +81,6 @@ const verifyuser = async (payload: Partial<IOTP>) => {
 
 
 
-
 // change password when user is login
 const changePasswordService = async (payload: IChangePassword) => {
 
@@ -142,7 +142,6 @@ const sendOtpUseingEmail = async (email: string) => {
 
 
 // change password new password
-
 const changePasswordNewAndConfirmed = async (email: string, password: string) => {
     const user = await User.findOne({ email });
 
@@ -166,6 +165,67 @@ const changePasswordNewAndConfirmed = async (email: string, password: string) =>
 
 
 
+
+
+
+
+
+
+
+export const googleLoginService = async (idToken: string) => {
+    const payload = await verifyGoogleToken(idToken);
+
+
+    console.log(payload, "google auth login")
+
+    // const { email,  name,   picture,  sub,  email_verified  } = payload;
+
+
+    // if (!email || !sub) {
+    //     throw new Error("Invalid Google payload");
+    // }
+
+    // if (!email_verified) {
+    //     throw new Error("Email not verified by Google");
+    // }
+
+
+    // let user = await User.findOne({ googleId: sub });
+
+    // if (!user) {
+    //     user = await User.findOne({ email });
+
+    //     if (user) {
+    //         // Link existing account
+    //         user.googleId = sub;
+    //         user.provider = "google";
+    //         await user.save();
+    //     } else {
+    //         // Create new user
+    //         user = await User.create({
+    //             name,
+    //             email,
+    //             image: picture,
+    //             googleId: sub,
+    //             provider: "google",
+    //         });
+    //     }
+    // }
+
+
+    // const accessToken = jwt.sign(
+    //     { id: user._id },
+    //     process.env.JWT_SECRET as string,
+    //     { expiresIn: "7d" }
+    // );
+
+    // return {
+    //     user,
+    //     accessToken,
+    // };
+};
+
+
 export const loginService = {
     loginUser,
     verifyuser,
@@ -173,3 +233,20 @@ export const loginService = {
     sendOtpUseingEmail,
     changePasswordNewAndConfirmed
 }
+
+
+
+
+// Google Login  using app
+
+// Android App  ┐
+//              ├── Google OAuth
+// iOS App      ┘
+//                 ↓
+//            Google returns ID Token
+//                 ↓
+//            Node.js Backend
+//                 ↓
+//         Verify with Web Client ID
+//                 ↓
+//              Login

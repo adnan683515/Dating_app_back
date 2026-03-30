@@ -27,4 +27,7 @@ router.post('/verify-otp/:otp', checkAuth(...Object.values(Role)), authControlle
 router.post('/chnage-pass', checkAuth(...Object.values(Role)), authController.changePassNewAndConfirm)
 
 
+// router.post("/google-login", googleLoginController);
+
+
 export const authRoutes = router

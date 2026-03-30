@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { EStatus, EventTags, IEvent } from "./event.interface";
+import { EStatus, EventServiceInterface, EventTags, IEvent } from "./event.interface";
 
 
 export const EventSchema = new Schema<IEvent>({
@@ -67,7 +67,7 @@ export const EventSchema = new Schema<IEvent>({
     attendanceTotal: { type: Number, default: 0 },
     isDelete: { type: Boolean, default: false },
 
-    addRess : {type : String , default : ""}
+    addRess: { type: String, default: "" }
 
 }, {
     timestamps: true, // createdAt & updatedAt auto add
@@ -80,3 +80,16 @@ EventSchema.index({ location: '2dsphere' });
 
 // Model
 export const Event = model<IEvent>("Event", EventSchema);
+
+
+// service fee modal 
+const ServiceSchema = new Schema<EventServiceInterface>({
+    fee: {
+        type: Number,
+        required: [true, "Fee is required"],
+        min: [0, "Minimum value will be 0"],
+    },
+});
+
+
+export const Service = model<EventServiceInterface>('Service',ServiceSchema)

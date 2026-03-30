@@ -6,14 +6,17 @@ const notificationSchema = new Schema<NotificationInterFace>(
         receiverId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            required : true
         },
+
 
         senderId: {
             type: Schema.Types.ObjectId,
             ref: "User",
+            required : true
         },
 
+        
         type: {
             type: String,
             enum: Object.values(NotificationTypes),
@@ -22,10 +25,14 @@ const notificationSchema = new Schema<NotificationInterFace>(
 
         title: {
             type: String,
+            trim: true,
+            required: true
         },
 
         body: {
             type: String,
+            trim: true,
+            required: true
         },
         eventId: {
             type: Schema.Types.ObjectId,
@@ -53,9 +60,5 @@ const notificationSchema = new Schema<NotificationInterFace>(
     }
 );
 
-const Notification = model<NotificationInterFace>(
-    "Notification",
-    notificationSchema
-);
+export const Notification = model<NotificationInterFace>("Notification", notificationSchema);
 
-export default Notification;

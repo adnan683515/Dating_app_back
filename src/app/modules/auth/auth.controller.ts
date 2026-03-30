@@ -1,7 +1,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { loginService } from "./auth.service";
+import { googleLoginService, loginService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import http_status_code from "http-status-codes"
 import { clearTokens, setTokens } from "../../utils/UserTokens";
@@ -136,6 +136,28 @@ const changePassNewAndConfirm = async (req: Request, res: Response) => {
 };
 
 
+
+
+
+
+
+// const googleLoginController = async (req: Request, res: Response) => {
+//   try {
+//     const { idToken } = req.body;
+
+//     if (!idToken) {
+//       return res.status(400).json({ message: "idToken required" });
+//     }
+
+//     const result = await googleLoginService(idToken);
+
+//     return res.json(result);
+//   } catch (err: any) {
+//     return res.status(401).json({
+//       message: err.message || "Authentication failed",
+//     });
+//   }
+// };
 
 
 
