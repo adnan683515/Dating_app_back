@@ -36,15 +36,18 @@ const webHookController = catchAsync(async (req: Request, res: Response, next: N
 
   const sig = req.headers["stripe-signature"]!;
 
+
+  console.log("web hook controller start" )
   const endpointSecret = envVars.WEB_HOOK_SECRET;
   let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
 
-
     // Object method call
     await bookingService.handleEvent(event);
+
+     console.log("web hook controller middle" )
 
     res.status(200).send({ received: true });
   } catch (err: any) {

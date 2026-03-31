@@ -125,10 +125,12 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
         { returnDocument: 'after' }
       );
 
+      console.log("secuiccee")
+
 
       await Event.findOneAndUpdate(
         { _id: new mongoose.Types.ObjectId(eventId) },
-        { $inc: { attendanceTotal: session.metadata?.ticketCount } },
+        { $inc: { attendanceTotal: Number(session.metadata?.ticketCount) } },
         { returnDocument: 'after' }
       );
 
@@ -164,7 +166,7 @@ const getAllMyBookings = async (myId: string, query: Record<string, string>) => 
     .sort()
     .fields()
     .paginate()
-    .populate([{ path: "userId", select: "image displayName" }, { path: "eventId" }])
+    .populate([{ path: "userId", select: "image displayName" }, { path: "eventId" , select: "title image" }])
 
 
   // jdi multiple populate korte hoi  tah hole populate([ {path : "interests"}, {path : "interests"} ])
@@ -196,7 +198,7 @@ const getJoinedMembers = async (eventId: string, query: Record<string, string>) 
     throw new AppError(httpStatus.NOT_FOUND, "Event Not found!")
   }
 
-  const querybuilder = new QueryBuilder(Booking.find(), query,{ eventId: eventId  , paymentStatus : PaymentStatusEnum.PAID })
+  const querybuilder = new QueryBuilder(Booking.find(), query, { eventId: eventId, paymentStatus: PaymentStatusEnum.PAID })
 
   const userdata = querybuilder
     .filter()
