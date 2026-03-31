@@ -2,7 +2,11 @@ import { Types } from "mongoose"
 import { likeInterface } from "./like.interface"
 import { Like } from "./like.model"
 import { Post } from "../Post/post.model";
-
+import AppError from "../../errorHerlpers/AppError";
+import httpStatus from 'http-status-codes'
+import { NotificationTypes } from "../Notifications/notification.interface";
+import { createNotification } from "../../utils/Notifications";
+import { io, onlineUsers } from "../../socket/socket.server";
 
 
 
@@ -18,6 +22,12 @@ const likeCreateOrDelete = async (payload: Partial<likeInterface>) => {
         userId: userId as Types.ObjectId,
         postId: postId as Types.ObjectId
     });
+
+    const ckPost = await Post.findById(postId)
+
+    if (!ckPost) {
+        throw new AppError(httpStatus.NOT_FOUND, "Post Not found!")
+    }
 
     // If already liked → remove like
     if (existingLike) {
@@ -39,12 +49,40 @@ const likeCreateOrDelete = async (payload: Partial<likeInterface>) => {
     }
 
     // If not liked → create like
+    const postAuther = ckPost.userId
     const like = await Like.create(payload);
     await Post.findOneAndUpdate(
         { _id: postId },
         { $inc: { like: 1 } },
         { returnDocument: "after", runValidators: true }
     );
+
+
+
+    if (postAuther && userId) {
+
+        const notification = await createNotification({
+            receiverId: postAuther,
+            senderId: userId,
+            type: NotificationTypes.POST_LIKE,
+            title: "New Like ❤️",
+            body: ckPost?.caption as string,
+        });
+
+        const receiverIdStr = postAuther.toString();
+
+        // ✅ get socketId from onlineUsers
+        const socketId = onlineUsers[receiverIdStr];
+
+        console.log("receiver", receiverIdStr, "socket", socketId);
+
+        if (socketId) {
+            console.log("yes")
+            io.to(socketId).emit('new_notification_by_socket', notification);
+        }
+    }
+
+
 
 
     return {

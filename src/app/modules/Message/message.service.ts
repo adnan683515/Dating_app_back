@@ -2,13 +2,13 @@ import httpStatus from 'http-status-codes';
 import mongoose, { Types } from "mongoose";
 import admin from "../../config/firebaseConfiq";
 import AppError from "../../errorHerlpers/AppError";
-import { io, onlineUsers } from '../../socket/socket.server';
+import { io } from '../../socket/socket.server';
+import { createNotification } from '../../utils/Notifications';
 import { QueryBuilder } from '../../utils/QueryBuilder';
+import { NotificationTypes } from '../Notifications/notification.interface';
 import { User } from '../User/user.model';
 import { IMessage } from "./message.interface";
 import { Message, Room } from "./message.model";
-import { createNotification } from '../../utils/Notifications';
-import { NotificationTypes } from '../Notifications/notification.interface';
 
 // send message service
 const sendMessage = async (payload: Partial<IMessage>) => {
@@ -46,16 +46,19 @@ const sendMessage = async (payload: Partial<IMessage>) => {
     })
 
 
+
     // receiver ar objectid k string a convert korlam
     let receiver = receiverId.toString()
     let sender = senderId.toString()
 
 
-    if (receiver && sender) {
+
+    if (senderId && receiverId) {
+
 
         const notification = await createNotification({
-            receiver,
-            sender,
+            receiverId: receiver,
+            senderId: sender,
             type: NotificationTypes.MESSAGE,
             title: "New Message",
             body: payload.messageText,
@@ -64,8 +67,6 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
 
         io.to(receiver).emit('direct_message', message);
-
-
         io.to(receiver).emit('new_notification_by_socket', notification);
 
     } else {
@@ -80,8 +81,13 @@ const sendMessage = async (payload: Partial<IMessage>) => {
         });
 
 
+        console.log("notification", notification)
+
         // user offline -> FCM push
         const user = await User.findById(receiverId); // receiverId from message
+
+        console.log(user?.fcmToken, "user")
+
         if (user?.fcmToken) {
 
             const fcmMessage: admin.messaging.Message = {
@@ -92,6 +98,8 @@ const sendMessage = async (payload: Partial<IMessage>) => {
                     type: notification.type,
                 },
             };
+
+            console.log("fcmmessage", fcmMessage)
 
             try {
                 await admin.messaging().send(fcmMessage);

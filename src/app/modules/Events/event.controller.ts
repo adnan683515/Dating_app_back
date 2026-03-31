@@ -40,14 +40,6 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
 
     const MAX_SIZE = 50 * 1024 * 1024; // 50MB in bytes
 
-    // if (req?.file) {
-
-    //     if (req.file.size > MAX_SIZE) {
-
-    //         throw new AppError(httpStatus.BAD_REQUEST, "File size should not exceed 20MB")
-    //     }
-    // }
-
 
     if (req?.body?.lat && req?.body?.long) {
         req.body.location = {
@@ -62,7 +54,9 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
         req.body.addRess = location
     }
 
-    const data = await eventService.createEvent(req?.body)
+
+    const myId = req?.user?.id 
+    const data = await eventService.createEvent(myId as string , req?.body)
 
     sendResponse(res, {
         message: "Event Create Successfully!",

@@ -9,6 +9,8 @@ const sendMessage = catchAsync(async (req: Request, res: Response, next: NextFun
     const senderId = req?.user?.id
     const { receiverId, messageText } = req?.body
 
+    console.log(receiverId , senderId)
+
     const sendmsg = await messageService.sendMessage({ senderId, receiverId, messageText })
 
     sendResponse(res, {

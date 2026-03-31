@@ -5,26 +5,63 @@ import { EStatus, IEvent } from "./event.interface";
 import { Event } from "./event.model";
 import { Cetegory } from '../ICategory/cetegory.model';
 import { EventLineUp } from '../EventLineup/lineup.model';
-
+import { io, onlineUsers } from '../../socket/socket.server';
+import httpStatus from 'http-status-codes'
+import { NotificationTypes } from '../Notifications/notification.interface';
+import { createNotification } from '../../utils/Notifications';
+import { User } from '../User/user.model';
 
 
 
 
 // event create only admin create events
-const createEvent = async (payload: Partial<IEvent>) => {
+const createEvent = async (myId: string, payload: Partial<IEvent>) => {
+    const { category, ...rest } = payload;
 
-    const { category, ...rest } = payload
-
-    const isCategoryExits = await Cetegory.findById(category)
+    const isCategoryExits = await Cetegory.findById(category);
 
     if (!isCategoryExits) {
-        throw new AppError(htttpStatus.NOT_FOUND, "This category was not found")
+        throw new AppError(httpStatus.NOT_FOUND, "This category was not found");
     }
-    const creatEvent = await Event.create(payload)
 
-    return creatEvent
+    // Create Event
+    const createdEvent = await Event.create(payload);
 
-}
+
+    const users = await User.find({
+        location: {
+            $nearSphere: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [createdEvent?.long, createdEvent.lat],
+                },
+                $maxDistance: 50000,
+            },
+        },
+    });
+
+
+    const notifications = await createNotification({
+        senderId: myId,
+        eventId: createdEvent._id,
+        title: "New Event Created",
+        type: NotificationTypes.EVENT,
+        body: createdEvent.title
+    })
+
+
+    users.forEach((user) => {
+        const socketId = onlineUsers[user._id.toString()];
+
+        if (socketId) {
+            io.to(socketId).emit("new_notification_by_socket", notifications);
+        }
+    });
+
+
+
+    return createdEvent;
+};
 
 
 // event details 

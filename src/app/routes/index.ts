@@ -12,6 +12,7 @@ import { LikeRoute } from "../modules/Like/like.route";
 import path from "node:path";
 import { MessageRoute } from "../modules/Message/message.route";
 import { BookingRouter } from "../modules/Booking/booking.route";
+import { NotificationRoute } from "../modules/Notifications/notification.route";
 
 
 
@@ -59,6 +60,9 @@ const moduleRoutes = [
     {
         path : "/booking",
         route : BookingRouter
+    }, {
+        path : '/notification', 
+        route : NotificationRoute
     }
 ]
 

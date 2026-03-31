@@ -6,7 +6,6 @@ const notificationSchema = new Schema<NotificationInterFace>(
         receiverId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required : true
         },
 
 
@@ -57,6 +56,7 @@ const notificationSchema = new Schema<NotificationInterFace>(
     },
     {
         timestamps: true,
+        versionKey : false
     }
 );
 

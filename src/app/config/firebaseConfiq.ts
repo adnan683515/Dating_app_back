@@ -2,11 +2,11 @@
 import admin from "firebase-admin";
 import { envVars } from "./env";
 
-const obj   = {
+const obj = {
     type: envVars.TYPE,
     project_id: envVars.PROJECT_ID,
     private_key_id: envVars.PRIVATE_KEY_ID,
-     privateKey: envVars.PRIVATE_KEY?.replace(/\\n/g, "\n"),
+    privateKey: envVars.PRIVATE_KEY?.replace(/\\n/g, "\n"),
     client_email: envVars.CLIENT_EMAIL,
     client_id: envVars.CLIENT_ID,
     auth_uri: envVars.AUTH_URI,
