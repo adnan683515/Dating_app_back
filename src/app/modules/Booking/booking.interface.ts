@@ -9,5 +9,5 @@ export interface IBooking {
     fee: number;
     paymentStatus: PaymentStatusEnum.UNPAID | PaymentStatusEnum.PAID | PaymentStatusEnum.FAILED;
     txId?: string;
-
+    useCount : number;
 }

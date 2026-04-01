@@ -39,6 +39,10 @@ const BookingSchema = new Schema<IBooking>(
         },
         txId: {
             type: String
+        },
+        useCount: {
+            default: 0,
+            type: Number
         }
     },
     {

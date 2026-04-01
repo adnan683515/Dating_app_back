@@ -68,7 +68,6 @@ const likeCreateOrDelete = async (payload: Partial<likeInterface>) => {
             title: "New Like ❤️",
             body: ckPost?.caption as string,
         });
-
         const receiverIdStr = postAuther.toString();
 
         // ✅ get socketId from onlineUsers

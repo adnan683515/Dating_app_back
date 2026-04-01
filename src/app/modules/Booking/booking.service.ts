@@ -94,6 +94,18 @@ const createBooking = async (payload: Partial<IBooking>) => {
       ticketCount: (payload.ticketCount ?? 1).toString(),
       bookId: bookId?._id.toString()
     },
+
+
+
+    // 🔥 THIS IS THE REAL FIX
+    payment_intent_data: {
+      metadata: {
+        userId: findUser._id.toString(),
+        eventId: findEvent._id.toString(),
+        ticketCount: (payload.ticketCount ?? 1).toString(),
+        bookId: bookId._id.toString(),
+      },
+    },
   });
 
 
@@ -105,49 +117,144 @@ const createBooking = async (payload: Partial<IBooking>) => {
 
 
 // when payment will be success this webhook will be call
+// const handleEvent = async (stripeEvent: Stripe.Event) => {
+
+//   switch (stripeEvent.type) {
+
+//     case "checkout.session.completed":
+//       const session = stripeEvent.data.object as Stripe.Checkout.Session;
+//       const userId = session.metadata?.userId;
+//       const eventId = session.metadata?.eventId;
+//       const bookId = session?.metadata?.bookId;
+//       // console.log(userId, eventId, "from booking web hook service");
+//       await Booking.findOneAndUpdate(
+//         {
+//           _id: bookId as string,
+//           eventId: eventId as string,
+//           userId: userId as string,
+//         },
+//         { $set: { paymentStatus: PaymentStatusEnum.PAID } },
+//         { returnDocument: 'after' }
+//       );
+
+
+//       await Event.findOneAndUpdate(
+//         { _id: new mongoose.Types.ObjectId(eventId) },
+//         { $inc: { attendanceTotal: Number(session.metadata?.ticketCount) } },
+//         { returnDocument: 'after' }
+//       );
+
+
+
+//       break;
+//     case "payment_intent.payment_failed":
+//       const session = stripeEvent.data.object as Stripe.Checkout.Session;
+//       // ❌ Payment failed
+//       // await Booking.findByIdAndUpdate(bookId, {
+//       //   paymentStatus: "FAILED",
+//       // });
+//       console.log("payment_failed")
+//       break;
+
+//     case "checkout.session.expired":
+//       // ❌ User didn’t complete payment
+//       // await Booking.findByIdAndUpdate(bookId, {
+//       //   paymentStatus: "CANCELLED",
+//       // });
+//       console.log("payment expired")
+//       break;
+
+//     case "payment_intent.canceled":
+//       // ❌ Payment cancelled
+//       // await Booking.findByIdAndUpdate(bookId, {
+//       //   paymentStatus: "CANCELLED",
+//       // });
+//       console.log("payment canceled")
+//       break;
+
+//     default:
+//       console.log(`Unhandled event type ${stripeEvent.type}`);
+//   }
+// };
+
+
 const handleEvent = async (stripeEvent: Stripe.Event) => {
 
   switch (stripeEvent.type) {
 
-    case "checkout.session.completed":
+    // ✅ PAYMENT SUCCESS
+    case "checkout.session.completed": {
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
+
       const userId = session.metadata?.userId;
       const eventId = session.metadata?.eventId;
-      const bookId = session?.metadata?.bookId;
-      // console.log(userId, eventId, "from booking web hook service");
-      const res = await Booking.findOneAndUpdate(
-        {
-          _id: bookId as string,
-          eventId: eventId as string,
-          userId: userId as string,
-        },
-        { $set: { paymentStatus: PaymentStatusEnum.PAID } },
-        { returnDocument: 'after' }
-      );
+      const bookId = session.metadata?.bookId;
 
-      console.log("secuiccee")
+      if (!bookId) return;
 
+      await Booking.findByIdAndUpdate(bookId, {
+        paymentStatus: PaymentStatusEnum.PAID,
+      });
 
-      await Event.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(eventId) },
-        { $inc: { attendanceTotal: Number(session.metadata?.ticketCount) } },
-        { returnDocument: 'after' }
-      );
-
-
+      await Event.findByIdAndUpdate(eventId, {
+        $inc: { attendanceTotal: Number(session.metadata?.ticketCount) },
+      });
 
       break;
-    case "payment_intent.payment_failed":
-      console.log("hello your payment is failed");
+    }
+
+    // ❌ PAYMENT FAILED
+    case "payment_intent.payment_failed": {
+      const paymentIntent = stripeEvent.data.object as Stripe.PaymentIntent;
+
+      const bookId = paymentIntent.metadata?.bookId;
+
+      if (!bookId) return;
+
+      await Booking.findByIdAndUpdate(bookId, {
+        paymentStatus: PaymentStatusEnum.FAILED,
+      });
+
+      console.log("❌ Payment Failed");
       break;
+    }
+
+    // ⏳ SESSION EXPIRED
+    case "checkout.session.expired": {
+      const session = stripeEvent.data.object as Stripe.Checkout.Session;
+
+      const bookId = session.metadata?.bookId;
+
+      if (!bookId) return;
+
+      await Booking.findByIdAndUpdate(bookId, {
+        paymentStatus: PaymentStatusEnum.FAILED,
+      });
+
+      console.log("⏳ Payment Expired");
+      break;
+    }
+
+    // 🚫 PAYMENT CANCELLED
+    case "payment_intent.canceled": {
+      const paymentIntent = stripeEvent.data.object as Stripe.PaymentIntent;
+
+      const bookId = paymentIntent.metadata?.bookId;
+
+      if (!bookId) return;
+
+      await Booking.findByIdAndUpdate(bookId, {
+        paymentStatus: PaymentStatusEnum.FAILED,
+      });
+
+      console.log("🚫 Payment Cancelled");
+      break;
+    }
 
     default:
       console.log(`Unhandled event type ${stripeEvent.type}`);
   }
 };
-
-
-
 
 // get all my bookings
 const getAllMyBookings = async (myId: string, query: Record<string, string>) => {
@@ -158,7 +265,8 @@ const getAllMyBookings = async (myId: string, query: Record<string, string>) => 
     throw new AppError(httpStatus.NOT_FOUND, "this user not found")
   }
 
-  const queribuilder = new QueryBuilder(Booking.find({ userId: myId }), query)
+  // , paymentStatus: PaymentStatusEnum.PAID
+  const queribuilder = new QueryBuilder(Booking.find({ userId: myId, paymentStatus: PaymentStatusEnum.PAID }), query)
 
 
   const userdata = queribuilder
@@ -166,7 +274,7 @@ const getAllMyBookings = async (myId: string, query: Record<string, string>) => 
     .sort()
     .fields()
     .paginate()
-    .populate([{ path: "userId", select: "image displayName" }, { path: "eventId" , select: "title image" }])
+    .populate([{ path: "userId", select: "image displayName" }, { path: "eventId", select: "title image" }])
 
 
   // jdi multiple populate korte hoi  tah hole populate([ {path : "interests"}, {path : "interests"} ])
@@ -191,38 +299,63 @@ const getAllMyBookings = async (myId: string, query: Record<string, string>) => 
 
 // get all attendance member of event
 const getJoinedMembers = async (eventId: string, query: Record<string, string>) => {
-
   const eventCk = await Event.findById(eventId)
-
   if (!eventCk) {
     throw new AppError(httpStatus.NOT_FOUND, "Event Not found!")
   }
-
   const querybuilder = new QueryBuilder(Booking.find(), query, { eventId: eventId, paymentStatus: PaymentStatusEnum.PAID })
-
   const userdata = querybuilder
     .filter()
     .sort()
     .fields()
     .paginate()
     .populate([{ path: "userId", select: "image displayName" }])
-
-
   const [data, meta] = await Promise.all([
     userdata.build(),
     querybuilder.getMeta()
   ])
-
-
   return {
     data,
     meta
   }
-
-
 }
 
 
+// get all booking for admin
+const allBookingList = async (query: Record<string, string>) => {
+
+  const queryBuilder = new QueryBuilder(Booking.find(), query)
+  const bookingData = queryBuilder.filter().sort().fields().paginate().populate([{ path: "userId", select: "image displayName" }, { path: 'eventId', select: 'title image _id' }])
+  const [data, meta] = await Promise.all([
+    bookingData.build(),
+    queryBuilder.getMeta()
+  ])
+  return {
+    data,
+    meta
+  }
+}
+
+
+// update bookiing 
+const updateBooking = async (id: string, useTicket: number) => {
+
+  const ckBooking = await Booking.findById(id);
+
+  if (!ckBooking) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking Not found!");
+  }
+
+  const result = await Booking.findByIdAndUpdate(
+    id,
+    { $set: { useCount: useTicket } },
+    { new: true }
+  );
+
+  console.log(result);
+
+  return result;
+};
 
 
 
@@ -231,5 +364,7 @@ export const bookingService = {
   createBooking,
   handleEvent,
   getAllMyBookings,
-  getJoinedMembers
+  getJoinedMembers,
+  allBookingList,
+  updateBooking
 }

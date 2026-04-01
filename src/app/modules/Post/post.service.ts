@@ -73,7 +73,7 @@ const getPosts = async (query: Record<string, string>, currentUserId: string) =>
 
 const getMyPost = async (user: JwtPayload, query: Record<string, string>) => {
 
-    const querybuilder = new QueryBuilder(Post.find({ userId: user?.id }), query)
+    const querybuilder = new QueryBuilder(Post.find({ userId: user?.id , isDelete : false }), query)
 
     const postdata = querybuilder.filter().sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
     const [data, meta] = await Promise.all([

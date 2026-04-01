@@ -37,7 +37,7 @@ const webHookController = catchAsync(async (req: Request, res: Response, next: N
   const sig = req.headers["stripe-signature"]!;
 
 
-  console.log("web hook controller start" )
+  console.log("web hook controller start")
   const endpointSecret = envVars.WEB_HOOK_SECRET;
   let event: Stripe.Event;
 
@@ -47,7 +47,7 @@ const webHookController = catchAsync(async (req: Request, res: Response, next: N
     // Object method call
     await bookingService.handleEvent(event);
 
-     console.log("web hook controller middle" )
+    console.log("web hook controller middle")
 
     res.status(200).send({ received: true });
   } catch (err: any) {
@@ -55,8 +55,6 @@ const webHookController = catchAsync(async (req: Request, res: Response, next: N
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
 });
-
-
 
 
 
@@ -81,6 +79,7 @@ const getAllMyBookings = catchAsync(async (req: Request, res: Response, next: Ne
 })
 
 
+// joined members of event
 const getJoinedMembers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
@@ -102,9 +101,54 @@ const getJoinedMembers = catchAsync(async (req: Request, res: Response, next: Ne
 })
 
 
+
+// get all bookings for admin
+const allBookingList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+  const query = req?.query
+  const data = await bookingService.allBookingList(query as Record<string, string>)
+
+
+  sendResponse(res, {
+    success: true,
+    message: 'All-Booking List',
+    data: data,
+    statusCode: httpStatus.OK
+  })
+
+})
+
+
+// use ticket update 
+const updateBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+
+  const bookingId = req?.params?.id as string
+
+
+  const { useCount } = req?.body
+
+  console.log(useCount , bookingId)
+
+  const ans = await bookingService.updateBooking(bookingId, useCount)
+
+  sendResponse(res, {
+    success: true,
+    message: 'Update Successfully!',
+    data: ans,
+    statusCode: httpStatus.OK
+  })
+
+
+})
+
+
 export const bookingController = {
   eventBooking,
   webHookController,
   getAllMyBookings,
-  getJoinedMembers
+  getJoinedMembers,
+  allBookingList,
+  updateBooking
 }

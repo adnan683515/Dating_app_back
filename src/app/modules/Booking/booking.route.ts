@@ -20,5 +20,13 @@ route.get('/get-all-my-bookings' , checkAuth(...Object.values(Role)), bookingCon
 route.get('/get-all-joined-member/:eventId' , checkAuth(...Object.values(Role)) , bookingController.getJoinedMembers)
 
 
+// get all booking for admin
+route.get('/get-all-bookingList', checkAuth(Role.ADMIN) , bookingController.allBookingList)
+
+
+// 
+route.patch('/update-book-useCount/:id' , checkAuth(Role.ADMIN) , bookingController.updateBooking)
+
+
 
 export const BookingRouter = route
