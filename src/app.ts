@@ -42,13 +42,6 @@ app.use("/api/v1", router) //main router
 
 
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 min
-    max: 50, // ai time ar modde maximum 140 ta request dite parbe
-    message: "Too many requests from this IP, please try again later.",
-});
-
-app.use(limiter); //this middleware -> limit request
 
 
 
