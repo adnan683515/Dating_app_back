@@ -29,4 +29,12 @@ route.patch('/update-book-useCount/:id' , checkAuth(Role.ADMIN) , bookingControl
 
 
 
+// count booking for admin 
+route.get('/countBooking' , checkAuth(Role.ADMIN), bookingController.countBooking)
+
+
+
+route.get("/stats", checkAuth(Role.ADMIN) , bookingController.getBookingStatsController);
+
+
 export const BookingRouter = route

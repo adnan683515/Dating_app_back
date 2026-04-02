@@ -41,7 +41,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
         }
 
         if (isUserExits.status === Status.INACTIVE) {
-            throw new AppError(httpStatusCode.BAD_REQUEST, `User is ${isUserExits?.status}`)
+            throw new AppError(httpStatusCode.BAD_REQUEST, `User is Restricted!`)
         }
 
 

@@ -54,6 +54,8 @@ const createBooking = async (payload: Partial<IBooking>) => {
 
   const txid = generateTxId()
 
+  console.log(txid, "text id")
+
   const bookId = await Booking.create({
     userId: findUser._id,
     eventId: findEvent._id,
@@ -117,72 +119,11 @@ const createBooking = async (payload: Partial<IBooking>) => {
 
 
 // when payment will be success this webhook will be call
-// const handleEvent = async (stripeEvent: Stripe.Event) => {
-
-//   switch (stripeEvent.type) {
-
-//     case "checkout.session.completed":
-//       const session = stripeEvent.data.object as Stripe.Checkout.Session;
-//       const userId = session.metadata?.userId;
-//       const eventId = session.metadata?.eventId;
-//       const bookId = session?.metadata?.bookId;
-//       // console.log(userId, eventId, "from booking web hook service");
-//       await Booking.findOneAndUpdate(
-//         {
-//           _id: bookId as string,
-//           eventId: eventId as string,
-//           userId: userId as string,
-//         },
-//         { $set: { paymentStatus: PaymentStatusEnum.PAID } },
-//         { returnDocument: 'after' }
-//       );
-
-
-//       await Event.findOneAndUpdate(
-//         { _id: new mongoose.Types.ObjectId(eventId) },
-//         { $inc: { attendanceTotal: Number(session.metadata?.ticketCount) } },
-//         { returnDocument: 'after' }
-//       );
-
-
-
-//       break;
-//     case "payment_intent.payment_failed":
-//       const session = stripeEvent.data.object as Stripe.Checkout.Session;
-//       // ❌ Payment failed
-//       // await Booking.findByIdAndUpdate(bookId, {
-//       //   paymentStatus: "FAILED",
-//       // });
-//       console.log("payment_failed")
-//       break;
-
-//     case "checkout.session.expired":
-//       // ❌ User didn’t complete payment
-//       // await Booking.findByIdAndUpdate(bookId, {
-//       //   paymentStatus: "CANCELLED",
-//       // });
-//       console.log("payment expired")
-//       break;
-
-//     case "payment_intent.canceled":
-//       // ❌ Payment cancelled
-//       // await Booking.findByIdAndUpdate(bookId, {
-//       //   paymentStatus: "CANCELLED",
-//       // });
-//       console.log("payment canceled")
-//       break;
-
-//     default:
-//       console.log(`Unhandled event type ${stripeEvent.type}`);
-//   }
-// };
-
-
 const handleEvent = async (stripeEvent: Stripe.Event) => {
 
   switch (stripeEvent.type) {
 
-    // ✅ PAYMENT SUCCESS
+    // PAYMENT SUCCESS
     case "checkout.session.completed": {
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
 
@@ -190,11 +131,16 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       const eventId = session.metadata?.eventId;
       const bookId = session.metadata?.bookId;
 
+
+
       if (!bookId) return;
+
+
 
       await Booking.findByIdAndUpdate(bookId, {
         paymentStatus: PaymentStatusEnum.PAID,
       });
+
 
       await Event.findByIdAndUpdate(eventId, {
         $inc: { attendanceTotal: Number(session.metadata?.ticketCount) },
@@ -203,7 +149,7 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       break;
     }
 
-    // ❌ PAYMENT FAILED
+    // PAYMENT FAILED
     case "payment_intent.payment_failed": {
       const paymentIntent = stripeEvent.data.object as Stripe.PaymentIntent;
 
@@ -211,15 +157,16 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
 
       if (!bookId) return;
 
+      console.log("payment_intent.payment_failed")
       await Booking.findByIdAndUpdate(bookId, {
         paymentStatus: PaymentStatusEnum.FAILED,
       });
 
-      console.log("❌ Payment Failed");
+      console.log("Payment Failed");
       break;
     }
 
-    // ⏳ SESSION EXPIRED
+    // SESSION EXPIRED
     case "checkout.session.expired": {
       const session = stripeEvent.data.object as Stripe.Checkout.Session;
 
@@ -235,7 +182,7 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
       break;
     }
 
-    // 🚫 PAYMENT CANCELLED
+    // PAYMENT CANCELLED
     case "payment_intent.canceled": {
       const paymentIntent = stripeEvent.data.object as Stripe.PaymentIntent;
 
@@ -247,7 +194,7 @@ const handleEvent = async (stripeEvent: Stripe.Event) => {
         paymentStatus: PaymentStatusEnum.FAILED,
       });
 
-      console.log("🚫 Payment Cancelled");
+      console.log("Payment Cancelled");
       break;
     }
 
@@ -359,6 +306,57 @@ const updateBooking = async (id: string, useTicket: number) => {
 
 
 
+// count documents of booking
+const countBookingService = async () => {
+  const total = await Booking.countDocuments();
+
+  const paid = await Booking.countDocuments({ paymentStatus: PaymentStatusEnum.PAID });
+
+  const failed = await Booking.countDocuments({ paymentStatus: PaymentStatusEnum.FAILED });
+
+  const unpaid = await Booking.countDocuments({ paymentStatus: PaymentStatusEnum.UNPAID });
+
+  return {
+    total,
+    paid,
+    failed,
+    unpaid,
+  };
+};
+
+
+
+
+
+
+
+
+export const getBookingStats = async () => {
+  const stats = await Booking.aggregate([
+    {
+      $group: {
+        _id: "$paymentStatus",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // default structure
+  const result = {
+    PAID: 0,
+    UNPAID: 0,
+    FAILED: 0,
+  };
+
+  stats.forEach((item) => {
+    result[item._id as keyof typeof result] = item.count;
+  });
+
+  return result;
+};
+
+
+
 
 export const bookingService = {
   createBooking,
@@ -366,5 +364,7 @@ export const bookingService = {
   getAllMyBookings,
   getJoinedMembers,
   allBookingList,
-  updateBooking
+  updateBooking,
+  countBookingService,
+  getBookingStats
 }

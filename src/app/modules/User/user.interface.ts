@@ -61,11 +61,3 @@ export interface IUser {
     fcmToken? : string;
 }
 
-// otp schema
-
-
-export interface IOTP {
-    email: string;
-    otp: string;
-    expiresAt: Date
-}

@@ -98,31 +98,104 @@ const getComments = async (id: string, query: Record<string, string>) => {
 
 
 // update comment status
+// const updateComments = async (id: string) => {
+
+//     const ckComment = await Comment.findById(id)
+//     if (!ckComment) {
+//         throw new AppError(httpStatus.NOT_FOUND, "Comment not found!")
+//     }
+
+//     const postId = await Post.findById(ckComment.parentId)
+//     const childComment = await Comment.find({ parentId: ckComment?.parentId ? ckComment?.parentId : ckComment?._id }).countDocuments()
+
+
+//     console.log("chiled comment", childComment)
+
+//     const data = await Comment.findOneAndUpdate(
+//         { _id: id },
+//         { $set: { isDelete: true } },
+//         {
+//             returnDocument: "after", runValidators: true
+//         }
+//     )
+//     return data
+
+// }
+
 const updateComments = async (id: string) => {
+    const comment = await Comment.findById(id);
+
+    if (!comment) {
+        throw new AppError(httpStatus.NOT_FOUND, "Comment not found!");
+    }
+
+    // find children only
+    const children = await Comment.countDocuments({
+        parentId: comment._id,
+        isDelete: false,
+    });
+
+    // check if parent or child
+    let deleteCount = 1 + children; // default (parent case)
+
+    // if this is child → only 1 count
+    if (comment.parentId) {
+        deleteCount = 1;
+    }
+
+    // mark this comment as deleted
+    await Comment.findByIdAndUpdate(comment._id, {
+        $set: { isDelete: true },
+    });
+
+    // if parent → delete children
+    if (!comment.parentId) {
+        await Comment.updateMany(
+            { parentId: comment._id },
+            { $set: { isDelete: true } }
+        );
+    }
+
+    // update post count (ONLY ONCE)
+    await Post.findByIdAndUpdate(comment.postId, {
+        $inc: { comment: -deleteCount },
+    });
+
+
+
+    return { message: "Comment deleted and count updated" };
+};
+
+
+
+const updateCommentsData = async (id: string, payload: Partial<Icomment>) => {
+
 
     const ckComment = await Comment.findById(id)
+    const { ...updatedFields } = payload
+
     if (!ckComment) {
         throw new AppError(httpStatus.NOT_FOUND, "Comment not found!")
     }
 
+    if (updatedFields?.isDelete) {
+        throw new AppError(httpStatus.BAD_REQUEST, "you cann't edit isDelete in this api!")
+    }
+
     const data = await Comment.findOneAndUpdate(
         { _id: id },
-        { $set: { isDelete: true } },
+        { $set: updatedFields },
         {
             returnDocument: "after", runValidators: true
-
         }
     )
-
-
     return data
-
 }
 
 
 export const commentService = {
-
     createComment,
     getComments,
-    updateComments
+    updateComments,
+    updateCommentsData
 }

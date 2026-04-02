@@ -61,6 +61,8 @@ const getPosts = async (query: Record<string, string>, currentUserId: string) =>
 
     }));
 
+
+
     return {
         data: postsWithLikedFlag,
         meta

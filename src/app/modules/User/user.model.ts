@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, IOTP, IUser, Role, Status } from "./user.interface";
+import { IAuthProvider, IUser, Role, Status } from "./user.interface";
 
 
 
@@ -97,5 +97,5 @@ const otpSchema = new Schema({
 
 userSchema.index({ location: '2dsphere' });
 export const User = model<IUser>("User", userSchema)
-export const OTP = model<IOTP>("OTP", otpSchema)
+
 

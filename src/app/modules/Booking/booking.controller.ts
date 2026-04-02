@@ -129,7 +129,7 @@ const updateBooking = catchAsync(async (req: Request, res: Response, next: NextF
 
   const { useCount } = req?.body
 
-  console.log(useCount , bookingId)
+  console.log(useCount, bookingId)
 
   const ans = await bookingService.updateBooking(bookingId, useCount)
 
@@ -144,11 +144,44 @@ const updateBooking = catchAsync(async (req: Request, res: Response, next: NextF
 })
 
 
+const countBooking = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+
+
+  const data = await bookingService.countBookingService()
+
+  sendResponse(res, {
+    success: true,
+    data: data,
+    message: 'Count all Documents of booking',
+    statusCode: httpStatus.OK
+  })
+})
+
+
+
+
+const getBookingStatsController = async (req: Request, res: Response) => {
+
+
+  const data = await bookingService.getBookingStats();
+
+  res.status(200).json({
+    success: true,
+    message: "Booking stats fetched successfully",
+    data,
+  });
+};
+
+
 export const bookingController = {
   eventBooking,
   webHookController,
   getAllMyBookings,
   getJoinedMembers,
   allBookingList,
-  updateBooking
+  updateBooking,
+  countBooking,
+  getBookingStatsController
 }

@@ -9,7 +9,6 @@ const router = Router()
 
 router.post('/login', authController.loginUser)
 
-router.post('/verifyUser', authController.verifyUser)
 
 // when user authenticated
 router.patch('/changePassword', checkAuth(...Object.values(Role)), authController.changePassword)

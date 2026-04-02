@@ -16,5 +16,6 @@ route.get('/get-comments/:id', checkAuth(...Object.values(Role)) , commentContro
 
 route.patch('/update-comment/:id', checkAuth(...Object.values(Role)) , commentController.updateComment )
 
+route.patch('/update-comment-data/:id' , checkAuth(...Object.values(Role)) , commentController.updateCommentsData)
 
 export const CommentRoute = route

@@ -1,14 +1,14 @@
-import AppError from "../../errorHerlpers/AppError";
-import { IOTP, IUser } from "../User/user.interface";
-import { OTP, User } from "../User/user.model";
-import http_status_code from 'http-status-codes'
-import bcrypt from 'bcrypt'
-import { createUserTokens } from "../../utils/createUserTokens";
-import { IChangePassword } from "./auth.interface";
+import bcrypt from 'bcrypt';
+import http_status_code from 'http-status-codes';
 import { envVars } from "../../config/env";
-import { sendEmail } from "../../utils/sendOTP";
+import AppError from "../../errorHerlpers/AppError";
+import { createUserTokens } from "../../utils/createUserTokens";
 import { generateTokenFn } from "../../utils/jwt";
+import { sendEmail } from "../../utils/sendOTP";
 import { verifyGoogleToken } from "../../utils/VerifyIdTokenForGoogleLogin";
+import { IUser, Status } from "../User/user.interface";
+import { User } from "../User/user.model";
+import { IChangePassword } from "./auth.interface";
 
 
 // login service
@@ -24,9 +24,9 @@ const loginUser = async (payload: Partial<IUser>) => {
         throw new AppError(http_status_code.NOT_FOUND, "user not found")
     }
 
-    // if (!isUserExits.isVerified) {
-    //     throw new AppError(http_status_code.BAD_REQUEST, "user not verified")
-    // }
+    if (isUserExits.status === Status.INACTIVE) {
+        throw new AppError(http_status_code.BAD_REQUEST, "User is Restricted");
+    }
 
 
 
@@ -50,34 +50,6 @@ const loginUser = async (payload: Partial<IUser>) => {
 
 }
 
-
-// verify user
-const verifyuser = async (payload: Partial<IOTP>) => {
-
-    const { email, otp } = payload
-
-    const user = await OTP.findOne({ email: email as string })
-
-    if (user?.expiresAt && new Date(user.expiresAt) < new Date()) {
-
-        throw new AppError(http_status_code.BAD_REQUEST, "OTP expired")
-    }
-
-    if (user?.otp !== otp) {
-        throw new AppError(http_status_code.BAD_REQUEST, "Invalid OTP. Please try again")
-    }
-
-    // delete from otp model this email
-    await OTP.deleteOne({ email: email as string })
-
-    // verified true kore deya holo from user model
-    await User.updateOne({ email: email as string }, { $set: { isVerified: true } })
-
-
-    return true
-
-
-}
 
 
 
@@ -228,7 +200,6 @@ export const googleLoginService = async (idToken: string) => {
 
 export const loginService = {
     loginUser,
-    verifyuser,
     changePasswordService,
     sendOtpUseingEmail,
     changePasswordNewAndConfirmed

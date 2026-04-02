@@ -40,28 +40,46 @@ const getComments = catchAsync(async (req: Request, res: Response, next: NextFun
 
     sendResponse(res, {
         data,
-        success : true,
-        statusCode : httpStatus.OK,
-        message : 'get all coments'
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'get all coments'
     })
 })
 
 
-const updateComment = catchAsync(async (req : Request , res : Response , next : NextFunction)=>{
+const updateComment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const id = req?.params?.id as string
 
 
     const data = await commentService.updateComments(id)
 
-    sendResponse(res , {
-        success : true,
-        message : "update status done",
+    sendResponse(res, {
+        success: true,
+        message: "update status done",
         data,
-        statusCode : httpStatus.OK
+        statusCode: httpStatus.OK
     })
 
 
+})
+
+
+const updateCommentsData = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const id = req?.params?.id as string
+
+    const body = req?.body
+
+    const result = await commentService.updateCommentsData(id, body)
+
+    sendResponse(res, {
+
+        success: true,
+        message: 'Comment update Successfully',
+        data: result,
+        statusCode: httpStatus.OK
+    })
 })
 
 
@@ -70,5 +88,6 @@ const updateComment = catchAsync(async (req : Request , res : Response , next : 
 export const commentController = {
     createComment,
     getComments,
-    updateComment
+    updateComment,
+    updateCommentsData
 }
