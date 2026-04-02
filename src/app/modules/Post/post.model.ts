@@ -14,7 +14,7 @@ const postSchema = new Schema<postInterface>({
         type: String,
         required: [true, "Caption is required"],
         trim: true,
-        minlength: [5, "Caption must be at least 5 characters long"],
+
     },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     isDelete: { type: Boolean, default: false },
