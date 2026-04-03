@@ -1,7 +1,6 @@
-import { envVars } from "../config/env"
 import nodemailer from 'nodemailer'
 import otpGenerator from "otp-generator"
-import { OTP } from "../modules/User/user.model"
+import { envVars } from "../config/env"
 
 
 export const sendEmail = async (email: string) => {
