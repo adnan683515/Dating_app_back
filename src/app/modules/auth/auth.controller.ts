@@ -37,7 +37,7 @@ const loginUser = catchAsync(async (req: Request, res: Response, next: NextFunct
 const verifyUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
 
-    await loginService.verifyuser(req?.body)
+  
 
     sendResponse(res, {
         statusCode: http_status_code.OK,
