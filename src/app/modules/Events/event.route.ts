@@ -42,4 +42,9 @@ route.get('/admin-events-status-count' , checkAuth(Role.ADMIN), eventController.
 
 
 
+// top 5 event 
+route.get('/top-five-events' , checkAuth(Role.ADMIN) , eventController.topFiveEvents)
+
+
+
 export const EventRoute = route

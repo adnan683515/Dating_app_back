@@ -140,8 +140,6 @@ const getEvents = async (lat: Number, long: Number, quey: Record<string, string>
     }
 }
 
-
-
 // admin for this service
 const getEventsForAdmin = async (query: Record<string, string>) => {
 
@@ -164,7 +162,6 @@ const getEventsForAdmin = async (query: Record<string, string>) => {
     }
 }
 
-
 // update events 
 const updateEvents = async (eventId: string, payload: Partial<IEvent>) => {
 
@@ -183,6 +180,28 @@ const updateEvents = async (eventId: string, payload: Partial<IEvent>) => {
     )
 
     return updatedEvent
+
+}
+
+
+const topFiveEvents = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder( Event.find().sort({ attendanceTotal: -1 }), query);
+
+
+    const eventsData = queryBuilder.filter().search(['title', 'venue']).sort().fields().paginate().populate([
+        { path: 'category', select: 'name ' }
+    ])
+
+
+    const [data, meta] = await Promise.all([
+        eventsData.build(),
+        queryBuilder.getMeta()
+    ])
+
+    return{
+        data
+    }
 
 }
 
@@ -226,5 +245,6 @@ export const eventService = {
     getEvents,
     updateEvents,
     getEventsForAdmin,
-    eventServiceStatus
+    eventServiceStatus,
+    topFiveEvents
 }

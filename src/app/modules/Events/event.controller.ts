@@ -55,8 +55,8 @@ const createEvent = catchAsync(async (req: Request, res: Response, next: NextFun
     }
 
 
-    const myId = req?.user?.id 
-    const data = await eventService.createEvent(myId as string , req?.body)
+    const myId = req?.user?.id
+    const data = await eventService.createEvent(myId as string, req?.body)
 
     sendResponse(res, {
         message: "Event Create Successfully!",
@@ -188,11 +188,28 @@ const eventStatusCountContrller = catchAsync(async (req: Request, res: Response,
 })
 
 
+// top events
+const topFiveEvents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+    const query = req?.query
+    const data = await eventService.topFiveEvents(query as Record<string, string>)
+
+    sendResponse(res, {
+        success: true,
+        message: 'Top Five Events Show',
+        data: data,
+        statusCode: httpStatus.OK
+    })
+})
+
+
 export const eventController = {
     createEvent,
     getEvents,
     eventDetails,
     updateEvents,
     getEventsForAdmin,
-    eventStatusCountContrller
+    eventStatusCountContrller,
+    topFiveEvents
 }
