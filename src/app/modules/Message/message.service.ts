@@ -82,14 +82,10 @@ const sendMessage = async (payload: Partial<IMessage>) => {
 
 
         console.log("notification", notification)
-
         // user offline -> FCM push
         const user = await User.findById(receiverId); // receiverId from message
-
         console.log(user?.fcmToken, "user")
-
         if (user?.fcmToken) {
-
             const fcmMessage: admin.messaging.Message = {
                 token: user.fcmToken,
                 notification: { title: notification?.title, body: notification?.body },
@@ -98,9 +94,7 @@ const sendMessage = async (payload: Partial<IMessage>) => {
                     type: notification.type,
                 },
             };
-
             console.log("fcmmessage", fcmMessage)
-
             try {
                 await admin.messaging().send(fcmMessage);
                 console.log("Notification sent");
