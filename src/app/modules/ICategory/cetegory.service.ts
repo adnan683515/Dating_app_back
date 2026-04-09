@@ -29,7 +29,7 @@ const createCetegory = async (payload: Partial<ICetegory>) => {
 const getCetegory = async (query: Record<string, string>) => {
 
 
-    const queryBuilder = new QueryBuilder(Cetegory.find(), query)
+    const queryBuilder = new QueryBuilder(Cetegory.find({ isDelete: false }), query)
 
     const cetegoryData = queryBuilder.search(['name']).filter().paginate()
 
@@ -70,9 +70,18 @@ const updateCetegory = async (id: string, payload: Partial<ICetegory>) => {
 }
 
 
+// get cetegory for admin 
+const getCetegoryAdmin = async () => {
+
+    const data = await Cetegory.find({ isDelete: false })
+    return data || []
+}
+
+
 
 export const CetegoryService = {
     createCetegory,
     getCetegory,
-    updateCetegory
+    updateCetegory,
+    getCetegoryAdmin
 }

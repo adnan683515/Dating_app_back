@@ -13,6 +13,7 @@ import path from "node:path";
 import { MessageRoute } from "../modules/Message/message.route";
 import { BookingRouter } from "../modules/Booking/booking.route";
 import { NotificationRoute } from "../modules/Notifications/notification.route";
+import { ReportRouter } from "../modules/report/report.route";
 
 
 
@@ -63,6 +64,10 @@ const moduleRoutes = [
     }, {
         path : '/notification', 
         route : NotificationRoute
+    },
+    {
+        path : '/report',
+        route : ReportRouter
     }
 ]
 

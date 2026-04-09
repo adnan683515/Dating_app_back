@@ -63,9 +63,27 @@ const updateCetegory = catchAsync(async (req: Request, res: Response, next: Next
 })
 
 
+// get cetegory controller 
+const getCategoryAdmin = catchAsync(async(req : Request , res : Response , next : NextFunction)=>{
+
+    const data = await CetegoryService.getCetegoryAdmin()
+
+    sendResponse(res , {
+        success : true, 
+        data : data , 
+        message : 'Get All Categories for admin',
+        statusCode : httpStatus.OK
+    })
+
+
+
+})
+
+
 
 export const cetegoryController = {
     createCetegory,
     getCetegory,
-    updateCetegory
+    updateCetegory,
+    getCategoryAdmin
 }

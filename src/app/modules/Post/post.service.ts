@@ -7,6 +7,9 @@ import { Types } from 'mongoose';
 import { object } from 'zod';
 import { JwtPayload } from 'jsonwebtoken';
 import { Like } from '../Like/like.model';
+import Report from '../report/report.model';
+import { reportType } from '../report/report.interface';
+import { Block } from '../Block/block.model';
 
 
 
@@ -25,9 +28,48 @@ const postCreate = async (payload: Partial<postInterface>) => {
 }
 
 
-
+// get all post for user
 const getPosts = async (query: Record<string, string>, currentUserId: string) => {
-    const queryBuilder = new QueryBuilder(Post.find(), query, {isDelete : false});
+
+
+    // get reported posts by this user
+    const reportedPosts = await Report.find({
+        reporter: currentUserId,
+        type: reportType.POST
+    }).lean();
+
+
+    // repoted postid array
+    const reportedPostIds = reportedPosts
+        .filter(r => r.postId)
+        .map(r => r.postId!.toString());
+
+
+    // block user 
+    const blockedUsers = await Block.find({
+        blockerUserId: currentUserId
+    }).lean();
+   
+
+    // blocked id gula jare jare ami block korsi
+    const blockedUserIds = blockedUsers
+        .map(b => b.blockedUserId?.toString())
+        .filter(Boolean);
+
+
+
+    // exclude reported posts and ami jare jare block korsi oder post bade
+    const queryBuilder = new QueryBuilder(
+        Post.find({
+            isDelete: false,
+            _id: { $nin: reportedPostIds },
+            userId: { $nin: blockedUserIds } 
+        }),
+        query
+    );
+
+
+
 
     const postData = queryBuilder
         .filter()
@@ -42,23 +84,19 @@ const getPosts = async (query: Record<string, string>, currentUserId: string) =>
         queryBuilder.getMeta()
     ]);
 
-    // post IDs
+    // likes
     const postIds = data.map(post => post._id);
 
-    // likes of current user
     const liked = await Like.find({
         postId: { $in: postIds },
         userId: currentUserId
     }).lean();
 
-    // convert to string for safe comparison
     const likedSet = new Set(liked.map(l => l.postId.toString()));
 
-    // attach likedByMe flag
     const postsWithLikedFlag = data.map(post => ({
         ...post.toObject(),
-        likedByMe: likedSet.has(post._id.toString()), // <-- MUST convert to string
-
+        likedByMe: likedSet.has(post._id.toString()),
     }));
 
 
@@ -70,12 +108,10 @@ const getPosts = async (query: Record<string, string>, currentUserId: string) =>
 };
 
 
-
-
-
+// get my post
 const getMyPost = async (user: JwtPayload, query: Record<string, string>) => {
 
-    const querybuilder = new QueryBuilder(Post.find({ userId: user?.id , isDelete : false }), query)
+    const querybuilder = new QueryBuilder(Post.find({ userId: user?.id, isDelete: false }), query)
 
     const postdata = querybuilder.filter().sort().fields().paginate().populate([{ path: "userId", select: 'image displayName' }])
     const [data, meta] = await Promise.all([
@@ -90,6 +126,7 @@ const getMyPost = async (user: JwtPayload, query: Record<string, string>) => {
 }
 
 
+// update post
 const updatePost = async (postId: string, payload: Partial<postInterface>, userId: string) => {
 
 
@@ -120,6 +157,10 @@ const updatePost = async (postId: string, payload: Partial<postInterface>, userI
     return update
 
 }
+
+
+
+
 
 
 

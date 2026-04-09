@@ -20,6 +20,11 @@ export enum Status {
     INACTIVE = "INACTIVE"
 }
 
+
+
+
+
+
 export interface IUser {
     _id?: Types.ObjectId;
     displayName: string;
@@ -59,5 +64,7 @@ export interface IUser {
     role: Role;
     auths?: IAuthProvider[];
     fcmToken? : string;
-}
 
+
+
+}

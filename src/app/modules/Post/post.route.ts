@@ -13,7 +13,7 @@ const route = Router()
 route.post('/create-post', upload.single('file'), checkAuth(...Object.values(Role)), postController.createPost)
 
 
-//  get all post
+//  get all post for admin and user
 route.get('/get-post', checkAuth(...Object.values(Role)), postController.getpost)
 
 // my post
@@ -21,6 +21,13 @@ route.get('/get-my-post' , checkAuth(...Object.values(Role)) , postController.ge
 
 // update post
 route.patch('/update-post/:id', upload.single('file'), checkAuth(...Object.values(Role)), postController.updatepost)
+
+
+
+
+
+
+
 
 
 export const PostRoute = route

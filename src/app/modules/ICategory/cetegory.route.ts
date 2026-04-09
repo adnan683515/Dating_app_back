@@ -21,5 +21,8 @@ route.get('/cetegories', checkAuth(...Object.values(Role)), cetegoryController.g
 route.patch('/update-cetegory/:id', validateRequest(updateCetegoryzodSchema), checkAuth(Role.ADMIN), cetegoryController.updateCetegory)
 
 
+// get cetegory for admin 
+route.get('/get-cetegory-for-admin' , checkAuth(Role.ADMIN) , cetegoryController.getCategoryAdmin)
+
 
 export const CetegoryRoute = route
