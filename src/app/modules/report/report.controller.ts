@@ -33,12 +33,12 @@ const createReport = catchAsync(async (req: Request, res: Response, next: NextFu
 
 
 // get all report post 
-const getAllreport = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const getAllPostReport = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-  
+
     const query = req?.query
 
-    const data = await reportService.getAllPostreport(query as Record<string, string> )
+    const data = await reportService.getAllPostreport(query as Record<string, string>)
 
 
     sendResponse(res, {
@@ -50,7 +50,42 @@ const getAllreport = catchAsync(async (req: Request, res: Response, next: NextFu
 })
 
 
+// get all user report 
+const getAllUserReport = catchAsync( async (req: Request, res: Response, next: NextFunction) => {
+
+        const query = req.query as Record<string, string>;
+
+        const userList = await reportService.getAllUserreport(query);
+
+        return sendResponse(res, {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: "All reported users fetched successfully",
+            data: userList
+        });
+    }
+);
+
+
+// count of report 
+const countOfReport = catchAsync(async (req : Request , res : Response, next : NextFunction)=>{
+
+
+    const data = await reportService.countOfReport()
+
+
+    sendResponse(res, {
+        success : true,
+        message : 'Count of Reports',
+        data : data,
+        statusCode : httpStatus.OK
+    })
+})
+
+
 export const reportController = {
     createReport,
-    getAllreport
+    getAllPostReport,
+    getAllUserReport,
+    countOfReport
 }

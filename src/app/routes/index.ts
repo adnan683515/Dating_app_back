@@ -14,6 +14,7 @@ import { MessageRoute } from "../modules/Message/message.route";
 import { BookingRouter } from "../modules/Booking/booking.route";
 import { NotificationRoute } from "../modules/Notifications/notification.route";
 import { ReportRouter } from "../modules/report/report.route";
+import { BlockRoute } from "../modules/Block/block.route";
 
 
 
@@ -68,6 +69,10 @@ const moduleRoutes = [
     {
         path : '/report',
         route : ReportRouter
+    }, 
+    {
+        path : '/block',
+        route  : BlockRoute
     }
 ]
 

@@ -15,8 +15,15 @@ route.post('/create-report/:type' , checkAuth(...Object.values(Role)) , reportCo
 
 
 // get all report post (admin)
+route.get('/get-all-post-report' , checkAuth(Role.ADMIN) , reportController.getAllPostReport)
 
-route.get('/get-all-post-report' , checkAuth(Role.ADMIN) , reportController.getAllreport)
+
+// get all report user(admin)
+route.get('/get-all-user-report' , checkAuth(Role.ADMIN) , reportController.getAllUserReport) 
+
+
+// get count of reports 
+route.get('/count-of-reports' , checkAuth(Role.ADMIN) , reportController.countOfReport)
 
 
 export const ReportRouter = route

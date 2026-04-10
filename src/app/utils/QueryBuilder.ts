@@ -48,11 +48,11 @@ export class QueryBuilder<T> {
             $or: searchableField?.map((field) => ({ [field]: { $regex: searchTerm, $options: "i" } }))
         }
 
-    
+
         const { _id } = this.filterQuery || {};
 
-        this.filterQuery = {  ...(_id && { _id }),  };
-        
+        this.filterQuery = { ...(_id && { _id }), };
+
         this.filterQuery = {
             ...(_id && { _id }),
 
@@ -117,6 +117,7 @@ export class QueryBuilder<T> {
         const totalDocuments = await this.modelQuery.model.countDocuments(this.filterQuery);
         const totalpage = totalDocuments > 0 ? Math.ceil(totalDocuments / limit) : 0;
 
+      
 
         return {
             page,

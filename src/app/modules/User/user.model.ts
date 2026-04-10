@@ -72,26 +72,6 @@ const userSchema = new Schema<IUser>({
 
 
 
-const otpSchema = new Schema({
-    email: {
-        type: String,
-        required: true,
-        trim: true
-    },
-
-    otp: {
-        type: String,
-        required: true,
-        trim: true
-    },
-
-    expiresAt: {
-        type: Date,
-        required: true,
-    },
-}, {
-    versionKey: false
-})
 
 
 

@@ -12,6 +12,7 @@ import { ConnectionReq } from '../ConnectionRequest/connection.model';
 import { StatusConnect } from '../ConnectionRequest/connection.interface';
 
 import { ObjectId } from 'mongodb';
+import { Block } from '../Block/block.model';
 
 
 
@@ -93,15 +94,24 @@ const updateUser = async (userId: string, payload: Partial<IUser>): Promise<IUse
 // get all users with out admin
 const getAllUsers = async (userId: string, query: Record<string, string>) => {
 
+    // get blocked users
+    const blockedUsers = await Block.find({
+        blockerUserId: userId
+    }).select("blockedUserId");
 
-
+    const blockedIds = blockedUsers.map(
+        (b) => b.blockedUserId
+    );
 
     const querybuilder = new QueryBuilder(
-        User.find(),
-        query,
-        { _id: { $ne: userId } }
-    )
-
+        User.find({
+            _id: {
+                $ne: userId,
+                $nin: blockedIds   
+            }
+        }),
+        query
+    );
 
     const userdata = querybuilder
         .filter()
@@ -109,83 +119,18 @@ const getAllUsers = async (userId: string, query: Record<string, string>) => {
         .sort()
         .fields()
         .paginate()
-        .populate([{ path: "interests" }])
-
-
-    // jdi multiple populate korte hoi  tah hole populate([ {path : "interests"}, {path : "interests"} ])
-
-
+        .populate([{ path: "interests" }]);
 
     const [data, meta] = await Promise.all([
         userdata.build(),
         querybuilder.getMeta()
-    ])
-
-
-
-    // const filter = query
-    // const searchTerm = filter?.searchTerm || ""
-    // const sort = query?.sort || "-createdAt"
-    // const limit = Number(query?.limit) || 10
-    // const page = Number(query?.page) || 1
-    // const skip = (page - 1) * limit
-
-
-    // field filtering
-    // const fields = query?.fields?.split(',').join(' ') || ""
-
-
-    // delete filter["searchTerm"]
-    // delete filter['sort']
-
-
-
-
-    // for (const field of excludeField) {
-    //     delete filter[field]
-    // }
-
-
-    // const searchArray = {
-    //     $or: userFields?.map((item) => ({ [item]: { $regex: searchTerm, $options: 'i' } }))
-    // }
-
-    // {
-    //     $or : [
-    //         {title : {$regex : value , $options : "i"}},
-    //         {bio : {$regex : value , $options : "i"}},
-    //         {role : {$regex : value , $options : "i"}},
-    //     ]
-    // }
-
-
-    // const users = await User.find({
-    //     $and: [
-    //         searchArray,
-    //         { email: { $ne: envVars.ADMIN_EMAIL } }
-    //     ]
-    // }).find(filter).sort(sort).select(fields as string).skip(skip).limit(limit).populate('interests')
-
-
-    // const userCount = await User.find({ email: { $ne: envVars.ADMIN_EMAIL } }).countDocuments()
-
-
-    // const totalpage = Math.ceil(userCount / limit)
-
-    // const meta = {
-    //     total: userCount,
-    //     page: page,
-    //     limit: limit,
-    //     totalpage
-    // }
-
+    ]);
 
     return {
         data,
         meta
-    }
-}
-
+    };
+};
 
 // get me 
 const getMe = async (userId: string) => {

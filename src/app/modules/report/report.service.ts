@@ -11,8 +11,6 @@ import { QueryBuilder } from '../../utils/QueryBuilder';
 
 const createReport = async (payload: Partial<IReport>) => {
 
-
-
     const { reporter, type } = payload
 
     const ckReporter = await User.findById(reporter)
@@ -54,12 +52,6 @@ const createReport = async (payload: Partial<IReport>) => {
             throw new AppError(httpStatus.BAD_REQUEST, "please give me both id (post and user)")
         }
 
-        // ck post
-        const id = payload.postId
-        const ckPost = await Post.findById(id)
-        if (!ckPost) {
-            throw new AppError(httpStatus.NOT_FOUND, "Report post not found!")
-        }
 
         // ck user 
         const uId = payload.userId
@@ -67,6 +59,16 @@ const createReport = async (payload: Partial<IReport>) => {
         if (!ckUser) {
             throw new AppError(httpStatus.NOT_FOUND, "Report user not found!")
         }
+
+
+
+        // ck post
+        const id = payload.postId
+        const ckPost = await Post.findOne({ _id: id, userId: payload.userId })
+        if (!ckPost) {
+            throw new AppError(httpStatus.NOT_FOUND, "Report post not found!")
+        }
+
 
         //current user ki  post report and user block ck
         const ckAlreadyReportPostandBlock = await Report.findOne({ reporter: payload.reporter, postId: id, userId: uId })
@@ -106,51 +108,302 @@ const createReport = async (payload: Partial<IReport>) => {
 
 
 const getAllPostreport = async (query: Record<string, string>) => {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
 
+    const search = query.search || "";
 
-    const querybuilder = new QueryBuilder(Report.find({
+    const matchStage: any = {
         postId: { $ne: null }
-    }), query)
+    };
 
-    const postdata = querybuilder.filter().sort().fields().paginate().populate([{ path: "reporter", select: 'image displayName' }, { path: 'postId', select: 'caption imageOrVideo' }])
-    const [data, meta] = await Promise.all([
-        postdata.build(),
-        querybuilder.getMeta()
-    ])
+    const data = await Report.aggregate([
+        // filter reports
+        {
+            $match: matchStage
+        },
+
+        // group by post
+        {
+            $group: {
+                _id: "$postId",
+                totalReports: { $sum: 1 },
+                latestReport: { $first: "$$ROOT" }
+            }
+        },
+
+        // join posts
+        {
+            $lookup: {
+                from: "posts",
+                localField: "_id",
+                foreignField: "_id",
+                as: "post"
+            }
+        },
+
+        {
+            $unwind: "$post"
+        },
+
+        // caption search filter 
+        {
+            $match: search
+                ? {
+                    "post.caption": {
+                        $regex: search,
+                        $options: "i"   // case insensitive
+                    }
+                }
+                : {}
+        },
+
+        // shape response
+        {
+            $project: {
+                _id: 0,
+                totalReports: 1,
+                post: {
+                    _id: "$post._id",
+                    caption: "$post.caption",
+                    imageOrVideo: "$post.imageOrVideo",
+                    userId: "$post.userId",
+                    isDelete: "$post.isDelete"
+                }
+            }
+        },
+        //  sort
+        {
+            $sort: { totalReports: -1 }
+        },
+
+        //  pagination
+        {
+            $skip: skip
+        },
+        {
+            $limit: limit
+        }
+    ]);
+
+
+    const totalResult = await Report.aggregate([
+        {
+            $match: matchStage
+        },
+        {
+            $group: {
+                _id: "$postId"
+            }
+        },
+        {
+            $lookup: {
+                from: "posts",
+                localField: "_id",
+                foreignField: "_id",
+                as: "post"
+            }
+        },
+        {
+            $unwind: "$post"
+        },
+
+        // same search apply here
+        {
+            $match: search
+                ? {
+                    "post.caption": {
+                        $regex: search,
+                        $options: "i"
+                    }
+                }
+                : {}
+        },
+
+        {
+            $count: "total"
+        }
+    ]);
+
+    const total = totalResult[0]?.total || 0;
 
     return {
         data,
-        meta
-    }
-}
+        meta: {
+            page,
+            limit,
+            total,
+            totalpage: Math.ceil(total / limit)
+        }
+    };
+};
+
+
+const getAllUserreport = async (query: Record<string, string>) => {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const matchStage = {
+        userId: { $ne: null }
+    };
+
+    // =========================
+    // 📊 MAIN DATA PIPELINE
+    // =========================
+    const data = await Report.aggregate([
+        // 1️⃣ match filter
+        {
+            $match: matchStage
+        },
+
+        // 2️⃣ group by reported user
+        {
+            $group: {
+                _id: "$userId",
+                totalReports: { $sum: 1 },
+                latestReport: { $first: "$$ROOT" }
+            }
+        },
+
+        // 3️⃣ join user collection
+        {
+            $lookup: {
+                from: "users",
+                localField: "_id",
+                foreignField: "_id",
+                as: "user"
+            }
+        },
+
+        // 4️⃣ convert array → object
+        {
+            $unwind: "$user"
+        },
+
+        // 5️⃣ final shape
+        {
+            $project: {
+                _id: 0,
+                totalReports: 1,
+                user: {
+                    _id: "$user._id",
+                    displayName: "$user.displayName",
+                    image: "$user.image",
+                    email: "$user.email"
+                }
+            }
+        },
+
+        // 6️⃣ sort by most reported
+        {
+            $sort: { totalReports: -1 }
+        },
+
+        // 🔥 7️⃣ PAGINATION (IMPORTANT FIX)
+        {
+            $skip: skip
+        },
+        {
+            $limit: limit
+        }
+    ]);
+
+    // =========================
+    // 📊 TOTAL COUNT META
+    // =========================
+    const totalResult = await Report.aggregate([
+        {
+            $match: matchStage
+        },
+        {
+            $group: {
+                _id: "$userId"
+            }
+        },
+        {
+            $count: "total"
+        }
+    ]);
+
+    const total = totalResult[0]?.total || 0;
+
+    return {
+        data,
+        meta: {
+            page,
+            limit,
+            total,
+            totalpage: Math.ceil(total / limit)
+        }
+    };
+};
 
 
 
+const countOfReport = async () => {
 
+    const result = await Report.aggregate([
+        {
+            $facet: {
 
-// const getAllUserreport = async (query: Record<string, string>) => {
+                // total reports
+                totalReports: [
+                    { $count: "count" }
+                ],
 
+                // user reports
+                userReports: [
+                    {
+                        $match: {
+                            userId: { $ne: null }
+                        }
+                    },
+                    { $count: "count" }
+                ],
 
-//     const querybuilder = new QueryBuilder(Report.find({ userId: { $ne: null } }), query)
+                // post reports
+                postReports: [
+                    {
+                        $match: {
+                            postId: { $ne: null }
+                        }
+                    },
+                    { $count: "count" }
+                ],
 
-//     const postdata = querybuilder.filter().sort().fields().paginate().populate([{ path: "reporter", select: 'image displayName' }, { path: 'postId', select: 'caption imageOrVideo' }])
-//     const [data, meta] = await Promise.all([
-//         postdata.build(),
-//         querybuilder.getMeta()
-//     ])
+                // extra → unique reported users
+                uniqueReportedUsers: [
+                    {
+                        $match: {
+                            userId: { $ne: null }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$userId"
+                        }
+                    },
+                    { $count: "count" }
+                ]
+            }
+        }
+    ]);
 
-//     return {
-//         data,
-//         meta
-//     }
-// }
+    const data = result[0];
 
-
-
-
-
+    return {
+        totalReports: data.totalReports[0]?.count || 0,
+        userReports: data.userReports[0]?.count || 0,
+        postReports: data.postReports[0]?.count || 0,
+        uniqueReportedUsers: data.uniqueReportedUsers[0]?.count || 0
+    };
+};
 
 export const reportService = {
     createReport,
-    getAllPostreport
+    getAllPostreport,
+    getAllUserreport,
+    countOfReport
 }
